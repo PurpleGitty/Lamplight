@@ -2,18 +2,18 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://7o4ja5xgv6ja"
-path="res://.godot/imported/mojangles.otf-0e306ca8dd1007f98a7b85f4ae0dfe65.fontdata"
+uid="uid://c3awfkuwfxewp"
+path="res://.godot/imported/PixelOperatorMono8-Bold.ttf-224f09c60e37c6ef8cfd0f9b91add5a4.fontdata"
 
 [deps]
 
-source_file="res://mojangles.otf"
-dest_files=["res://.godot/imported/mojangles.otf-0e306ca8dd1007f98a7b85f4ae0dfe65.fontdata"]
+source_file="res://fonts/PixelOperatorMono8-Bold.ttf"
+dest_files=["res://.godot/imported/PixelOperatorMono8-Bold.ttf-224f09c60e37c6ef8cfd0f9b91add5a4.fontdata"]
 
 [params]
 
 Rendering=null
-antialiasing=1
+antialiasing=0
 generate_mipmaps=false
 disable_embedded_bitmaps=true
 multichannel_signed_distance_field=false
@@ -22,7 +22,7 @@ msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
-hinting=1
+hinting=3
 subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0

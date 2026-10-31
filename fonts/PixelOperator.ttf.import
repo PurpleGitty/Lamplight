@@ -2,18 +2,18 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://2bkkxholnkd"
-path="res://.godot/imported/DS-DIGI.TTF-95dcd7b4cad534c542fdbce52ada94b8.fontdata"
+uid="uid://5vfxphai0tuc"
+path="res://.godot/imported/PixelOperator.ttf-a8302fa8032f699415ff0d53bc6dec56.fontdata"
 
 [deps]
 
-source_file="res://DS-DIGI.TTF"
-dest_files=["res://.godot/imported/DS-DIGI.TTF-95dcd7b4cad534c542fdbce52ada94b8.fontdata"]
+source_file="res://fonts/PixelOperator.ttf"
+dest_files=["res://.godot/imported/PixelOperator.ttf-a8302fa8032f699415ff0d53bc6dec56.fontdata"]
 
 [params]
 
 Rendering=null
-antialiasing=1
+antialiasing=0
 generate_mipmaps=false
 disable_embedded_bitmaps=true
 multichannel_signed_distance_field=false

@@ -17,26 +17,26 @@ var beat_timer = 0.0
 @onready var clock_label = $"timerbox/time left"
 @onready var energy_bar = $"energybox/current energy"
 
-#func _process(delta: float) -> void:
-	#if time_left > 0:
-		#time_left -= delta
-		#handle_bpm_pulses(delta)
-#
-#func handle_bpm_pulses(delta: float):
-	#beat_timer += delta
-	#if beat_timer >= BEAT_DURATION:
-		#beat_timer -= BEAT_DURATION
-		#on_musical_beat()
-#
-#func on_musical_beat():
-	## This function triggers EXACTLY 160 times a minute!
-	## Pulse the energy bar container or text box slightly on the beat
-	#var pulse_tween = create_tween()
-	#var ui_box = $"../CanvasLayer/hud"
-	#
-	## Scale up slightly on the hit, then drop back down instantly
-	#ui_box.scale = Vector2(1.03, 1.03)
-	#pulse_tween.tween_property(ui_box, "scale", Vector2(1.0, 1.0), BEAT_DURATION * 0.5)
+func _process(delta: float) -> void:
+	if time_left > 0:
+		time_left -= delta
+		handle_bpm_pulses(delta)
+
+func handle_bpm_pulses(delta: float):
+	beat_timer += delta
+	if beat_timer >= BEAT_DURATION:
+		beat_timer -= BEAT_DURATION
+		on_musical_beat()
+
+func on_musical_beat():
+	# This function triggers EXACTLY 160 times a minute!
+	# Pulse the energy bar container or text box slightly on the beat
+	var pulse_tween = create_tween()
+	var ui_box = $"."
+	
+	# Scale up slightly on the hit, then drop back down instantly
+	ui_box.scale = Vector2(1.03, 1.03)
+	pulse_tween.tween_property(ui_box, "scale", Vector2(1.0, 1.0), BEAT_DURATION * 0.5)
 
 
 func update_clock_display():

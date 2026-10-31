@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://c576fguyytboj"
-path="res://.godot/imported/Mojang-Regular.ttf-49b69271ac37fe782312d1a159d4e86b.fontdata"
+uid="uid://2bkkxholnkd"
+path="res://.godot/imported/DS-DIGI.TTF-bb4086ae511decb9786432dde5bbeb82.fontdata"
 
 [deps]
 
-source_file="res://Mojang-Regular.ttf"
-dest_files=["res://.godot/imported/Mojang-Regular.ttf-49b69271ac37fe782312d1a159d4e86b.fontdata"]
+source_file="res://fonts/DS-DIGI.TTF"
+dest_files=["res://.godot/imported/DS-DIGI.TTF-bb4086ae511decb9786432dde5bbeb82.fontdata"]
 
 [params]
 
@@ -22,7 +22,7 @@ msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
-hinting=1
+hinting=3
 subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0

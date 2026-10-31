@@ -1,0 +1,8580 @@
+{
+	"board_events": [
+		{
+			"beat": 97.0,
+			"id": 110,
+			"length": 1.0,
+			"params": {
+				"degrees": 90.0,
+				"easing": "ease_in_out",
+				"include_outside": false,
+				"rotate_contents": false
+			},
+			"type": "rotate_board"
+		},
+		{
+			"beat": 98.0,
+			"id": 111,
+			"length": 1.0,
+			"params": {
+				"degrees": -90.0,
+				"easing": "ease_in_out",
+				"include_outside": false,
+				"rotate_contents": true
+			},
+			"type": "rotate_board"
+		}
+	],
+	"bpm": 160.0,
+	"next_id": 692,
+	"objects": [
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 34.0,
+					"id": 14,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -8.8629264831543,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 34.0,
+					"id": 15,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 38.0,
+					"id": 22,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 1.24126052856445,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 38.0,
+					"id": 23,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 42.0,
+					"id": 30,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -22.1264324188232,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 42.0,
+					"id": 31,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 46.0,
+					"id": 38,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -22.1238269805908,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 46.0,
+					"id": 39,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 50.0,
+					"id": 46,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 17.8347473144531,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 50.0,
+					"id": 47,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 138.0,
+					"id": 114,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -4.10096168518066,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 138.0,
+					"id": 115,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 142.0,
+					"id": 122,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -16.795841217041,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 142.0,
+					"id": 123,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 146.0,
+					"id": 130,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 7.97016906738281,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 146.0,
+					"id": 131,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 150.0,
+					"id": 138,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 1.37606430053711,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 150.0,
+					"id": 139,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 154.0,
+					"id": 146,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 14.3732719421387,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 154.0,
+					"id": 147,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 298.0,
+					"id": 254,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 11.1632347106934,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 298.0,
+					"id": 255,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 302.0,
+					"id": 262,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -25.0455665588379,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 302.0,
+					"id": 263,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 306.0,
+					"id": 270,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 9.7010383605957,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 306.0,
+					"id": 271,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 310.0,
+					"id": 278,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -8.25591659545898,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 310.0,
+					"id": 279,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 314.0,
+					"id": 286,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 3.69164276123047,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 314.0,
+					"id": 287,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 402.0,
+					"id": 344,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -1.71431732177734,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 402.0,
+					"id": 345,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 406.0,
+					"id": 352,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -4.78058242797852,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 406.0,
+					"id": 353,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 410.0,
+					"id": 360,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -21.5830459594727,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 410.0,
+					"id": 361,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 414.0,
+					"id": 368,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 16.8156776428223,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 414.0,
+					"id": 369,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 418.0,
+					"id": 376,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 23.98388671875,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 418.0,
+					"id": 377,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 562.0,
+					"id": 484,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -14.2232980728149,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 562.0,
+					"id": 485,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 566.0,
+					"id": 492,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -9.413330078125,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 566.0,
+					"id": 493,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 570.0,
+					"id": 500,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 1.96262550354004,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 570.0,
+					"id": 501,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 574.0,
+					"id": 508,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 1.69470596313477,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 574.0,
+					"id": 509,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 578.0,
+					"id": 516,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.2139320373535,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 578.0,
+					"id": 517,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 666.0,
+					"id": 574,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 6.39915466308594,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 666.0,
+					"id": 575,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 670.0,
+					"id": 582,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -22.9573440551758,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 670.0,
+					"id": 583,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 674.0,
+					"id": 590,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 4.03330230712891,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 674.0,
+					"id": 591,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 678.0,
+					"id": 598,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -23.450569152832,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 678.0,
+					"id": 599,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 682.0,
+					"id": 606,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 20.1852111816406,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 682.0,
+					"id": 607,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 1,
+			"lane_label": "rain 1",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 35.0,
+					"id": 16,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -11.6170682907104,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 35.0,
+					"id": 17,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 39.0,
+					"id": 24,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -23.532413482666,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 39.0,
+					"id": 25,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 43.0,
+					"id": 32,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 23.2085227966309,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 43.0,
+					"id": 33,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 47.0,
+					"id": 40,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 11.8385314941406,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 47.0,
+					"id": 41,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 51.0,
+					"id": 48,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.0118637084961,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 51.0,
+					"id": 49,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 139.0,
+					"id": 116,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 11.0458068847656,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 139.0,
+					"id": 117,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 143.0,
+					"id": 124,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 3.80927848815918,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 143.0,
+					"id": 125,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 147.0,
+					"id": 132,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -7.20243072509766,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 147.0,
+					"id": 133,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 151.0,
+					"id": 140,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -9.3375072479248,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 151.0,
+					"id": 141,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 155.0,
+					"id": 148,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 22.3783111572266,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 155.0,
+					"id": 149,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 299.0,
+					"id": 256,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 0.750799179077148,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 299.0,
+					"id": 257,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 303.0,
+					"id": 264,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.9621124267578,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 303.0,
+					"id": 265,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 307.0,
+					"id": 272,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -5.3386116027832,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 307.0,
+					"id": 273,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 311.0,
+					"id": 280,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -7.06020164489746,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 311.0,
+					"id": 281,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 315.0,
+					"id": 288,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -16.3746585845947,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 315.0,
+					"id": 289,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 403.0,
+					"id": 346,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -23.9067497253418,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 403.0,
+					"id": 347,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 407.0,
+					"id": 354,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.5750007629395,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 407.0,
+					"id": 355,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 411.0,
+					"id": 362,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 4.00490951538086,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 411.0,
+					"id": 363,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 415.0,
+					"id": 370,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 21.8270492553711,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 415.0,
+					"id": 371,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 419.0,
+					"id": 378,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 17.8316116333008,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 419.0,
+					"id": 379,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 563.0,
+					"id": 486,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.7324905395508,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 563.0,
+					"id": 487,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 567.0,
+					"id": 494,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -6.63796043395996,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 567.0,
+					"id": 495,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 571.0,
+					"id": 502,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 21.9140586853027,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 571.0,
+					"id": 503,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 575.0,
+					"id": 510,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 25.7151908874512,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 575.0,
+					"id": 511,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 579.0,
+					"id": 518,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 5.31290435791016,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 579.0,
+					"id": 519,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 667.0,
+					"id": 576,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -22.2822608947754,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 667.0,
+					"id": 577,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 671.0,
+					"id": 584,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 3.16192245483398,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 671.0,
+					"id": 585,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 675.0,
+					"id": 592,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -17.8070888519287,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 675.0,
+					"id": 593,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 679.0,
+					"id": 600,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 14.6773223876953,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 679.0,
+					"id": 601,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 683.0,
+					"id": 608,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -11.1333131790161,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 683.0,
+					"id": 609,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 2,
+			"lane_label": "rain 2",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 36.0,
+					"id": 18,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 0.510099411010742,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 36.0,
+					"id": 19,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 40.0,
+					"id": 26,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 9.00113296508789,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 40.0,
+					"id": 27,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 44.0,
+					"id": 34,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 13.6260566711426,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 44.0,
+					"id": 35,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 48.0,
+					"id": 42,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 13.0982360839844,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 48.0,
+					"id": 43,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 52.0,
+					"id": 50,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -3.16595458984375,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 52.0,
+					"id": 51,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 140.0,
+					"id": 118,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 9.31479263305664,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 140.0,
+					"id": 119,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 144.0,
+					"id": 126,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -22.2320709228516,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 144.0,
+					"id": 127,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 148.0,
+					"id": 134,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 1.63137817382813,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 148.0,
+					"id": 135,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 152.0,
+					"id": 142,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -11.7003517150879,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 152.0,
+					"id": 143,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 156.0,
+					"id": 150,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -6.5232105255127,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 156.0,
+					"id": 151,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 300.0,
+					"id": 258,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 21.6309204101563,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 300.0,
+					"id": 259,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 304.0,
+					"id": 266,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -20.7893104553223,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 304.0,
+					"id": 267,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 308.0,
+					"id": 274,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 5.99805068969727,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 308.0,
+					"id": 275,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 312.0,
+					"id": 282,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 23.2722930908203,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 312.0,
+					"id": 283,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 316.0,
+					"id": 290,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 13.3319282531738,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 316.0,
+					"id": 291,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 404.0,
+					"id": 348,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 18.0310974121094,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 404.0,
+					"id": 349,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 408.0,
+					"id": 356,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -21.741024017334,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 408.0,
+					"id": 357,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 412.0,
+					"id": 364,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -17.3375911712646,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 412.0,
+					"id": 365,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 416.0,
+					"id": 372,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 23.3707237243652,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 416.0,
+					"id": 373,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 420.0,
+					"id": 380,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -20.3606758117676,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 420.0,
+					"id": 381,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 564.0,
+					"id": 488,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -11.9035568237305,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 564.0,
+					"id": 489,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 568.0,
+					"id": 496,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 0.990081787109375,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 568.0,
+					"id": 497,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 572.0,
+					"id": 504,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.923656463623,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 572.0,
+					"id": 505,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 576.0,
+					"id": 512,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 0.391592025756836,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 576.0,
+					"id": 513,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 580.0,
+					"id": 520,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.149299621582,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 580.0,
+					"id": 521,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 668.0,
+					"id": 578,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -8.40412712097168,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 668.0,
+					"id": 579,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 672.0,
+					"id": 586,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -13.6098718643188,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 672.0,
+					"id": 587,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 676.0,
+					"id": 594,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 9.84075927734375,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 676.0,
+					"id": 595,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 680.0,
+					"id": 602,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 2.47250175476074,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 680.0,
+					"id": 603,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 684.0,
+					"id": 610,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -24.3912811279297,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 684.0,
+					"id": 611,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 3,
+			"lane_label": "rain 3",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 37.0,
+					"id": 20,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.5851287841797,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 37.0,
+					"id": 21,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 41.0,
+					"id": 28,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.2032318115234,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 41.0,
+					"id": 29,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 45.0,
+					"id": 36,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 19.1183166503906,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 45.0,
+					"id": 37,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 49.0,
+					"id": 44,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.3630981445313,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 49.0,
+					"id": 45,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 141.0,
+					"id": 120,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 2.80732154846191,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 141.0,
+					"id": 121,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 145.0,
+					"id": 128,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 14.7699699401855,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 145.0,
+					"id": 129,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 149.0,
+					"id": 136,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 6.77708435058594,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 149.0,
+					"id": 137,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 153.0,
+					"id": 144,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -13.0664033889771,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 153.0,
+					"id": 145,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 301.0,
+					"id": 260,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -15.9372453689575,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 301.0,
+					"id": 261,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 305.0,
+					"id": 268,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -25.5964183807373,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 305.0,
+					"id": 269,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 309.0,
+					"id": 276,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -18.9014358520508,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 309.0,
+					"id": 277,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 313.0,
+					"id": 284,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -6.7315673828125,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 313.0,
+					"id": 285,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 405.0,
+					"id": 350,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 10.9957962036133,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 405.0,
+					"id": 351,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 409.0,
+					"id": 358,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 9.67681503295898,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 409.0,
+					"id": 359,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 413.0,
+					"id": 366,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 14.8715896606445,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 413.0,
+					"id": 367,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 417.0,
+					"id": 374,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -0.945060729980469,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 417.0,
+					"id": 375,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 565.0,
+					"id": 490,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 19.8681030273438,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 565.0,
+					"id": 491,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 569.0,
+					"id": 498,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -10.8978128433228,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 569.0,
+					"id": 499,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 573.0,
+					"id": 506,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -16.3197402954102,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 573.0,
+					"id": 507,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 577.0,
+					"id": 514,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -6.57904434204102,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 577.0,
+					"id": 515,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 669.0,
+					"id": 580,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 12.427001953125,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 669.0,
+					"id": 581,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 673.0,
+					"id": 588,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -24.7814712524414,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 673.0,
+					"id": 589,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 677.0,
+					"id": 596,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -16.9681453704834,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 677.0,
+					"id": 597,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 681.0,
+					"id": 604,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -17.4589309692383,
+						"y": -48.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 681.0,
+					"id": 605,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 90.0,
+						"speed": 32.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 4,
+			"lane_label": "rain 4",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 90.0,
+					"id": 54,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 7.29483413696289
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 90.0,
+					"id": 55,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 95.0,
+					"id": 66,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 9.96619415283203
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 95.0,
+					"id": 67,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 100.0,
+					"id": 78,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -40.2079200744629
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 100.0,
+					"id": 79,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 104.0,
+					"id": 90,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 7.97935485839844
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 104.0,
+					"id": 91,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 186.0,
+					"id": 154,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -16.6201553344727
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 186.0,
+					"id": 155,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 191.0,
+					"id": 166,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -37.7688903808594
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 191.0,
+					"id": 167,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 196.0,
+					"id": 178,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 12.1098403930664
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 196.0,
+					"id": 179,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 200.0,
+					"id": 190,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -6.37158966064453
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 200.0,
+					"id": 191,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 242.0,
+					"id": 204,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 41.5104446411133
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 242.0,
+					"id": 205,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 247.0,
+					"id": 216,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 16.0749206542969
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 247.0,
+					"id": 217,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 252.0,
+					"id": 228,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -28.0691738128662
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 252.0,
+					"id": 229,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 256.0,
+					"id": 240,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -49.5806159973145
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 256.0,
+					"id": 241,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 354.0,
+					"id": 294,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 2.03792572021484
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 354.0,
+					"id": 295,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 359.0,
+					"id": 306,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -25.3506698608398
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 359.0,
+					"id": 307,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 364.0,
+					"id": 318,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 44.2257080078125
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 364.0,
+					"id": 319,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 368.0,
+					"id": 330,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -0.0426368713378906
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 368.0,
+					"id": 331,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 450.0,
+					"id": 384,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 34.5193710327148
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 450.0,
+					"id": 385,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 455.0,
+					"id": 396,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 50.1595153808594
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 455.0,
+					"id": 397,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 460.0,
+					"id": 408,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -15.3517570495605
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 460.0,
+					"id": 409,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 464.0,
+					"id": 420,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -24.3949813842773
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 464.0,
+					"id": 421,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 506.0,
+					"id": 434,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 25.9380187988281
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 506.0,
+					"id": 435,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 511.0,
+					"id": 446,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 42.7954406738281
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 511.0,
+					"id": 447,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 516.0,
+					"id": 458,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -49.4141311645508
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 516.0,
+					"id": 459,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 520.0,
+					"id": 470,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 32.3002014160156
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 520.0,
+					"id": 471,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 618.0,
+					"id": 524,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 13.5013198852539
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 618.0,
+					"id": 525,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 623.0,
+					"id": 536,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -7.92578506469727
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 623.0,
+					"id": 537,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 628.0,
+					"id": 548,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -0.507923126220703
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 628.0,
+					"id": 549,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 632.0,
+					"id": 560,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 53.6151428222656
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 632.0,
+					"id": 561,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 714.0,
+					"id": 614,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -49.3717079162598
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 714.0,
+					"id": 615,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 719.0,
+					"id": 626,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 55.7942047119141
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 719.0,
+					"id": 627,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 724.0,
+					"id": 638,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 31.5593566894531
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 724.0,
+					"id": 639,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 728.0,
+					"id": 650,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 32.5638732910156
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 728.0,
+					"id": 651,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 5,
+			"lane_label": "crossfire 1",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 91.0,
+					"id": 56,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 36.7475967407227
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 91.0,
+					"id": 57,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 96.0,
+					"id": 68,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -31.9304809570313
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 96.0,
+					"id": 69,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 100.0,
+					"id": 80,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 52.0042572021484
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 100.0,
+					"id": 81,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 105.0,
+					"id": 92,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 14.0385894775391
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 105.0,
+					"id": 93,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 187.0,
+					"id": 156,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -28.7175979614258
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 187.0,
+					"id": 157,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 192.0,
+					"id": 168,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 47.8786926269531
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 192.0,
+					"id": 169,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 196.0,
+					"id": 180,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 25.7381896972656
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 196.0,
+					"id": 181,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 201.0,
+					"id": 192,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 6.25010299682617
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 201.0,
+					"id": 193,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 243.0,
+					"id": 206,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -32.6236763000488
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 243.0,
+					"id": 207,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 248.0,
+					"id": 218,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -0.630668640136719
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 248.0,
+					"id": 219,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 252.0,
+					"id": 230,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 14.1025543212891
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 252.0,
+					"id": 231,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 257.0,
+					"id": 242,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -2.44840240478516
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 257.0,
+					"id": 243,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 355.0,
+					"id": 296,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 4.97299194335938
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 355.0,
+					"id": 297,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 360.0,
+					"id": 308,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 17.4308624267578
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 360.0,
+					"id": 309,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 364.0,
+					"id": 320,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -35.9150009155273
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 364.0,
+					"id": 321,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 369.0,
+					"id": 332,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 39.7956771850586
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 369.0,
+					"id": 333,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 451.0,
+					"id": 386,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -16.3558807373047
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 451.0,
+					"id": 387,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 456.0,
+					"id": 398,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 5.14862060546875
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 456.0,
+					"id": 399,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 460.0,
+					"id": 410,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 51.4386901855469
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 460.0,
+					"id": 411,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 465.0,
+					"id": 422,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -8.71833038330078
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 465.0,
+					"id": 423,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 507.0,
+					"id": 436,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 15.7778930664063
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 507.0,
+					"id": 437,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 512.0,
+					"id": 448,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -19.3964805603027
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 512.0,
+					"id": 449,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 516.0,
+					"id": 460,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 8.48934173583984
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 516.0,
+					"id": 461,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 521.0,
+					"id": 472,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -10.7451782226563
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 521.0,
+					"id": 473,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 619.0,
+					"id": 526,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -12.6172332763672
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 619.0,
+					"id": 527,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 624.0,
+					"id": 538,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -31.9299488067627
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 624.0,
+					"id": 539,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 628.0,
+					"id": 550,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 49.7921371459961
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 628.0,
+					"id": 551,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 633.0,
+					"id": 562,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 17.2808074951172
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 633.0,
+					"id": 563,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 715.0,
+					"id": 616,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 33.6560668945313
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 715.0,
+					"id": 617,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 720.0,
+					"id": 628,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -51.0953178405762
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 720.0,
+					"id": 629,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 724.0,
+					"id": 640,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -12.1162300109863
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 724.0,
+					"id": 641,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 729.0,
+					"id": 652,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -26.4744281768799
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 729.0,
+					"id": 653,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 6,
+			"lane_label": "crossfire 2",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 92.0,
+					"id": 58,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 1.9910888671875
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 92.0,
+					"id": 59,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 96.0,
+					"id": 70,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 21.1698455810547
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 96.0,
+					"id": 71,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 101.0,
+					"id": 82,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -44.9561042785645
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 101.0,
+					"id": 83,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 106.0,
+					"id": 94,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 53.6500091552734
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 106.0,
+					"id": 95,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 188.0,
+					"id": 158,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -31.4387359619141
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 188.0,
+					"id": 159,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 192.0,
+					"id": 170,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 45.4350433349609
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 192.0,
+					"id": 171,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 197.0,
+					"id": 182,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -49.1583518981934
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 197.0,
+					"id": 183,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 202.0,
+					"id": 194,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -42.8102531433105
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 202.0,
+					"id": 195,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 244.0,
+					"id": 208,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 30.4173812866211
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 244.0,
+					"id": 209,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 248.0,
+					"id": 220,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 53.6536254882813
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 248.0,
+					"id": 221,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 253.0,
+					"id": 232,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -15.6926803588867
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 253.0,
+					"id": 233,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 258.0,
+					"id": 244,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -26.8205738067627
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 258.0,
+					"id": 245,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 356.0,
+					"id": 298,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 27.4681015014648
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 356.0,
+					"id": 299,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 360.0,
+					"id": 310,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 15.1622314453125
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 360.0,
+					"id": 311,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 365.0,
+					"id": 322,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -18.320728302002
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 365.0,
+					"id": 323,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 370.0,
+					"id": 334,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 9.01404571533203
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 370.0,
+					"id": 335,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 452.0,
+					"id": 388,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 53.4591369628906
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 452.0,
+					"id": 389,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 456.0,
+					"id": 400,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -50.6240310668945
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 456.0,
+					"id": 401,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 461.0,
+					"id": 412,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -14.4650268554688
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 461.0,
+					"id": 413,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 466.0,
+					"id": 424,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 28.9310913085938
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 466.0,
+					"id": 425,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 508.0,
+					"id": 438,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -33.7228813171387
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 508.0,
+					"id": 439,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 512.0,
+					"id": 450,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 32.3289413452148
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 512.0,
+					"id": 451,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 517.0,
+					"id": 462,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -24.7721996307373
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 517.0,
+					"id": 463,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 522.0,
+					"id": 474,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 55.4061050415039
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 522.0,
+					"id": 475,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 620.0,
+					"id": 528,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 27.555549621582
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 620.0,
+					"id": 529,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 624.0,
+					"id": 540,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -35.0744018554688
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 624.0,
+					"id": 541,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 629.0,
+					"id": 552,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -16.4024314880371
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 629.0,
+					"id": 553,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 634.0,
+					"id": 564,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 36.7872161865234
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 634.0,
+					"id": 565,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 716.0,
+					"id": 618,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -14.8934364318848
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 716.0,
+					"id": 619,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 720.0,
+					"id": 630,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -29.7735214233398
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 720.0,
+					"id": 631,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 725.0,
+					"id": 642,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -45.6097755432129
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 725.0,
+					"id": 643,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 730.0,
+					"id": 654,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -0.231605529785156
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 730.0,
+					"id": 655,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 7,
+			"lane_label": "crossfire 3",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 92.0,
+					"id": 60,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -14.5944709777832
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 92.0,
+					"id": 61,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 97.0,
+					"id": 72,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 23.573974609375
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 97.0,
+					"id": 73,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 102.0,
+					"id": 84,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 14.9710693359375
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 102.0,
+					"id": 85,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 107.0,
+					"id": 96,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 23.9726257324219
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 107.0,
+					"id": 97,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 188.0,
+					"id": 160,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 11.293327331543
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 188.0,
+					"id": 161,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 193.0,
+					"id": 172,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -15.0624923706055
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 193.0,
+					"id": 173,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 198.0,
+					"id": 184,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 55.4248199462891
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 198.0,
+					"id": 185,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 203.0,
+					"id": 196,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 0.695751190185547
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 203.0,
+					"id": 197,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 244.0,
+					"id": 210,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 5.68657684326172
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 244.0,
+					"id": 211,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 249.0,
+					"id": 222,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -36.6750030517578
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 249.0,
+					"id": 223,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 254.0,
+					"id": 234,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 33.7271575927734
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 254.0,
+					"id": 235,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 259.0,
+					"id": 246,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -6.64429092407227
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 259.0,
+					"id": 247,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 356.0,
+					"id": 300,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -23.639949798584
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 356.0,
+					"id": 301,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 361.0,
+					"id": 312,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -0.558811187744141
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 361.0,
+					"id": 313,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 366.0,
+					"id": 324,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 2.68144226074219
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 366.0,
+					"id": 325,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 371.0,
+					"id": 336,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 17.5197296142578
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 371.0,
+					"id": 337,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 452.0,
+					"id": 390,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -27.259765625
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 452.0,
+					"id": 391,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 457.0,
+					"id": 402,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 8.06123352050781
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 457.0,
+					"id": 403,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 462.0,
+					"id": 414,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -14.560791015625
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 462.0,
+					"id": 415,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 467.0,
+					"id": 426,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 44.3381271362305
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 467.0,
+					"id": 427,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 508.0,
+					"id": 440,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 20.9173202514648
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 508.0,
+					"id": 441,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 513.0,
+					"id": 452,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 14.6870803833008
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 513.0,
+					"id": 453,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 518.0,
+					"id": 464,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -50.5709915161133
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 518.0,
+					"id": 465,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 523.0,
+					"id": 476,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 22.8261108398438
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 523.0,
+					"id": 477,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 620.0,
+					"id": 530,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -14.9935340881348
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 620.0,
+					"id": 531,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 625.0,
+					"id": 542,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 11.9225463867188
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 625.0,
+					"id": 543,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 630.0,
+					"id": 554,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -53.296947479248
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 630.0,
+					"id": 555,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 635.0,
+					"id": 566,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 0.684814453125
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 635.0,
+					"id": 567,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 716.0,
+					"id": 620,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -32.3289985656738
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 716.0,
+					"id": 621,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 721.0,
+					"id": 632,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -28.5033283233643
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 721.0,
+					"id": 633,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 726.0,
+					"id": 644,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 18.743522644043
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 726.0,
+					"id": 645,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 731.0,
+					"id": 656,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 23.9090423583984
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 731.0,
+					"id": 657,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 8,
+			"lane_label": "crossfire 4",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 93.0,
+					"id": 62,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -27.6387062072754
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 93.0,
+					"id": 63,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 98.0,
+					"id": 74,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -35.4148254394531
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 98.0,
+					"id": 75,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 103.0,
+					"id": 86,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -4.18092346191406
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 103.0,
+					"id": 87,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 108.0,
+					"id": 98,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -27.8538093566895
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 108.0,
+					"id": 99,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 189.0,
+					"id": 162,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -19.9534568786621
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 189.0,
+					"id": 163,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 194.0,
+					"id": 174,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 6.32644653320313
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 194.0,
+					"id": 175,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 199.0,
+					"id": 186,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 25.7518615722656
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 199.0,
+					"id": 187,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 204.0,
+					"id": 198,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 24.0709609985352
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 204.0,
+					"id": 199,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 245.0,
+					"id": 212,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -3.71628952026367
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 245.0,
+					"id": 213,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 250.0,
+					"id": 224,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 19.331901550293
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 250.0,
+					"id": 225,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 255.0,
+					"id": 236,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 37.764289855957
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 255.0,
+					"id": 237,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 260.0,
+					"id": 248,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -21.7912216186523
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 260.0,
+					"id": 249,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 357.0,
+					"id": 302,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -2.1580924987793
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 357.0,
+					"id": 303,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 362.0,
+					"id": 314,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -52.8114166259766
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 362.0,
+					"id": 315,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 367.0,
+					"id": 326,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -43.2382659912109
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 367.0,
+					"id": 327,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 372.0,
+					"id": 338,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 8.99700164794922
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 372.0,
+					"id": 339,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 453.0,
+					"id": 392,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -52.0325660705566
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 453.0,
+					"id": 393,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 458.0,
+					"id": 404,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -18.4576721191406
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 458.0,
+					"id": 405,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 463.0,
+					"id": 416,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 3.51511383056641
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 463.0,
+					"id": 417,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 468.0,
+					"id": 428,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 48.4878082275391
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 468.0,
+					"id": 429,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 509.0,
+					"id": 442,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -49.6549110412598
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 509.0,
+					"id": 443,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 514.0,
+					"id": 454,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 0.974273681640625
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 514.0,
+					"id": 455,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 519.0,
+					"id": 466,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 47.9283218383789
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 519.0,
+					"id": 467,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 524.0,
+					"id": 478,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 2.09992980957031
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 524.0,
+					"id": 479,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 621.0,
+					"id": 532,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 25.1708908081055
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 621.0,
+					"id": 533,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 626.0,
+					"id": 544,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -7.31256484985352
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 626.0,
+					"id": 545,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 631.0,
+					"id": 556,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -54.1004028320313
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 631.0,
+					"id": 557,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 636.0,
+					"id": 568,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -40.9363250732422
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 636.0,
+					"id": 569,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 717.0,
+					"id": 622,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 21.44287109375
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 717.0,
+					"id": 623,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 722.0,
+					"id": 634,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -47.1555290222168
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 722.0,
+					"id": 635,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 727.0,
+					"id": 646,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -41.1244049072266
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 727.0,
+					"id": 647,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 732.0,
+					"id": 658,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 16.6368789672852
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 732.0,
+					"id": 659,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 9,
+			"lane_label": "crossfire 5",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 20.0,
+			"events": [
+				{
+					"beat": 94.0,
+					"id": 64,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 30.3725357055664
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 94.0,
+					"id": 65,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 99.0,
+					"id": 76,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 20.3631820678711
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 99.0,
+					"id": 77,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 104.0,
+					"id": 88,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -37.8107223510742
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 104.0,
+					"id": 89,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 108.0,
+					"id": 100,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -14.0865707397461
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 108.0,
+					"id": 101,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 190.0,
+					"id": 164,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -42.9316215515137
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 190.0,
+					"id": 165,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 195.0,
+					"id": 176,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -0.0812873840332031
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 195.0,
+					"id": 177,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 200.0,
+					"id": 188,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -38.3962821960449
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 200.0,
+					"id": 189,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 204.0,
+					"id": 200,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 45.1707153320313
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 204.0,
+					"id": 201,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 246.0,
+					"id": 214,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 3.47691345214844
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 246.0,
+					"id": 215,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 251.0,
+					"id": 226,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 14.5636444091797
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 251.0,
+					"id": 227,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 256.0,
+					"id": 238,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -30.44850730896
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 256.0,
+					"id": 239,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 260.0,
+					"id": 250,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 49.6903991699219
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 260.0,
+					"id": 251,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 358.0,
+					"id": 304,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 39.1179351806641
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 358.0,
+					"id": 305,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 363.0,
+					"id": 316,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 7.30458831787109
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 363.0,
+					"id": 317,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 368.0,
+					"id": 328,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -47.6979789733887
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 368.0,
+					"id": 329,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 372.0,
+					"id": 340,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 30.4182815551758
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 372.0,
+					"id": 341,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 454.0,
+					"id": 394,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 49.6149444580078
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 454.0,
+					"id": 395,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 459.0,
+					"id": 406,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -55.4984741210938
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 459.0,
+					"id": 407,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 464.0,
+					"id": 418,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 37.7672271728516
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 464.0,
+					"id": 419,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 468.0,
+					"id": 430,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -41.1329803466797
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 468.0,
+					"id": 431,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 510.0,
+					"id": 444,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -33.4824981689453
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 510.0,
+					"id": 445,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 515.0,
+					"id": 456,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 5.58510208129883
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 515.0,
+					"id": 457,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 520.0,
+					"id": 468,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 51.2977600097656
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 520.0,
+					"id": 469,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 524.0,
+					"id": 480,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -26.1866645812988
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 524.0,
+					"id": 481,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 622.0,
+					"id": 534,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -25.2840595245361
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 622.0,
+					"id": 535,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 627.0,
+					"id": 546,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -29.3309001922607
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 627.0,
+					"id": 547,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 632.0,
+					"id": 558,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -24.2843780517578
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 632.0,
+					"id": 559,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 636.0,
+					"id": 570,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 36.0838775634766
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 636.0,
+					"id": 571,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 718.0,
+					"id": 624,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": 15.0317687988281
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 718.0,
+					"id": 625,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 723.0,
+					"id": 636,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": -2.28903198242188
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 723.0,
+					"id": 637,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 728.0,
+					"id": 648,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": -80.0,
+						"y": -23.9234390258789
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 728.0,
+					"id": 649,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 0.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				},
+				{
+					"beat": 732.0,
+					"id": 660,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 80.0,
+						"y": 19.5067749023438
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 732.0,
+					"id": 661,
+					"length": 1.0,
+					"params": {
+						"aim": "angle",
+						"angle": 180.0,
+						"speed": 48.0
+					},
+					"type": "launch"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 12.0,
+			"hitbox_w": 12.0,
+			"id": 10,
+			"lane_label": "crossfire 6",
+			"name": "pellet",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 0.5,
+			"tint": "ffffff"
+		},
+		{
+			"damage": 30.0,
+			"events": [
+				{
+					"beat": 92.0,
+					"id": 102,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 100.0,
+						"y": -100.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 92.0,
+					"id": 103,
+					"length": 3.0,
+					"params": {
+						"easing": "ease_out",
+						"margin": 12.0
+					},
+					"type": "random_point"
+				},
+				{
+					"beat": 95.0,
+					"id": 104,
+					"length": 1.0,
+					"params": {
+						"easing": "ease_in",
+						"mode": "fling"
+					},
+					"type": "target_soul"
+				},
+				{
+					"beat": 92.0,
+					"id": 105,
+					"length": 4.0,
+					"params": {
+						"degrees": 720.0,
+						"easing": "linear"
+					},
+					"type": "spin"
+				},
+				{
+					"beat": 101.0,
+					"id": 106,
+					"length": 1.0,
+					"params": {
+						"angle": 0.0,
+						"fade_in": 0.0,
+						"margin": 8.0,
+						"mode": "fixed",
+						"x": 100.0,
+						"y": -100.0
+					},
+					"type": "spawn"
+				},
+				{
+					"beat": 101.0,
+					"id": 107,
+					"length": 3.0,
+					"params": {
+						"easing": "ease_out",
+						"margin": 12.0
+					},
+					"type": "random_point"
+				},
+				{
+					"beat": 104.0,
+					"id": 108,
+					"length": 1.0,
+					"params": {
+						"easing": "ease_in",
+						"mode": "fling"
+					},
+					"type": "target_soul"
+				},
+				{
+					"beat": 101.0,
+					"id": 109,
+					"length": 4.0,
+					"params": {
+						"degrees": 720.0,
+						"easing": "linear"
+					},
+					"type": "spin"
+				}
+			],
+			"frame": 0.0,
+			"hframes": 1.0,
+			"hitbox_h": 22.0,
+			"hitbox_w": 22.0,
+			"id": 11,
+			"lane_label": "",
+			"name": "spinner",
+			"sprite": "res://sprites/pellet.png",
+			"sprite_scale": 1.0,
+			"tint": "ffb0ff"
+		}
+	],
+	"offset": 0.0,
+	"song": "res://sounds/Phonky Tribu - Funk Tribu.mp3",
+	"text_events": [
+		{
+			"beat": 0.0,
+			"id": 662,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "* [time=1.5][shake]woooooooow[/shake][/time]\n* are we deadass?"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 1.0,
+			"id": 663,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "How are you viewing this? This isn't visible in-game!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 1.5,
+			"id": 664,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Purple",
+				"text": "this is a speech bubble. if you don't know what that is, [pause=0.5]you might want to revisit first grade. [tiny][spaced](or, USE YOUR GOD-GIVEN BRAIN!)[/spaced][/tiny]"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 56.0,
+			"id": 665,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "This is also flavor text!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 57.0,
+			"id": 666,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "Ready for round two?"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 57.5,
+			"id": 667,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Violet",
+				"text": "Placeholder reply."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 60.0,
+			"id": 668,
+			"length": 1.0,
+			"params": {
+				"kind": "status",
+				"speaker": "Testicina",
+				"text": "* Testicina is [wave]winding up[/wave]..."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 112.0,
+			"id": 669,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Testicina looks bored."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 113.0,
+			"id": 670,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Purple",
+				"text": "Placeholder line."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 160.0,
+			"id": 671,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "People watch your showdown like popcorn in the microwave."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 216.0,
+			"id": 672,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Down with Envy!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 264.0,
+			"id": 673,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "This is flavor text!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 265.0,
+			"id": 674,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "How are you viewing this? This isn't visible in-game!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 320.0,
+			"id": 675,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "This is also flavor text!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 321.0,
+			"id": 676,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "Ready for round two?"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 321.5,
+			"id": 677,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Violet",
+				"text": "Placeholder reply."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 376.0,
+			"id": 678,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Testicina looks bored."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 377.0,
+			"id": 679,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Purple",
+				"text": "Placeholder line."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 424.0,
+			"id": 680,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "People watch your showdown like popcorn in the microwave."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 480.0,
+			"id": 681,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Down with Envy!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 528.0,
+			"id": 682,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "This is flavor text!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 529.0,
+			"id": 683,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "How are you viewing this? This isn't visible in-game!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 584.0,
+			"id": 684,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "This is also flavor text!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 585.0,
+			"id": 685,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Testicina",
+				"text": "Ready for round two?"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 585.5,
+			"id": 686,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Violet",
+				"text": "Placeholder reply."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 640.0,
+			"id": 687,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Testicina looks bored."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 641.0,
+			"id": 688,
+			"length": 1.0,
+			"params": {
+				"kind": "dialogue",
+				"speaker": "Purple",
+				"text": "Placeholder line."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 688.0,
+			"id": 689,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "People watch your showdown like popcorn in the microwave."
+			},
+			"type": "text"
+		},
+		{
+			"beat": 744.0,
+			"id": 690,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "Down with Envy!"
+			},
+			"type": "text"
+		},
+		{
+			"beat": 33.0,
+			"id": 691,
+			"length": 1.0,
+			"params": {
+				"kind": "status",
+				"speaker": "Testicina",
+				"text": "[shake]* It's raining pellets![/shake]"
+			},
+			"type": "text"
+		}
+	],
+	"turn_events": [
+		{
+			"beat": 32.0,
+			"id": 12,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 56.0,
+			"id": 13,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 88.0,
+			"id": 52,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 112.0,
+			"id": 53,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 136.0,
+			"id": 112,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 160.0,
+			"id": 113,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 184.0,
+			"id": 152,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 216.0,
+			"id": 153,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 240.0,
+			"id": 202,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 264.0,
+			"id": 203,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 296.0,
+			"id": 252,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 320.0,
+			"id": 253,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 352.0,
+			"id": 292,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 376.0,
+			"id": 293,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 400.0,
+			"id": 342,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 424.0,
+			"id": 343,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 448.0,
+			"id": 382,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 480.0,
+			"id": 383,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 504.0,
+			"id": 432,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 528.0,
+			"id": 433,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 560.0,
+			"id": 482,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 584.0,
+			"id": 483,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 616.0,
+			"id": 522,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 640.0,
+			"id": 523,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 664.0,
+			"id": 572,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 64.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 64.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 688.0,
+			"id": 573,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 712.0,
+			"id": 612,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 744.0,
+			"id": 613,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		}
+	],
+	"version": 1.0
+}

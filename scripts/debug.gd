@@ -1,31 +1,27 @@
 extends RichTextLabel
+## Press the DEBUG key (F10) to toggle.
 
-@onready var debug = true
+var debug := false
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready() -> void:
-	pass # Replace with function body.
+	visible = debug
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("DEBUG"):
-		debug = !debug # This is a shorter way to flip true/false
-		self.visible = debug
+		debug = !debug
+		visible = debug
+	if not debug:
+		return
 
-	# 1. Safely grab the nodes (or null if they are dead)
-	var purple = get_node_or_null("../purple")
-	var violet = get_node_or_null("../violet")
-	var soul = get_node_or_null("../../soul")
-	
-	# 2. Convert values to strings or "DEAD"
-	var p_hp = str(purple.hp) if purple else "DEAD"
-	var v_hp = str(violet.hp) if violet else "DEAD"
-	var s_pos = "(" + str(floor(soul.position.x)) + ", " + str(floor(soul.position.y)) + ")" if soul else "N/A"
-
-	# 3. Build the final text
-	self.text = "debug = " + str(debug) + \
-		"\nsoul = " + s_pos + \
-		"\npurple hp = " + p_hp + \
-		"\nviolet hp = " + v_hp + \
-		"\ninvincibility = " + (str(soul.invincibility) if soul else "N/A")
+	var battle: Battle = owner
+	var soul: Node2D = battle.soul
+	text = "beat = %.2f  (song %.1fs)" % [battle.conductor.song_beat, battle.conductor.song_position] + \
+		"\nphase = %s, turn %d, ends on beat %.0f" % [Battle.Phase.keys()[battle.phase], battle.turn_number + 1, battle.phase_end_beat] + \
+		"\nsoul = (%d, %d)  invincible = %s" % [soul.position.x, soul.position.y, soul.invincible_time > 0.0] + \
+		"\npurple hp = %d%s" % [battle.purple.hp, "  (DOWN %.0fs)" % battle.purple.revive_progress if battle.purple.is_down else ""] + \
+		"\nviolet hp = %d%s" % [battle.violet.hp, "  (DOWN %.0fs)" % battle.violet.revive_progress if battle.violet.is_down else ""] + \
+		"\nfocus = %d/4 on purple" % battle.enemy.focus + \
+		"\ntp = %d" % battle.tp + \
+		"\nenemy hp = %d / %d" % [battle.enemy.hp, battle.enemy.max_hp]

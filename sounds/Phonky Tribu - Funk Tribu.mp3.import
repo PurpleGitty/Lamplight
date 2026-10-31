@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bca8x111f1yvp"
+path="res://.godot/imported/Phonky Tribu - Funk Tribu.mp3-f7d87ddcca20172c375b7f76429fa40a.mp3str"
+
+[deps]
+
+source_file="res://sounds/Phonky Tribu - Funk Tribu.mp3"
+dest_files=["res://.godot/imported/Phonky Tribu - Funk Tribu.mp3-f7d87ddcca20172c375b7f76429fa40a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

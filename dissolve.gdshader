@@ -1,27 +1,35 @@
 shader_type canvas_item;
 
-uniform sampler2D noise_texture;
+uniform sampler2D noise_texture : filter_nearest;
+// 0 = fully visible, 1.1 = fully gone
 uniform float dissolve_value : hint_range(0.0, 1.1) = 0.0;
-uniform vec4 glow_color : source_color = vec4(1.0, 0.5, 0.0, 1.0);
+// 0 = normal colours, 1 = solid white silhouette
+uniform float flash : hint_range(0.0, 1.0) = 0.0;
+// Size of the dissolve's blocks, in sprite pixels
+uniform float pixel_size = 2.0;
+// Higher = finer, more scattered breakup (the noise texture tiles seamlessly)
+uniform float noise_scale = 1.0;
+uniform vec4 glow_color : source_color = vec4(1.0);
+
+varying vec4 tint; // modulate / self_modulate (in fragment(), COLOR already has the texture baked in)
+
 void vertex() {
-	// Called for every vertex the material is visible on.
+	tint = COLOR;
 }
 
 void fragment() {
-	vec4 main_texture = texture(TEXTURE, UV);
-	float noise = texture(noise_texture, UV).r;
+	vec4 tex = texture(TEXTURE, UV);
 
-	// Determine transparency based on noise vs dissolve_value
-	float alpha = step(dissolve_value, noise);
+	// Sample the noise in chunky blocks so the sprite breaks apart pixel by pixel
+	vec2 texels = 1.0 / TEXTURE_PIXEL_SIZE;
+	vec2 cell = (floor(UV * texels / pixel_size) + 0.5) * pixel_size / texels;
+	float noise = texture(noise_texture, fract(cell * noise_scale)).r;
 
-	// Create a thin glowing edge
-	float edge = step(dissolve_value - 0.05, noise) - alpha;
+	float visible = step(dissolve_value - 0.08, noise);
+	float edge = visible - step(dissolve_value, noise); // thin rim right before a block vanishes
 
-	vec4 final_color = mix(main_texture, glow_color, edge);
-	COLOR = vec4(final_color.rgb, main_texture.a * alpha);
+	vec3 rgb = mix(tex.rgb, vec3(1.0), flash);
+	rgb = mix(rgb, glow_color.rgb, edge);
+	// Multiply by the tint so modulate (like the red hurt flash) still works
+	COLOR = vec4(rgb, tex.a * visible) * tint;
 }
-
-//void light() {
-//	// Called for every pixel for every light affecting the CanvasItem.
-//	// Uncomment to replace the default light processing function with this one.
-//}

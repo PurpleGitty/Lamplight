@@ -1,50 +1,71 @@
 extends CharacterBody2D
-
+## The soul. Can only move during the enemy's turn, and checks for bullets
+## every physics frame so standing inside one keeps hurting after i-frames.
+## Passing close to a bullet without touching it (grazing) gives TP.
 
 const SPEED = 128
-@onready var focusdamage = $"../CanvasLayer/testicina".focus * .25
-var invincibility = false
+const INVINCIBILITY_TIME = 1.0
+const GRAZE_RADIUS := 16.0
+const GRAZE_TP := 2.0 # the moment a bullet is first grazed
+const GRAZE_TP_PER_SECOND := 4.0 # while staying close to it
+
+@onready var battle: Battle = owner
+@onready var hitbox: Area2D = $"bullet collision"
+@onready var sprite: Sprite2D = $Soul
+
+var invincible_time := 0.0
+var graze_area := Area2D.new()
+
+
+func _ready() -> void:
+	var shape := CollisionShape2D.new()
+	shape.shape = CircleShape2D.new()
+	shape.shape.radius = GRAZE_RADIUS
+	graze_area.add_child(shape)
+	add_child(graze_area)
+
 
 func _physics_process(delta: float) -> void:
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if direction && $"../board".yourturn == false:
-		velocity = direction * SPEED
-	else:
-		velocity = Vector2.ZERO
+	# Stay put until the board has finished opening, so the walls can't shut you out
+	if battle.phase != Battle.Phase.ENEMY or not battle.board.is_open():
+		return
 
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	velocity = direction * SPEED
 	move_and_slide()
 
-func _on_bullet_collision_area_entered(area: Area2D) -> void:
-	if invincibility:
-		return
-		
-	if "damage" in area && !$"../board".yourturn:
-		take_damage(area.damage)
-			
-func take_damage(amount):
-	invincibility = true
-	$"../AudioStreamPlayer2D".play()
-	
-	
-	var purple_mult = $"../CanvasLayer/testicina".focus / 4.0
-	var violet_mult = 1.0 - purple_mult
-	
-	var purple = $"../CanvasLayer/purple"
-	var violet = $"../CanvasLayer/violet"
+	var touching := hitbox.get_overlapping_areas()
+	if invincible_time > 0.0:
+		invincible_time -= delta
+		# Flicker between the two soul frames while invincible
+		sprite.frame = 1 if invincible_time > 0.0 and fmod(invincible_time, 0.2) >= 0.1 else 0
+	else:
+		for area in touching:
+			if _is_bullet(area):
+				battle.damage_party(area.damage, area.source_name)
+				battle.get_node("AudioStreamPlayer2D").play()
+				invincible_time = INVINCIBILITY_TIME
+				return
 
-	if not purple.dead and not violet.dead:
-		purple.hp -= floor(amount * purple_mult)
-		violet.hp -= floor(amount * violet_mult)
-	elif not purple.dead:
-		purple.hp -= amount
-	elif not violet.dead:
-		violet.hp -= amount
-	
-	await get_tree().create_timer(1.0).timeout
-	invincibility = false
-	for area in $"bullet collision".get_overlapping_areas():
-		if "damage" in area && !$"../board".yourturn:
-			take_damage(area.damage)
-			break
+	for area in graze_area.get_overlapping_areas():
+		if not _is_bullet(area) or area in touching:
+			continue
+		if not area.has_meta("grazed"):
+			area.set_meta("grazed", true)
+			battle.add_tp(GRAZE_TP)
+			battle.get_node("Txt").play()
+			sprite.self_modulate = Color(3, 3, 3) # bright flash
+			create_tween().tween_property(sprite, "self_modulate", Color.WHITE, 0.2)
+		else:
+			battle.add_tp(GRAZE_TP_PER_SECOND * delta)
+
+
+func _is_bullet(area: Area2D) -> bool:
+	return "damage" in area and area.get("harmful") != false and area.is_visible_in_tree()
+
+
+func reset(at := Vector2.ZERO) -> void:
+	position = at
+	velocity = Vector2.ZERO
+	invincible_time = 0.0
+	sprite.frame = 0

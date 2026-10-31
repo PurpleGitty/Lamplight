@@ -1,51 +1,63 @@
 [gd_scene format=3 uid="uid://um3ubx14dca7"]
 
+[ext_resource type="Script" uid="uid://ct3na04bkanj" path="res://scripts/battle.gd" id="0_battle"]
+[ext_resource type="Script" uid="uid://cqh5pa8dl3stb" path="res://scripts/conductor.gd" id="0_conductor"]
 [ext_resource type="Script" uid="uid://d0usqs6ycnqxe" path="res://scripts/character_body_2d.gd" id="1_0hol4"]
 [ext_resource type="Texture2D" uid="uid://b3np4gq6cb5b6" path="res://sprites/violetcina.png" id="1_kdubu"]
-[ext_resource type="Script" uid="uid://cxj5hgco0cph8" path="res://scripts/violet.gd" id="2_d2bti"]
 [ext_resource type="Texture2D" uid="uid://qkx0mdkg5pni" path="res://sprites/purplecina.png" id="2_d21ai"]
 [ext_resource type="Script" uid="uid://c8s817l4poiw1" path="res://scripts/battle_board.gd" id="2_epypp"]
 [ext_resource type="Texture2D" uid="uid://b3bo26842by47" path="res://dissolve_noise.tres" id="2_fs4d3"]
 [ext_resource type="Shader" uid="uid://d1x6sn8co74yv" path="res://dissolve.gdshader" id="3_k73cj"]
-[ext_resource type="FontFile" uid="uid://c576fguyytboj" path="res://Mojang-Regular.ttf" id="4_4d7sh"]
-[ext_resource type="Script" uid="uid://cyxny05j4nal8" path="res://scripts/purple.gd" id="4_ta5nu"]
+[ext_resource type="FontFile" uid="uid://c576fguyytboj" path="res://fonts/Mojang-Regular.ttf" id="4_4d7sh"]
+[ext_resource type="Script" uid="uid://rrx6uf26hqs0" path="res://scripts/party_member.gd" id="4_party"]
 [ext_resource type="Texture2D" uid="uid://cclifxtacvaoe" path="res://sprites/hpempty.png" id="5_4d7sh"]
 [ext_resource type="Texture2D" uid="uid://dn2hqgdnpuqay" path="res://sprites/hpfull.png" id="6_ir8iy"]
+[ext_resource type="Script" uid="uid://dqixihepai57n" path="res://scripts/hud.gd" id="7_hud"]
 [ext_resource type="Script" uid="uid://8p11fpiccmmk" path="res://scripts/debug.gd" id="7_ir8iy"]
-[ext_resource type="Script" uid="uid://duob475df2d1f" path="res://music.gd" id="7_mryly"]
 [ext_resource type="Texture2D" uid="uid://cvdblcqestjqr" path="res://sprites/purple_head.png" id="8_x0ka3"]
 [ext_resource type="Script" uid="uid://cu01jd1suobux" path="res://scripts/testicina.gd" id="9_0h7mo"]
 [ext_resource type="Texture2D" uid="uid://b22sgnllpncit" path="res://sprites/menu_options.png" id="11_7vxoj"]
 [ext_resource type="Script" uid="uid://br03moagg3y1p" path="res://scripts/fight.gd" id="11_bjha6"]
-[ext_resource type="Texture2D" uid="uid://cftv72vfekwot" path="res://sprites/pellet.png" id="13_0h7mo"]
 [ext_resource type="Texture2D" uid="uid://ppw0jssh2vgv" path="res://sprites/candy_soul.png" id="13_flf07"]
 [ext_resource type="Script" uid="uid://dkadig17am1cb" path="res://scripts/special.gd" id="13_gt76g"]
 [ext_resource type="Script" uid="uid://bb0ac5ifduvf7" path="res://maneuver.gd" id="14_1fr6y"]
 [ext_resource type="Script" uid="uid://dwdv1eiufuq4k" path="res://scripts/defend.gd" id="15_2hxjc"]
-[ext_resource type="Script" uid="uid://cbd473c2dvnku" path="res://scripts/pellet.gd" id="15_ta5nu"]
 [ext_resource type="Script" uid="uid://c05opnv2h43eq" path="res://scripts/timer.gd" id="16_2u7jv"]
 [ext_resource type="Script" uid="uid://cank0vedjp27r" path="res://scripts/energy.gd" id="17_24dk6"]
 [ext_resource type="AudioStream" uid="uid://byb6wg0ysj7r3" path="res://sounds/snd_hurt1.wav" id="17_flf07"]
-[ext_resource type="FontFile" uid="uid://2bkkxholnkd" path="res://DS-DIGI.TTF" id="17_kq1c5"]
+[ext_resource type="FontFile" uid="uid://2bkkxholnkd" path="res://fonts/DS-DIGI.TTF" id="17_kq1c5"]
 [ext_resource type="Texture2D" uid="uid://bl16126nxy53g" path="res://sprites/clock.png" id="19_ornx7"]
+[ext_resource type="Script" path="res://scripts/clock_hands.gd" id="38_clock_hands"]
 [ext_resource type="AudioStream" uid="uid://b4mvekovatj5v" path="res://sounds/spanked.wav" id="19_rjqkl"]
 [ext_resource type="AudioStream" uid="uid://ba3hhtnnmb05c" path="res://sounds/creatorshome-video-game-select-337214.mp3" id="26_gt76g"]
 [ext_resource type="AudioStream" uid="uid://dqt3xr1indyc8" path="res://sounds/lightningbulb-spacebar-click-keyboard-199448.mp3" id="27_1fr6y"]
 [ext_resource type="AudioStream" uid="uid://cq7crnval7cs7" path="res://sounds/freesound_community-cancel-36118.mp3" id="27_2hxjc"]
+[ext_resource type="AudioStream" uid="uid://bca8x111f1yvp" path="res://sounds/Phonky Tribu - Funk Tribu.mp3" id="32_mryly"]
+[ext_resource type="AudioStream" uid="uid://b4xes3qrcb1aj" path="res://sounds/snd_damage.wav" id="33_damage"]
+[ext_resource type="AudioStream" uid="uid://dknb4vjx0dml4" path="res://sounds/snd_break1.wav" id="34_break"]
+[ext_resource type="AudioStream" uid="uid://b0ksk41nafuwt" path="res://sounds/mus_sfx_a_gigatalk.wav" id="35_gigatalk"]
+[ext_resource type="AudioStream" uid="uid://bexjdfosyg5by" path="res://sounds/snd_txt2.wav" id="36_txt"]
+[ext_resource type="AudioStream" uid="uid://fd47o6acm0y2" path="res://sounds/voice_purple.wav" id="37_voice_purple"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rjqkl"]
 resource_local_to_scene = true
 shader = ExtResource("3_k73cj")
 shader_parameter/noise_texture = ExtResource("2_fs4d3")
 shader_parameter/dissolve_value = 0.0
-shader_parameter/glow_color = Color(3.080368e-06, 0.7478883, 0.7927088, 1)
+shader_parameter/flash = 0.0
+shader_parameter/pixel_size = 2.0
+shader_parameter/noise_scale = 1.0
+shader_parameter/glow_color = Color(1, 1, 1, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fs4d3"]
 resource_local_to_scene = true
 shader = ExtResource("3_k73cj")
 shader_parameter/noise_texture = ExtResource("2_fs4d3")
 shader_parameter/dissolve_value = 0.0
-shader_parameter/glow_color = Color(0, 1, 1, 1)
+shader_parameter/flash = 0.0
+shader_parameter/pixel_size = 2.0
+shader_parameter/noise_scale = 1.0
+shader_parameter/glow_color = Color(1, 1, 1, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_e6n53"]
 font_size = 31
@@ -89,27 +101,31 @@ size = Vector2(2, 40)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rj586"]
 size = Vector2(2, 40)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_nr8wp"]
-size = Vector2(12, 12)
-
 [node name="Node2D" type="Node2D" unique_id=465323485]
+script = ExtResource("0_battle")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1871039526]
 follow_viewport_enabled = true
 
-[node name="violet" type="Sprite2D" parent="CanvasLayer" unique_id=843029258]
+[node name="violet" type="Sprite2D" parent="CanvasLayer" unique_id=843029258 node_paths=PackedStringArray("hp_bar", "name_label")]
 material = SubResource("ShaderMaterial_rjqkl")
 position = Vector2(-112, 168)
 scale = Vector2(4, 4)
 texture = ExtResource("1_kdubu")
-script = ExtResource("2_d2bti")
+script = ExtResource("4_party")
+display_name = "Violet"
+hp_bar = NodePath("../hud/mc2/hp2")
+name_label = NodePath("../hud/mc2")
 
-[node name="purple" type="Sprite2D" parent="CanvasLayer" unique_id=1720968395]
+[node name="purple" type="Sprite2D" parent="CanvasLayer" unique_id=1720968395 node_paths=PackedStringArray("hp_bar", "name_label")]
 material = SubResource("ShaderMaterial_fs4d3")
 position = Vector2(-276, 168)
 scale = Vector2(4, 4)
 texture = ExtResource("2_d21ai")
-script = ExtResource("4_ta5nu")
+script = ExtResource("4_party")
+hp_bar = NodePath("../hud/mc1/hp1")
+name_label = NodePath("../hud/mc1")
+voice = ExtResource("37_voice_purple")
 
 [node name="Camera2D" type="Camera2D" parent="CanvasLayer" unique_id=1946571598]
 
@@ -119,7 +135,7 @@ offset_top = 240.0
 offset_right = 320.0
 offset_bottom = 384.0
 color = Color(0, 0, 0, 1)
-script = ExtResource("7_mryly")
+script = ExtResource("7_hud")
 metadata/_edit_lock_ = true
 
 [node name="Line2D" type="Line2D" parent="CanvasLayer/hud" unique_id=1858483018]
@@ -252,17 +268,16 @@ offset_top = 46.0
 offset_right = 306.0
 offset_bottom = 140.0
 
-[node name="timerbox" type="ColorRect" parent="CanvasLayer/hud" unique_id=1579942619]
-layout_mode = 0
-offset_left = -280.0
-offset_top = -480.0
-offset_right = -188.0
-offset_bottom = -440.0
+[node name="timerbox" type="ColorRect" parent="CanvasLayer" unique_id=1579942619]
+offset_left = -276.0
+offset_top = -240.0
+offset_right = -184.0
+offset_bottom = -200.0
 color = Color(0, 0, 0, 1)
 script = ExtResource("16_2u7jv")
 metadata/_edit_lock_ = true
 
-[node name="time left" type="Label" parent="CanvasLayer/hud/timerbox" unique_id=995989649]
+[node name="time left" type="Label" parent="CanvasLayer/timerbox" unique_id=995989649]
 layout_mode = 0
 offset_left = 17.0
 offset_top = 4.0
@@ -273,16 +288,15 @@ label_settings = SubResource("LabelSettings_e6n53")
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="energybox" type="ColorRect" parent="CanvasLayer/hud" unique_id=1235817824]
-layout_mode = 0
-offset_left = -324.0
-offset_top = -440.0
-offset_right = -232.0
-offset_bottom = -400.0
+[node name="energybox" type="ColorRect" parent="CanvasLayer" unique_id=1235817824]
+offset_left = -320.0
+offset_top = -200.0
+offset_right = -228.0
+offset_bottom = -160.0
 color = Color(0, 0, 0, 1)
 script = ExtResource("17_24dk6")
 
-[node name="current energy" type="TextureProgressBar" parent="CanvasLayer/hud/energybox" unique_id=1041963180]
+[node name="current energy" type="TextureProgressBar" parent="CanvasLayer/energybox" unique_id=1041963180]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 3.0
@@ -292,12 +306,13 @@ rounded = true
 texture_under = SubResource("GradientTexture2D_d0u6y")
 texture_progress = SubResource("GradientTexture2D_yf5fn")
 
-[node name="clock" type="Sprite2D" parent="CanvasLayer/hud/energybox" unique_id=631668725]
+[node name="clock" type="Sprite2D" parent="CanvasLayer/energybox" unique_id=631668725]
 position = Vector2(24, -24)
 scale = Vector2(4, 4)
 texture = ExtResource("19_ornx7")
+script = ExtResource("38_clock_hands")
 
-[node name="energy left" type="Label" parent="CanvasLayer/hud/energybox" unique_id=1798564742]
+[node name="energy left" type="Label" parent="CanvasLayer/energybox" unique_id=1798564742]
 layout_mode = 0
 offset_left = 36.0
 offset_top = 3.0
@@ -365,6 +380,7 @@ shape = SubResource("RectangleShape2D_ta5nu")
 [node name="board" type="ColorRect" parent="." unique_id=1762389701]
 visible = false
 z_index = 1
+clip_contents = true
 offset_left = -20.0
 offset_top = -20.0
 offset_right = 20.0
@@ -390,18 +406,6 @@ shape = SubResource("RectangleShape2D_d21ai")
 position = Vector2(-1, 20)
 shape = SubResource("RectangleShape2D_rj586")
 
-[node name="pellet" type="Area2D" parent="board" unique_id=1080312431]
-script = ExtResource("15_ta5nu")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="board/pellet" unique_id=1174494664]
-position = Vector2(10, 10)
-shape = SubResource("RectangleShape2D_nr8wp")
-
-[node name="Pellet" type="Sprite2D" parent="board/pellet" unique_id=1417371308]
-position = Vector2(10, 10)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("13_0h7mo")
-
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=401650925]
 stream = ExtResource("17_flf07")
 
@@ -417,5 +421,21 @@ stream = ExtResource("27_2hxjc")
 [node name="LightningbulbSpacebarClickKeyboard199448" type="AudioStreamPlayer" parent="." unique_id=1615415784]
 stream = ExtResource("27_1fr6y")
 
-[connection signal="area_entered" from="soul/bullet collision" to="soul" method="_on_bullet_collision_area_entered"]
-[connection signal="body_entered" from="soul/bullet collision" to="soul" method="_on_bullet_collision_body_entered"]
+[node name="Conductor" type="Node" parent="." unique_id=73579619 node_paths=PackedStringArray("player")]
+script = ExtResource("0_conductor")
+player = NodePath("../Music")
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1913862888]
+stream = ExtResource("32_mryly")
+
+[node name="Damage" type="AudioStreamPlayer" parent="." unique_id=2121738238]
+stream = ExtResource("33_damage")
+
+[node name="Break" type="AudioStreamPlayer" parent="." unique_id=573442113]
+stream = ExtResource("34_break")
+
+[node name="GigaTalk" type="AudioStreamPlayer" parent="." unique_id=2103281976]
+stream = ExtResource("35_gigatalk")
+
+[node name="Txt" type="AudioStreamPlayer" parent="." unique_id=1375387606]
+stream = ExtResource("36_txt")
