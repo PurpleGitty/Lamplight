@@ -1,0 +1,23 @@
+{
+	"board_events": [],
+	"bpm": 160.0,
+	"next_id": 2,
+	"objects": [],
+	"offset": 0.0,
+	"song": "res://sounds/Phonky Tribu - Funk Tribu.mp3",
+	"text_events": [
+		{
+			"beat": 0.0,
+			"id": 1,
+			"length": 1.0,
+			"params": {
+				"kind": "flavor",
+				"speaker": "Testicina",
+				"text": "* Congrats!\n[pause=1.0][pause=1.0]* You are now on the path to\n[color=#ff5050][shake]perfect violence[/shake][/color]!\n[pause=1.0]* You're the good guys though, so don't worry!"
+			},
+			"type": "text"
+		}
+	],
+	"turn_events": [],
+	"version": 1
+}

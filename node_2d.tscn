@@ -27,7 +27,6 @@
 [ext_resource type="AudioStream" uid="uid://byb6wg0ysj7r3" path="res://sounds/snd_hurt1.wav" id="17_flf07"]
 [ext_resource type="FontFile" uid="uid://2bkkxholnkd" path="res://fonts/DS-DIGI.TTF" id="17_kq1c5"]
 [ext_resource type="Texture2D" uid="uid://bl16126nxy53g" path="res://sprites/clock.png" id="19_ornx7"]
-[ext_resource type="Script" path="res://scripts/clock_hands.gd" id="38_clock_hands"]
 [ext_resource type="AudioStream" uid="uid://b4mvekovatj5v" path="res://sounds/spanked.wav" id="19_rjqkl"]
 [ext_resource type="AudioStream" uid="uid://ba3hhtnnmb05c" path="res://sounds/creatorshome-video-game-select-337214.mp3" id="26_gt76g"]
 [ext_resource type="AudioStream" uid="uid://dqt3xr1indyc8" path="res://sounds/lightningbulb-spacebar-click-keyboard-199448.mp3" id="27_1fr6y"]
@@ -38,6 +37,7 @@
 [ext_resource type="AudioStream" uid="uid://b0ksk41nafuwt" path="res://sounds/mus_sfx_a_gigatalk.wav" id="35_gigatalk"]
 [ext_resource type="AudioStream" uid="uid://bexjdfosyg5by" path="res://sounds/snd_txt2.wav" id="36_txt"]
 [ext_resource type="AudioStream" uid="uid://fd47o6acm0y2" path="res://sounds/voice_purple.wav" id="37_voice_purple"]
+[ext_resource type="Script" uid="uid://dbq1beyavtvhp" path="res://scripts/clock_hands.gd" id="38_clock_hands"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rjqkl"]
 resource_local_to_scene = true
@@ -340,6 +340,7 @@ texture = ExtResource("8_x0ka3")
 hframes = 8
 frame = 6
 script = ExtResource("9_0h7mo")
+chart_path = "res://charts/new_chart.json"
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1180873044]
 z_index = -1
