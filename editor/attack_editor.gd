@@ -10,36 +10,44 @@ const Timeline = preload("res://editor/timeline.gd")
 const Preview = preload("res://editor/preview.gd")
 const Inspector = preload("res://editor/inspector.gd")
 const TextEditorWindow = preload("res://editor/text_editor.gd")
+const NodeTabs = preload("res://editor/node_tabs.gd")
+const CharactersPanel = preload("res://editor/characters_panel.gd")
+const RulesPanel = preload("res://editor/rules_panel.gd")
+const NewChartDialog = preload("res://editor/new_chart_dialog.gd")
 const FONT = preload("res://fonts/PixelOperator.ttf")
 const DEFAULT_CHART := "res://charts/testicina.json"
 const AUTOSAVE_PATH := "user://attack_editor_autosave.json"
 const SNAPS := [[1.0, "Snap: 1 beat"], [0.5, "Snap: 1/2"], [1.0 / 3.0, "Snap: 1/3"], [0.25, "Snap: 1/4"], [0.125, "Snap: 1/8"], [0.0, "Snap: off"]]
+const FRAME_SNAPS := [[1.0, "Snap: 1 frame"], [5.0, "Snap: 5"], [10.0, "Snap: 10"], [15.0, "Snap: 15"], [30.0, "Snap: 30"], [0.0, "Snap: off"]]
+const ICON_FOLDER := "res://sprites/node_icons/"
 const SPEEDS := [0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
 const UNDO_LIMIT := 200
 const HELP := """MOUSE
-- Pick a node type in the palette, then click a lane to place it. Right-click (or Esc) to put the tool down.
-- Click a node to select it; Ctrl+click to select several.
+- Hover a tab at the bottom to see its nodes. Hover a group to open it. The wheel scrolls a long list.
+- Click a node in a tab to add it right after the latest node, or drag it onto the timeline.
+- Click a node on the timeline to select it; Ctrl+click to select several.
 - Drag a node to move it (drag an object node onto another object lane to move it there).
+- Hold Ctrl while dragging to place it freely, without snapping.
 - Drag a node's right edge to stretch it.
 - Right-click a node to delete it.
-- Click a lane's name to edit that object (sprite, hitbox, damage...).
-- Click or drag the beat numbers to move the playhead. Clicking an empty spot also moves it.
+- Click a lane's name to edit that object (sprite, sound, hitbox, damage...).
+- Click or drag the numbers along the top to move the playhead. Clicking an empty spot also moves it.
 - Mouse wheel: scroll the timeline. Ctrl+wheel: zoom. Shift+wheel: scroll lanes. Middle-drag: pan.
 - In the preview: drag the soul to move it, and drag yellow markers to set positions.
 
 KEYS (when you're not typing in a box)
 - Space: play / pause      Home: back to the start
-- Left / Right: step one snap (Shift: one bar)
+- Left / Right: step one snap (Shift: further)
 - Delete: delete selected      Ctrl+Z / Ctrl+Y: undo / redo
 - Ctrl+C / Ctrl+V: copy / paste at the playhead      Ctrl+D: duplicate
-- Ctrl+S: save      Esc: put the tool down / deselect
+- Ctrl+S: save      Esc: deselect
 
 PLAYTEST
 Tick Playtest and press play to dodge with the arrow keys, like in the fight.
+Test Fight saves the chart and plays it for real."""
 
-NODE ICONS
-Drop a PNG named after a node type (e.g. random_point.png) into editor/icons/
-and it shows up on the timeline and palette."""
+## The chart that was open, so coming back from a test fight reopens it.
+static var last_chart_path := DEFAULT_CHART
 
 var chart: Dictionary
 var chart_path := DEFAULT_CHART
@@ -58,13 +66,18 @@ var follow := true
 
 var selected: Array = [] # selected node dictionaries
 var selected_object: Variant = null # object whose lane name was clicked
-var armed_type := "" # the palette tool: clicking a lane places this node
+var latest_event: Dictionary = {} # the node added most recently
 var clipboard: Array = []
 
 var player := AudioStreamPlayer.new()
 var timeline: Timeline
 var preview: Preview
 var inspector: Inspector
+var characters_panel: CharactersPanel
+var rules_panel: RulesPanel
+var side_tabs := TabContainer.new()
+var node_tabs: NodeTabs
+var snap_picker := OptionButton.new()
 var text_editor: TextEditorWindow
 var status_label: Label
 var time_label: Label
@@ -72,7 +85,6 @@ var title_label: Label
 var play_button: Button
 var file_dialog := FileDialog.new()
 var _file_callback: Callable
-var _palette_buttons := {}
 var _undo: Array[String] = []
 var _redo: Array[String] = []
 var _last_edit_key := ""
@@ -94,15 +106,26 @@ func _ready() -> void:
 	var editor_theme := Theme.new()
 	editor_theme.default_font = FONT
 	editor_theme.default_font_size = 16
+	editor_theme.set_icon("unchecked", "CheckBox", _empty_box_icon())
 	theme = editor_theme
 	add_child(player)
 	_build_ui()
 
-	var loaded := ChartDefs.load_chart(DEFAULT_CHART)
-	set_chart(loaded if not loaded.is_empty() else ChartDefs.new_chart(), DEFAULT_CHART)
+	var loaded := ChartDefs.load_chart(last_chart_path)
+	set_chart(loaded if not loaded.is_empty() else ChartDefs.new_chart(), last_chart_path)
 
 
 # --- UI ---
+
+## The default unticked checkbox is nearly invisible on this dark background.
+func _empty_box_icon() -> Texture2D:
+	var image := Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	for i in range(1, 15):
+		for edge in [1, 14]:
+			image.set_pixel(i, edge, Color.WHITE)
+			image.set_pixel(edge, i, Color.WHITE)
+	return ImageTexture.create_from_image(image)
+
 
 func _build_ui() -> void:
 	var bg := ColorRect.new()
@@ -148,16 +171,13 @@ func _build_ui() -> void:
 	time_label.custom_minimum_size.x = 210
 	top.add_child(time_label)
 	top.add_child(VSeparator.new())
-	var snaps := OptionButton.new()
-	snaps.focus_mode = FOCUS_NONE
-	for s in SNAPS:
-		snaps.add_item(s[1])
-	snaps.select(3)
-	snaps.item_selected.connect(func(i): snap = SNAPS[i][0])
-	top.add_child(snaps)
+	snap_picker.focus_mode = FOCUS_NONE
+	snap_picker.item_selected.connect(func(i): snap = _snap_list()[i][0])
+	top.add_child(snap_picker)
 	_toggle(top, "Playtest", playtest, func(on): playtest = on, "Dodge with the arrow keys while it plays")
 	_toggle(top, "Hitboxes", show_hitboxes, func(on): show_hitboxes = on)
 	_toggle(top, "Follow", follow, func(on): follow = on, "Keep the playhead in view while playing")
+	_button(top, "Test Fight", _test_fight, "Save this chart and play it for real")
 	_button(top, "Help", _show_help)
 
 	# Preview + context panel on top, palette + timeline below; the split can be dragged
@@ -172,21 +192,26 @@ func _build_ui() -> void:
 	preview.editor = self
 	preview.size_flags_horizontal = SIZE_EXPAND_FILL
 	middle.add_child(preview)
-	var side := PanelContainer.new()
-	side.custom_minimum_size.x = 380
-	middle.add_child(side)
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	side.add_child(scroll)
-	inspector = Inspector.new()
-	inspector.editor = self
-	inspector.size_flags_horizontal = SIZE_EXPAND_FILL
-	scroll.add_child(inspector)
+	side_tabs.custom_minimum_size.x = 380
+	middle.add_child(side_tabs)
+	inspector = _add_panel(Inspector.new(), "Selection")
+	characters_panel = _add_panel(CharactersPanel.new(), "Characters")
+	rules_panel = _add_panel(RulesPanel.new(), "Rules")
 
 	var bottom := VBoxContainer.new()
 	bottom.custom_minimum_size.y = 300
 	split.add_child(bottom)
-	bottom.add_child(_build_palette())
+	var tool_row := HBoxContainer.new()
+	bottom.add_child(tool_row)
+	node_tabs = NodeTabs.new()
+	node_tabs.editor = self
+	tool_row.add_child(node_tabs)
+	tool_row.add_child(VSeparator.new())
+	_button(tool_row, "+ Object", add_object, "New object lane: pick its sprite in the panel on the right")
+	_button(tool_row, "Duplicate Object", duplicate_object)
+	_button(tool_row, "Delete Object", delete_object)
+	_button(tool_row, "Lane Up", func(): move_object(-1))
+	_button(tool_row, "Lane Down", func(): move_object(1))
 	timeline = Timeline.new()
 	timeline.editor = self
 	timeline.size_flags_vertical = SIZE_EXPAND_FILL
@@ -207,38 +232,22 @@ func _build_ui() -> void:
 	add_child(text_editor)
 
 
-func _build_palette() -> Control:
-	var palette := HFlowContainer.new()
-	var last_lane := ""
-	for type in ChartDefs.TYPES:
-		var def: Dictionary = ChartDefs.TYPES[type]
-		if def["lane"] != last_lane:
-			last_lane = def["lane"]
-			var group := Label.new()
-			group.text = "  %s:" % last_lane.capitalize()
-			palette.add_child(group)
-		var b := Button.new()
-		b.text = def["label"]
-		b.toggle_mode = true
-		b.focus_mode = FOCUS_NONE
-		b.tooltip_text = def["help"]
-		b.icon = icon_for(type)
-		b.expand_icon = false
-		b.add_theme_color_override("font_color", def["color"])
-		b.add_theme_color_override("font_pressed_color", Color.BLACK)
-		var pressed_box := StyleBoxFlat.new()
-		pressed_box.bg_color = def["color"]
-		b.add_theme_stylebox_override("pressed", pressed_box)
-		b.pressed.connect(arm.bind(type))
-		palette.add_child(b)
-		_palette_buttons[type] = b
-	palette.add_child(VSeparator.new())
-	_button(palette, "+ Object", add_object, "New object lane (with a Spawn node at the playhead)")
-	_button(palette, "Duplicate Object", duplicate_object)
-	_button(palette, "Delete Object", delete_object)
-	_button(palette, "Lane Up", func(): move_object(-1))
-	_button(palette, "Lane Down", func(): move_object(1))
-	return palette
+## One tab of the panel on the right.
+func _add_panel(panel: Control, tab_name: String) -> Control:
+	panel.editor = self
+	panel.size_flags_horizontal = SIZE_EXPAND_FILL
+	var scroll := ScrollContainer.new()
+	scroll.name = tab_name
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.add_child(panel)
+	side_tabs.add_child(scroll)
+	return panel
+
+
+func _refresh_panels() -> void:
+	inspector.refresh()
+	characters_panel.refresh()
+	rules_panel.refresh()
 
 
 func _button(parent: Control, text: String, action: Callable, tip := "") -> Button:
@@ -262,10 +271,9 @@ func _toggle(parent: Control, text: String, on: bool, action: Callable, tip := "
 
 
 var _icons := {}
-## The timeline/palette icon for a node type: editor/icons/<type>.png, if you've made one.
 func icon_for(type: String) -> Texture2D:
 	if not _icons.has(type):
-		var path := "res://editor/icons/%s.png" % type
+		var path := ICON_FOLDER + type + ".png"
 		_icons[type] = load(path) if ResourceLoader.exists(path) else null
 	return _icons[type]
 
@@ -294,8 +302,22 @@ func _show_help() -> void:
 
 # --- playback ---
 
+func uses_frames() -> bool:
+	return ChartDefs.uses_frames(chart)
+
+
+## What the timeline counts: "beat", or "frame" in a traditional battle.
+func unit_name() -> String:
+	return "frame" if uses_frames() else "beat"
+
+
+## How many timeline units make a bar line.
+func bar_length() -> int:
+	return 60 if uses_frames() else 4
+
+
 func spb() -> float:
-	return 60.0 / chart["bpm"]
+	return 1.0 / ChartDefs.units_per_second(chart)
 
 
 func beat_to_seconds(b: float) -> float:
@@ -304,7 +326,7 @@ func beat_to_seconds(b: float) -> float:
 
 func _process(delta: float) -> void:
 	if playing:
-		if direction > 0.0 and player.playing:
+		if direction > 0.0 and player.playing and not uses_frames():
 			beat = (player.get_playback_position() + AudioServer.get_time_since_last_mix() - chart["offset"]) / spb()
 		else:
 			beat += direction * rate * delta / spb()
@@ -314,7 +336,7 @@ func _process(delta: float) -> void:
 		if follow:
 			timeline.follow(beat)
 		timeline.queue_redraw()
-	time_label.text = "beat %.2f   %s / %s" % [beat, _clock(beat_to_seconds(beat)), _clock(beat_to_seconds(song_length_beats))]
+	time_label.text = "%s %.2f   %s / %s" % [unit_name(), beat, _clock(beat_to_seconds(beat)), _clock(beat_to_seconds(song_length_beats))]
 
 	if _autosave_in > 0.0:
 		_autosave_in -= delta
@@ -334,7 +356,8 @@ func play(dir: float, fast := false) -> void:
 	player.stop()
 	if dir > 0.0 and player.stream:
 		player.pitch_scale = rate
-		player.play(maxf(beat_to_seconds(beat), 0.0))
+		# In frames the song just loops along: attacks aren't tied to it
+		player.play(0.0 if uses_frames() else maxf(beat_to_seconds(beat), 0.0))
 	play_button.text = "||"
 
 
@@ -353,7 +376,7 @@ func toggle_play() -> void:
 
 func seek(b: float) -> void:
 	beat = clampf(b, 0.0, song_length_beats)
-	if playing and direction > 0.0 and player.stream:
+	if playing and direction > 0.0 and player.stream and not uses_frames():
 		player.play(maxf(beat_to_seconds(beat), 0.0))
 	timeline.queue_redraw()
 
@@ -363,13 +386,36 @@ func snap_beat(b: float) -> float:
 
 
 func _load_song() -> void:
-	var path: String = chart["song"]
-	player.stream = load(path) if path != "" and ResourceLoader.exists(path) else null
-	if player.stream:
+	player.stream = ChartDefs.load_audio(chart["song"])
+	ChartDefs.set_looping(player.stream, uses_frames())
+	_rebuild_snaps()
+	if uses_frames():
+		song_length_beats = ChartDefs.SONG_LOOP_FRAMES
+	elif player.stream:
 		song_length_beats = (player.stream.get_length() - chart["offset"]) / spb()
 	else:
 		song_length_beats = 760.0
 		set_status("No song loaded - pick one in the chart settings (click an empty spot, then the panel on the right).")
+
+
+func _snap_list() -> Array:
+	return FRAME_SNAPS if uses_frames() else SNAPS
+
+
+## Beats and frames snap to different sizes.
+func _rebuild_snaps() -> void:
+	var wanted := _snap_list()
+	if snap_picker.item_count > 0 and snap_picker.get_item_text(0) == wanted[0][1]:
+		return
+	snap_picker.clear()
+	for entry in wanted:
+		snap_picker.add_item(entry[1])
+	var pick := 2 if uses_frames() else 3
+	snap_picker.select(pick)
+	snap = wanted[pick][0]
+	if timeline:
+		timeline.ppb = 4.0 if uses_frames() else 32.0
+		timeline.scroll = 0.0
 
 
 # --- chart, lanes, selection ---
@@ -378,21 +424,23 @@ func set_chart(new_chart: Dictionary, path: String) -> void:
 	stop_playback()
 	chart = new_chart
 	chart_path = path
+	last_chart_path = path
 	selected = []
 	selected_object = null
+	latest_event = {}
 	_undo.clear()
 	_redo.clear()
 	dirty = false
 	_load_song()
 	preview.invalidate()
-	inspector.refresh()
+	_refresh_panels()
 	timeline.queue_redraw()
 	_update_title()
 
 
-## [{"kind": "turn"|"board"|"object", "label": String, "object": Dictionary (object lanes)}]
+## [{"kind": "turn"|"text"|"meta"|"board"|"object", "label": String, "object": Dictionary (object lanes)}]
 func lane_list() -> Array:
-	var lanes := [{"kind": "turn", "label": "Turns"}, {"kind": "text", "label": "Text"}, {"kind": "board", "label": "Board"}]
+	var lanes := [{"kind": "turn", "label": "Turns"}, {"kind": "text", "label": "Text"}, {"kind": "meta", "label": "Meta"}, {"kind": "board", "label": "Board"}]
 	for obj in chart["objects"]:
 		lanes.append({"kind": "object", "label": ChartDefs.lane_label(obj), "object": obj})
 	return lanes
@@ -402,13 +450,14 @@ func lane_events(lane: Dictionary) -> Array:
 	match lane["kind"]:
 		"turn": return chart["turn_events"]
 		"text": return chart["text_events"]
+		"meta": return chart["meta_events"]
 		"board": return chart["board_events"]
 	return lane["object"]["events"]
 
 
 ## The events array an event lives in (and its object, for object lanes).
 func find_event(ev: Dictionary) -> Dictionary:
-	for key in ["turn_events", "text_events", "board_events"]:
+	for key in ["turn_events", "text_events", "meta_events", "board_events"]:
 		if chart[key].has(ev):
 			return {"events": chart[key], "object": null}
 	for obj in chart["objects"]:
@@ -429,6 +478,8 @@ func current_object() -> Variant:
 func select(events: Array) -> void:
 	selected = events
 	selected_object = null
+	if not events.is_empty():
+		side_tabs.current_tab = 0
 	inspector.refresh()
 	timeline.queue_redraw()
 
@@ -436,16 +487,29 @@ func select(events: Array) -> void:
 func select_object(obj: Dictionary) -> void:
 	selected = []
 	selected_object = obj
+	side_tabs.current_tab = 0
 	inspector.refresh()
 	timeline.queue_redraw()
 
 
-func arm(type: String) -> void:
-	armed_type = "" if armed_type == type else type
-	for t in _palette_buttons:
-		_palette_buttons[t].set_pressed_no_signal(t == armed_type)
-	if armed_type != "":
-		set_status("Click the %s lane to place %s. Right-click or Esc to stop." % [ChartDefs.TYPES[type]["lane"], ChartDefs.TYPES[type]["label"]])
+## The attack a beat falls in, or {} if it's between attacks.
+func attack_containing(b: float) -> Dictionary:
+	for a in ChartDefs.attacks(chart):
+		if a["start"] <= b and b < a["end"]:
+			return a
+	return {}
+
+
+func character_names() -> Array:
+	var names := []
+	for entry in chart["party"] + chart["enemies"]:
+		names.append(entry["name"])
+	return names
+
+
+## What a Change Rules node can aim at.
+func change_targets() -> Array:
+	return ["rules"] + character_names()
 
 
 # --- editing ---
@@ -464,7 +528,7 @@ func changed(refresh_inspector := true) -> void:
 	preview.invalidate()
 	timeline.queue_redraw()
 	if refresh_inspector:
-		inspector.refresh()
+		_refresh_panels()
 	_update_title()
 
 
@@ -515,7 +579,7 @@ func set_param(target: Dictionary, key: String, value, in_params: bool) -> void:
 		target["params"][key] = value
 	else:
 		target[key] = value
-	if key in ["song", "bpm", "offset"]:
+	if key in ["song", "bpm", "offset", "battle_type"]:
 		_load_song()
 	changed(false)
 
@@ -528,11 +592,45 @@ func place(type: String, lane: Dictionary, at: float) -> void:
 	push_undo()
 	var ev := ChartDefs.new_event(chart, type, maxf(at, 0.0))
 	lane_events(lane).append(ev)
-	# A new attack gets an End Attack 24 beats later, unless something already follows it
+	latest_event = ev
+	# A new attack gets an End Attack after it, unless something already follows it
 	if type == "begin_attack" and not chart["turn_events"].any(func(e): return e != ev and e["beat"] > at):
-		chart["turn_events"].append(ChartDefs.new_event(chart, "end_attack", at + 24.0))
+		chart["turn_events"].append(ChartDefs.new_event(chart, "end_attack", at + (360.0 if uses_frames() else 24.0)))
 	select([ev])
 	changed()
+
+
+## A tab row was clicked: adds the node right after the latest one on its lane.
+func add_after_latest(type: String) -> void:
+	var lane_kind: String = ChartDefs.TYPES[type]["lane"]
+	var lane := {}
+	for candidate in lane_list():
+		if candidate["kind"] == lane_kind and (lane_kind != "object" or candidate["object"] == current_object()):
+			lane = candidate
+			break
+	if lane.is_empty() and lane_kind == "object":
+		var latest_home: Dictionary = find_event(latest_event) if not latest_event.is_empty() else {}
+		if latest_home.get("object") != null:
+			lane = {"kind": "object", "object": latest_home["object"]}
+	if lane.is_empty():
+		set_status("Click an object's lane first, or press + Object.")
+		return
+	place(type, lane, _after_latest_on(lane))
+
+
+## Where a clicked-in node goes: right after the newest node if it's on this
+## lane, otherwise after the last node at or before the playhead.
+func _after_latest_on(lane: Dictionary) -> float:
+	var events: Array = lane_events(lane)
+	var anchor: Dictionary = latest_event if events.has(latest_event) else {}
+	if anchor.is_empty():
+		for ev in events:
+			if ev["beat"] <= beat and (anchor.is_empty() or ev["beat"] > anchor["beat"]):
+				anchor = ev
+	if anchor.is_empty():
+		return snap_beat(beat)
+	var step: float = snap if snap > 0.0 else 1.0
+	return anchor["beat"] + (step if ChartDefs.is_instant(anchor["type"]) else anchor["length"])
 
 
 func delete_events(events: Array) -> void:
@@ -591,12 +689,13 @@ func add_object() -> void:
 	push_undo()
 	var obj := ChartDefs.new_object(chart, "pellet")
 	obj["lane_label"] = "object %d" % (chart["objects"].size() + 1)
-	obj["events"].append(ChartDefs.new_event(chart, "spawn", snap_beat(beat)))
+	var spawn := ChartDefs.new_event(chart, "spawn", snap_beat(beat))
+	obj["events"].append(spawn)
 	chart["objects"].append(obj)
-	selected = [obj["events"][0]]
-	selected_object = null
+	latest_event = spawn
+	select_object(obj) # straight to its settings, to pick a sprite
 	changed()
-	timeline.show_lane(chart["objects"].size() + 2)
+	timeline.show_lane(chart["objects"].size() + 3)
 
 
 func duplicate_object() -> void:
@@ -643,7 +742,8 @@ func move_object(step: int) -> void:
 
 # --- files ---
 
-func _browse(title: String, filters: Array, mode: FileDialog.FileMode, on_pick: Callable) -> void:
+func _browse(title: String, filters: Array, mode: FileDialog.FileMode, on_pick: Callable, access := FileDialog.ACCESS_RESOURCES) -> void:
+	file_dialog.access = access
 	file_dialog.title = title
 	file_dialog.file_mode = mode
 	file_dialog.filters = PackedStringArray(filters)
@@ -651,10 +751,25 @@ func _browse(title: String, filters: Array, mode: FileDialog.FileMode, on_pick: 
 	file_dialog.popup_centered()
 
 
-## For the context panel's Browse buttons.
+## For the Browse buttons: pick a sprite or sound from anywhere on the PC. Files
+## from outside the project get copied in, so the chart keeps working.
 func browse_file(kind: String, on_pick: Callable) -> void:
 	var filters := ["*.png ; Images"] if kind == "texture" else ["*.mp3, *.ogg, *.wav ; Audio"]
-	_browse("Pick a file", filters, FileDialog.FILE_MODE_OPEN_FILE, on_pick)
+	var folder := "sprites" if kind == "texture" else "sounds"
+	_browse("Pick a file", filters, FileDialog.FILE_MODE_OPEN_FILE, func(path): on_pick.call(_import_file(path, folder)), FileDialog.ACCESS_FILESYSTEM)
+
+
+func _import_file(path: String, folder: String) -> String:
+	var inside := ProjectSettings.localize_path(path)
+	if inside.begins_with("res://"):
+		return inside
+	var target := "res://%s/imported/%s" % [folder, path.get_file()]
+	DirAccess.make_dir_recursive_absolute(target.get_base_dir())
+	if DirAccess.copy_absolute(path, ProjectSettings.globalize_path(target)) == OK:
+		set_status("Imported %s" % target)
+		return target
+	set_status("Couldn't copy %s into the project; using it where it is." % path.get_file())
+	return path
 
 
 func save() -> void:
@@ -682,14 +797,21 @@ func _open_file(path: String) -> void:
 
 
 func _confirm_new() -> void:
-	var dialog := ConfirmationDialog.new()
-	dialog.dialog_text = "Start a new, empty chart?%s" % ("\nUnsaved changes will be lost." if dirty else "")
-	dialog.confirmed.connect(func():
-		set_chart(ChartDefs.new_chart(), "res://charts/new_chart.json")
-		dialog.queue_free())
+	var dialog := NewChartDialog.new()
+	dialog.editor = self
+	dialog.confirmed.connect(dialog.queue_free)
 	dialog.canceled.connect(dialog.queue_free)
 	add_child(dialog)
 	dialog.popup_centered()
+
+
+## The new chart prompt was filled in.
+func create_chart(new_chart: Dictionary, path: String) -> void:
+	if dirty:
+		ChartDefs.save_chart(chart, AUTOSAVE_PATH)
+	set_chart(new_chart, path)
+	save()
+	side_tabs.current_tab = 1 # next stop: their sprites and stats
 
 
 # --- keys ---
@@ -729,16 +851,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 				if playtest and playing:
 					handled = false # the arrows are moving the soul
 				else:
-					var step := 4.0 if key.shift_pressed else maxf(snap, 0.25)
+					var step: float = float(bar_length()) if key.shift_pressed else (snap if snap > 0.0 else 0.25)
 					seek(snap_beat(beat) + (step if key.keycode == KEY_RIGHT else -step))
 					timeline.follow(beat)
 			KEY_DELETE, KEY_BACKSPACE:
 				delete_events(selected.duplicate())
 			KEY_ESCAPE:
-				if armed_type != "":
-					arm(armed_type)
-				else:
-					select([])
+				select([])
 			_:
 				handled = false
 	if handled:
@@ -750,3 +869,14 @@ func _back_to_menu() -> void:
 	if dirty:
 		ChartDefs.save_chart(chart, AUTOSAVE_PATH)
 	get_tree().change_scene_to_file("res://menu.tscn") # the menu restores the game's scaling
+
+
+func _test_fight() -> void:
+	save()
+	stop_playback()
+	Battle.chart_to_play = chart_path
+	var window := get_window()
+	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
+	window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
+	Engine.max_fps = ProjectSettings.get_setting("application/run/max_fps")
+	get_tree().change_scene_to_file("res://node_2d.tscn")

@@ -24,6 +24,11 @@ class ObjectState:
 	var alpha := 1.0
 	var harmful := true
 	var blink_hidden := false # in the "off" half of a telegraph blink
+	var mode := "normal" # normal, blue (hurts if you move), orange (hurts if you stay still)
+	var tint := "ffffff"
+	var damage := 0
+	var spawn_count := 0 # goes up each time it spawns, so sound can follow along
+	var sounded := 0
 	var move_op = null # the op currently steering its position, if any
 
 var start_beat := 0.0
@@ -40,6 +45,8 @@ var clip := true
 var soul_start := Vector2.ZERO
 
 var objects: Array[ObjectState] = []
+var _step := STEP
+var _by_id := {} # object id -> ObjectState
 var _queue: Array = [] # [{"ev": event, "obj": ObjectState or null}], in firing order
 var _next := 0
 var _ops: Array = [] # things in progress (tweens), as dictionaries
@@ -50,6 +57,7 @@ func _init(chart: Dictionary, attack: Dictionary, soul: Callable) -> void:
 	end_beat = attack["end"]
 	t = start_beat
 	soul_position = soul
+	_step = 1.0 if ChartDefs.uses_frames(chart) else STEP
 
 	var p: Dictionary = attack["begin"]["params"]
 	board_size = Vector2(p["width"], p["height"])
@@ -70,6 +78,7 @@ func _init(chart: Dictionary, attack: Dictionary, soul: Callable) -> void:
 				used = true
 		if used:
 			objects.append(state)
+			_by_id[int(data["id"])] = state
 	_queue.sort_custom(_fires_before)
 	_fire_due()
 
@@ -94,7 +103,7 @@ func _fires_before(a: Dictionary, b: Dictionary) -> bool:
 func advance(to_beat: float) -> void:
 	to_beat = minf(to_beat, end_beat)
 	while t < to_beat:
-		var next_t := minf(to_beat, t + STEP)
+		var next_t := minf(to_beat, t + _step)
 		if _next < _queue.size():
 			next_t = minf(next_t, _queue[_next]["ev"]["beat"])
 		var dt := next_t - t
@@ -242,11 +251,41 @@ func _fire(ev: Dictionary, o: ObjectState) -> void:
 			o.harmful = false
 		"set_harmful":
 			o.harmful = p["harmful"]
+		"change_objects":
+			for id in p["objects"]:
+				if _by_id.has(int(id)):
+					_change_object(_by_id[int(id)], p["changes"], ev["beat"], length, p["easing"])
+
+
+func _change_object(o: ObjectState, changes: Array, start: float, length: float, easing: String) -> void:
+	for change in changes:
+		var value = change["value"]
+		match change["key"]:
+			"mode":
+				o.mode = value
+			"tint":
+				o.tint = value
+			"harmful":
+				o.harmful = value
+			"damage":
+				o.damage = int(value)
+			"alpha":
+				var op := _op("alpha", o, start, length, easing)
+				op["from"] = o.alpha
+				op["to"] = float(value)
+			"scale":
+				var op := _op("scale", o, start, length, easing)
+				op["from"] = o.scale
+				op["to"] = float(value)
 
 
 func _spawn(o: ObjectState, p: Dictionary, rng: RandomNumberGenerator) -> void:
 	_clear_ops(o)
 	o.active = true
+	o.spawn_count += 1
+	o.mode = o.data["mode"]
+	o.tint = o.data["tint"]
+	o.damage = int(o.data["damage"])
 	o.vel = Vector2.ZERO
 	o.scale = 1.0
 	o.alpha = 1.0

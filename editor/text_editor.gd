@@ -67,7 +67,7 @@ func _ready() -> void:
 	_tool(tools, "Type over", func(): _wrap("[time=%s]" % _num(type_time.value), "[/time]"), "The highlighted part takes this long to type out (0 = appears instantly)")
 	tools.add_child(type_time)
 	tools.add_child(VSeparator.new())
-	for effect in [["Wave", "wave"], ["Shake", "shake"], ["Swirl", "swirl"], ["Rainbow", "rainbow"], ["Pulse", "pulse"],
+	for effect in [["Astral", "astral"], ["Wave", "wave"], ["Shake", "shake"], ["Swirl", "swirl"], ["Rainbow", "rainbow"], ["Pulse", "pulse"],
 			["Tiny", "tiny"], ["Big", "big"], ["Spaced", "spaced"], ["Underline", "u"], ["Strike", "s"], ["Quiet", "quiet"]]:
 		var tag: String = effect[1]
 		_tool(tools, effect[0], func(): _wrap("[%s]" % tag, "[/%s]" % tag))

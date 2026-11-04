@@ -20,6 +20,7 @@ static var current: Conductor
 var song_position := 0.0 # seconds into the song
 var song_beat := 0.0     # beats into the song (fractional)
 var playing := false
+var looping := false # traditional battles: the song loops and never runs out
 var _last_beat := -1
 
 
@@ -64,15 +65,17 @@ func _process(delta: float) -> void:
 		# The audio hardware is the real clock; correct for mixing delay so the
 		# beat lines up with what the player hears.
 		var heard := player.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
-		song_position = maxf(song_position, heard)
+		song_position = heard if looping else maxf(song_position, heard)
 	else:
 		song_position += delta
 
 	song_beat = (song_position - offset) / seconds_per_beat()
+	if floori(song_beat) < _last_beat:
+		_last_beat = floori(song_beat) - 1 # the song looped
 	while _last_beat < floori(song_beat):
 		_last_beat += 1
 		beat.emit(_last_beat)
 
-	if song_position >= song_length:
+	if not looping and song_position >= song_length:
 		playing = false
 		song_finished.emit()

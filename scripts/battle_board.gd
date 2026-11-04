@@ -59,7 +59,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if runtime == null:
 		return
-	runtime.advance(battle.conductor.song_beat)
+	runtime.advance(battle.clock())
 	_sync()
 
 
@@ -123,6 +123,12 @@ func _sync() -> void:
 		node.rotation_degrees = o.angle
 		node.scale = Vector2.ONE * maxf(o.scale * o.data["sprite_scale"], 0.001)
 		node.modulate.a = o.alpha
+		node.damage = o.damage
+		node.set_look(o.mode, o.tint)
+		node.sprite.frame = clampi(ChartDefs.anim_frame(int(o.data["frame"]), int(o.data["anim_frames"]), o.data["anim_beats"], battle.clock()), 0, node.sprite.hframes - 1)
+		if o.spawn_count > o.sounded:
+			o.sounded = o.spawn_count
+			battle.play_sound(o.data["spawn_sound"])
 
 
 func _place(center: Vector2, board_size: Vector2, angle: float) -> void:

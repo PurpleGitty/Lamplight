@@ -7,9 +7,7 @@ var editor
 
 
 func refresh() -> void:
-	for child in get_children():
-		remove_child(child)
-		child.queue_free()
+	_clear()
 	if editor.selected.size() == 1:
 		_show_event(editor.selected[0])
 	elif editor.selected.size() > 1:
@@ -21,6 +19,12 @@ func refresh() -> void:
 		_show_chart()
 
 
+func _clear() -> void:
+	for child in get_children():
+		remove_child(child)
+		child.queue_free()
+
+
 func _show_event(ev: Dictionary) -> void:
 	var def: Dictionary = ChartDefs.TYPES[ev["type"]]
 	_title(def["label"], def["color"])
@@ -29,17 +33,27 @@ func _show_event(ev: Dictionary) -> void:
 	if home.get("object") != null:
 		_note("Object: %s" % ChartDefs.lane_label(home["object"]))
 	var number := {"type": "float", "min": 0.0, "max": 100000.0}
-	_row(number.merged({"name": "beat"}), ev["beat"], func(v): editor.set_param(ev, "beat", v, false))
+	var unit: String = editor.unit_name()
+	_row(number.merged({"name": unit}), ev["beat"], func(v): editor.set_param(ev, "beat", v, false))
 	if not ChartDefs.is_instant(ev["type"]):
-		_row(number.merged({"name": "length", "help": "In beats"}), ev["length"], func(v): editor.set_param(ev, "length", maxf(v, 0.01), false))
+		_row(number.merged({"name": "length", "help": "In %ss" % unit}), ev["length"], func(v): editor.set_param(ev, "length", maxf(v, 0.01), false))
 	for p in def["params"]:
-		if p["type"] == "richtext":
-			_richtext_row(ev, p["name"])
-		else:
-			_row(p, ev["params"][p["name"]], func(v):
-				editor.set_param(ev, p["name"], v, true)
-				if ev["type"] == "text":
-					refresh.call_deferred()) # text previews follow kind/speaker
+		match p["type"]:
+			"richtext":
+				_richtext_row(ev, p["name"])
+			"object_list":
+				_object_list(ev, p)
+			"object_changes":
+				_changes_list(ev, p["name"], false)
+			"rule_changes":
+				_changes_list(ev, p["name"], true)
+			"character":
+				_character_row(ev, p)
+			_:
+				_row(p, ev["params"][p["name"]], func(v):
+					editor.set_param(ev, p["name"], v, true)
+					if ev["type"] == "text":
+						refresh.call_deferred()) # text previews follow kind/speaker
 	_action("Delete node", func(): editor.delete_events([ev]))
 
 
@@ -61,6 +75,101 @@ func _richtext_row(ev: Dictionary, key: String) -> void:
 	add_child(box)
 	TextMarkup.build(text, ev["params"][key], 0.0)
 	_action("Edit text...", func(): editor.open_text_editor(ev))
+
+
+## Tick boxes for the objects a Change Objects node affects.
+func _object_list(ev: Dictionary, def: Dictionary) -> void:
+	_section("Objects")
+	if def.has("help"):
+		_hint(def["help"])
+	var attack: Dictionary = editor.attack_containing(ev["beat"])
+	var listed := 0
+	for obj in editor.chart["objects"]:
+		var used: bool = attack.is_empty()
+		for other in obj["events"]:
+			if not attack.is_empty() and other["beat"] >= attack["start"] and other["beat"] < attack["end"]:
+				used = true
+		if not used:
+			continue
+		listed += 1
+		var id := int(obj["id"])
+		var check := CheckBox.new()
+		check.text = ChartDefs.lane_label(obj)
+		check.button_pressed = ev["params"]["objects"].any(func(o): return int(o) == id)
+		check.toggled.connect(func(on):
+			var ids: Array = ev["params"]["objects"].filter(func(o): return int(o) != id)
+			if on:
+				ids.append(id)
+			editor.set_param(ev, "objects", ids, true))
+		add_child(check)
+	if listed == 0:
+		_hint("No objects in this attack yet.")
+
+
+## The list of changes on a Change Objects or Change Rules node, each with its
+## own controls, and a button to add another.
+func _changes_list(ev: Dictionary, key: String, is_rules: bool) -> void:
+	_section("Changes")
+	var changes: Array = ev["params"][key]
+	for change in changes:
+		var row := HBoxContainer.new()
+		add_child(row)
+		var targets: Array = editor.change_targets() if is_rules else []
+		if is_rules:
+			row.add_child(_options(targets, change["target"], func(picked):
+				_edit_change(ev, change, func():
+					change["target"] = picked
+					var first: Dictionary = ChartDefs.change_keys(editor.chart, picked)[0]
+					change["key"] = first["name"]
+					change["value"] = first["default"])))
+		var keys: Array = ChartDefs.change_keys(editor.chart, change["target"]) if is_rules else ChartDefs.OBJECT_CHANGE_KEYS
+		var names: Array = keys.map(func(d): return d["name"])
+		row.add_child(_options(names, change["key"], func(picked):
+			_edit_change(ev, change, func():
+				change["key"] = picked
+				for d in keys:
+					if d["name"] == picked:
+						change["value"] = d["default"])))
+		for d in keys:
+			if d["name"] == change["key"]:
+				var field := _field(d, change["value"], func(v): editor.set_param(change, "value", v, false))
+				field.size_flags_horizontal = SIZE_EXPAND_FILL
+				row.add_child(field)
+		var remove := Button.new()
+		remove.text = "x"
+		remove.focus_mode = FOCUS_NONE
+		remove.pressed.connect(func():
+			_edit_change(ev, change, func(): changes.erase(change)))
+		row.add_child(remove)
+	_action("Add change", func():
+		editor.push_undo()
+		if is_rules:
+			var target: String = editor.change_targets()[0]
+			var first: Dictionary = ChartDefs.change_keys(editor.chart, target)[0]
+			changes.append({"target": target, "key": first["name"], "value": first["default"]})
+		else:
+			var first: Dictionary = ChartDefs.OBJECT_CHANGE_KEYS[0]
+			changes.append({"key": first["name"], "value": first["default"]})
+		editor.changed())
+
+
+func _edit_change(_ev: Dictionary, _change: Dictionary, edit: Callable) -> void:
+	editor.push_undo()
+	edit.call()
+	editor.changed()
+
+
+func _character_row(ev: Dictionary, def: Dictionary) -> void:
+	var names: Array = editor.character_names()
+	var row := HBoxContainer.new()
+	var label := Label.new()
+	label.text = def["name"].replace("_", " ")
+	label.custom_minimum_size.x = 130
+	row.add_child(label)
+	var field := _options(names, ev["params"][def["name"]], func(picked): editor.set_param(ev, def["name"], picked, true))
+	field.size_flags_horizontal = SIZE_EXPAND_FILL
+	row.add_child(field)
+	add_child(row)
 
 
 func _show_object(obj: Dictionary) -> void:
@@ -92,6 +201,13 @@ func _title(text: String, color: Color) -> void:
 	add_child(label)
 
 
+func _section(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_color_override("font_color", Color.WHITE)
+	add_child(label)
+
+
 func _note(text: String) -> void:
 	var label := Label.new()
 	label.text = text
@@ -99,6 +215,15 @@ func _note(text: String) -> void:
 	label.custom_minimum_size.x = 300
 	label.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
 	add_child(label)
+
+
+func _hint(text: String) -> void:
+	var help := Label.new()
+	help.text = "   " + text
+	help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	help.custom_minimum_size.x = 300
+	help.add_theme_color_override("font_color", Color(0.55, 0.55, 0.6))
+	add_child(help)
 
 
 func _action(text: String, action: Callable) -> void:
@@ -109,6 +234,17 @@ func _action(text: String, action: Callable) -> void:
 	add_child(b)
 
 
+func _options(items: Array, current, on_pick: Callable) -> OptionButton:
+	var options := OptionButton.new()
+	options.focus_mode = FOCUS_NONE
+	options.fit_to_longest_item = false
+	for item in items:
+		options.add_item(str(item).replace("_", " "))
+	options.select(maxi(items.find(current), 0))
+	options.item_selected.connect(func(i): on_pick.call(items[i]))
+	return options
+
+
 func _row(def: Dictionary, value, on_change: Callable) -> void:
 	var row := HBoxContainer.new()
 	var label := Label.new()
@@ -117,8 +253,17 @@ func _row(def: Dictionary, value, on_change: Callable) -> void:
 	label.tooltip_text = def.get("help", "")
 	label.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.add_child(label)
+	var field := _field(def, value, on_change)
+	field.size_flags_horizontal = SIZE_EXPAND_FILL
+	field.tooltip_text = def.get("help", "")
+	row.add_child(field)
+	add_child(row)
+	if def.has("help"):
+		_hint(def["help"])
 
-	var field: Control
+
+## The control for one setting.
+func _field(def: Dictionary, value, on_change: Callable) -> Control:
 	match def["type"]:
 		"float", "int":
 			var spin := SpinBox.new()
@@ -132,26 +277,21 @@ func _row(def: Dictionary, value, on_change: Callable) -> void:
 			spin.select_all_on_focus = true
 			var is_int: bool = def["type"] == "int"
 			spin.value_changed.connect(func(v): on_change.call(int(v) if is_int else v))
-			field = spin
+			return spin
 		"bool":
 			var check := CheckBox.new()
 			check.button_pressed = value
 			check.toggled.connect(on_change)
-			field = check
+			return check
 		"enum":
-			var options := OptionButton.new()
-			for o in def["options"]:
-				options.add_item(o.replace("_", " "))
-			options.select(maxi(def["options"].find(value), 0))
-			options.item_selected.connect(func(i): on_change.call(def["options"][i]))
-			field = options
+			return _options(def["options"], value, on_change)
 		"color":
 			var picker := ColorPickerButton.new()
 			picker.color = Color(value)
 			picker.edit_alpha = false
 			picker.custom_minimum_size = Vector2(60, 24)
 			picker.color_changed.connect(func(c): on_change.call(c.to_html(false)))
-			field = picker
+			return picker
 		"texture", "audio":
 			var box := HBoxContainer.new()
 			var path := LineEdit.new()
@@ -166,21 +306,8 @@ func _row(def: Dictionary, value, on_change: Callable) -> void:
 				refresh()))
 			box.add_child(path)
 			box.add_child(browse)
-			field = box
-		_:
-			var line := LineEdit.new()
-			line.text = str(value)
-			line.text_changed.connect(on_change)
-			field = line
-	field.size_flags_horizontal = SIZE_EXPAND_FILL
-	field.tooltip_text = def.get("help", "")
-	row.add_child(field)
-	add_child(row)
-	if def.has("help"):
-		var help := Label.new()
-		help.text = "   " + def["help"]
-		help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		help.custom_minimum_size.x = 300
-		help.add_theme_font_size_override("font_size", 16)
-		help.add_theme_color_override("font_color", Color(0.55, 0.55, 0.6))
-		add_child(help)
+			return box
+	var line := LineEdit.new()
+	line.text = str(value)
+	line.text_changed.connect(on_change)
+	return line

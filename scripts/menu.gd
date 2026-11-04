@@ -23,6 +23,7 @@ var _leaving := false
 
 
 func _ready() -> void:
+	Battle.chart_to_play = "" # the campaign plays its own charts
 	# The editor switches the window to full resolution; put the game's scaling back
 	var window := get_window()
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT

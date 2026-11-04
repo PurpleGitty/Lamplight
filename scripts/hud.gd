@@ -10,20 +10,7 @@ enum MenuState { HIDDEN, TAB_SELECT, LIST_SELECT, TARGET_SELECT, EXECUTING, DIAL
 const OPEN_POS := Vector2(4, 96)
 const PEEK_POS := Vector2(4, 200) # enemy turn: only the names and HP bars stay on screen
 const TYPE_SPEED := 0.02 # seconds per character
-const FIGHT_DAMAGE := 300
-const PERFECT_TP := 10 # TP for a PERFECT basic attack
 const HIT_DELAY := 0.3 # pause between stopping the bar and the hit landing (weapon animations go here)
-
-var specials := {
-	"Purple": [
-		{"name": "Crucible", "cost": 15, "type": "timed_bar", "damage": 500},
-		{"name": "Guitar", "cost": 70, "type": "rapid_tap", "damage": 1200},
-	],
-	"Violet": [
-		{"name": "P90", "cost": 20, "type": "rapid_tap", "damage": 700},
-		{"name": "AWP", "cost": 80, "type": "circle_shrink", "damage": 1600},
-	],
-}
 
 @onready var battle: Battle = owner
 @onready var tabs: Array[Control] = [$fight, $special, $maneuver, $defend]
@@ -39,6 +26,9 @@ var selected_index := 0 # highlighted row in a SPECIAL/MANEUVER list
 var list_kind := "" # "special" or "act"
 var list_items: Array = []
 var pending_choice = null # a FIGHT/SPECIAL waiting for its target
+var target_options: Array[Enemy] = [] # enemies to choose from on the target screen
+var target_index := 0
+var party_rows: Array[Label] = []
 var order: Array[PartyMember] = [] # who picks a move this turn, in order
 var picker := 0 # index into `order`
 var choices := {} # PartyMember -> chosen move
@@ -59,7 +49,29 @@ func _ready() -> void:
 	meter.size = flavortext.size
 	meter.hide()
 	add_child(meter)
+	$mc1.hide() # the template the party's name and HP rows are copied from
 	get_parent().add_child.call_deferred(bubble)
+
+
+## Lays out one name + HP bar per party member, however many there are.
+func layout_party() -> void:
+	for row in party_rows:
+		row.queue_free()
+	party_rows.clear()
+	var column := 291.0 / maxi(battle.party.size(), 1)
+	for i in battle.party.size():
+		var member: PartyMember = battle.party[i]
+		var row: Label = $mc1.duplicate()
+		row.text = member.display_name
+		row.show()
+		add_child(row)
+		row.position = Vector2(25 + i * column, 12)
+		var bar: TextureProgressBar = row.get_child(0)
+		var name_width := menu_font.get_string_size(member.display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
+		bar.position = Vector2(name_width + 6, 0)
+		bar.size = Vector2(maxf(minf(50.0, column - name_width - 12), 8.0), 15)
+		member.set_hud(row, bar)
+		party_rows.append(row)
 
 
 func _process(delta: float) -> void:
@@ -145,9 +157,9 @@ func _tab_input(event: InputEvent) -> void:
 				pending_choice = {"type": "fight"}
 				enter_target_select()
 			1: # SPECIAL
-				open_list("special", specials[current_member().display_name])
+				open_list("special", current_member().data["specials"])
 			2: # MANEUVER
-				open_list("act", battle.enemy.acts)
+				open_list("act", battle.all_acts())
 			3: # DEFEND
 				lock_choice({"type": "defend"})
 	elif event.is_action_pressed("BACK") and picker > 0:
@@ -166,7 +178,8 @@ func open_list(kind: String, items: Array, index := 0) -> void:
 	var rows := []
 	for item in items:
 		if kind == "special":
-			rows.append({"text": "%s   %d TP" % [item["name"], item["cost"]], "enabled": item["cost"] <= available_tp()})
+			var cost := "%d TP" % item["cost"] if battle.rules["tp_enabled"] else ""
+			rows.append({"text": "%s   %s" % [item["name"], cost], "enabled": item["cost"] <= available_tp()})
 		else:
 			rows.append({"text": item["name"], "enabled": true})
 	_show_rows(rows, selected_index)
@@ -200,13 +213,26 @@ func _list_input(event: InputEvent) -> void:
 
 func enter_target_select() -> void:
 	state = MenuState.TARGET_SELECT
-	var enemy = battle.enemy
-	_show_rows([{"text": "* %s" % enemy.display_name, "enabled": true, "hp": enemy.hp_percent()}], 0)
+	target_options = battle.living_enemies()
+	target_index = 0
+	var rows := []
+	for enemy in target_options:
+		rows.append({"text": "* %s" % enemy.display_name, "enabled": true, "hp": enemy.hp_percent()})
+	_show_rows(rows, 0)
 
 
 func _target_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ACCEPT"):
+	if event.is_action_pressed("ui_down") and target_index < target_options.size() - 1:
+		target_index += 1
+		_sfx("LightningbulbSpacebarClickKeyboard199448")
+		_highlight_row(target_index)
+	elif event.is_action_pressed("ui_up") and target_index > 0:
+		target_index -= 1
+		_sfx("LightningbulbSpacebarClickKeyboard199448")
+		_highlight_row(target_index)
+	elif event.is_action_pressed("ACCEPT"):
 		_sfx("Select")
+		pending_choice["target"] = target_options[target_index]
 		lock_choice(pending_choice)
 	elif event.is_action_pressed("BACK"):
 		_sfx("Deselect")
@@ -228,8 +254,10 @@ func lock_choice(choice: Dictionary) -> void:
 
 
 ## TP left after the specials already picked this turn are paid for
-func available_tp() -> int:
-	var reserved := 0
+func available_tp() -> float:
+	if not battle.rules["tp_enabled"]:
+		return INF # specials are free
+	var reserved := 0.0
 	for choice in choices.values():
 		if choice["type"] == "special":
 			reserved += choice["move"]["cost"]
@@ -255,10 +283,11 @@ func execute_choices() -> void:
 				_show_text(choice["act"]["text"])
 				await _wait(2.5)
 			"fight", "special":
-				var damage := FIGHT_DAMAGE
+				var damage: float = member.data["fight_damage"]
 				var title := "%s attacks!" % member.display_name
 				if choice["type"] == "special":
-					battle.spend_tp(choice["move"]["cost"])
+					if battle.rules["tp_enabled"]:
+						battle.spend_tp(choice["move"]["cost"])
 					damage = choice["move"]["damage"]
 					title = "%s uses %s!" % [member.display_name, choice["move"]["name"]]
 				flavortext.hide()
@@ -267,12 +296,17 @@ func execute_choices() -> void:
 				if token != turn_token:
 					return
 				if meter.perfect and choice["type"] == "fight":
-					battle.add_tp(PERFECT_TP)
+					battle.add_tp(battle.rules["perfect_tp"])
+				if int(member.data["attack_count"]) > 0:
+					member.play_anim(int(member.data["attack_first"]), int(member.data["attack_count"]), member.data["attack_seconds"])
 				await _wait(HIT_DELAY)
 				if token != turn_token:
 					return
 				if multiplier > 0.0:
-					battle.enemy.take_damage(roundi(damage * multiplier))
+					var target: Enemy = choice["target"]
+					if target.is_dead() and battle.enemy:
+						target = battle.enemy # someone else got them first
+					target.take_damage(roundi(damage * multiplier))
 				await _wait(0.6)
 				if token != turn_token:
 					return
@@ -302,18 +336,15 @@ func start_dialogue() -> void:
 func _show_dialogue_line() -> void:
 	var line: Dictionary = dialogue[dialogue_index]
 	var speaker: String = line["speaker"]
-	if speaker == battle.enemy.display_name:
+	var who := battle.find_character(speaker)
+	if who is Enemy:
 		# Bubble to the left of the enemy's head, tail pointing right
-		var enemy: Sprite2D = battle.enemy
-		var half_width := enemy.texture.get_width() / enemy.hframes * enemy.scale.x / 2
-		bubble.say(line["text"], enemy.position + Vector2(-half_width - 4, -16), SIDE_RIGHT, battle.enemy.voice)
+		bubble.say(line["text"], who.position + Vector2(-who.half_width() - 4, -16), SIDE_RIGHT, who.voice)
 		return
-	for member in battle.party:
-		if member.display_name == speaker:
-			# Bubble above their head, tail pointing down
-			var top := member.position.y - member.texture.get_height() * member.scale.y / 2
-			bubble.say(line["text"], Vector2(member.position.x, top - 4), SIDE_BOTTOM, member.voice)
-			return
+	if who != null:
+		# Bubble above their head, tail pointing down
+		bubble.say(line["text"], Vector2(who.position.x, who.top_y() - 4), SIDE_BOTTOM, who.voice)
+		return
 	push_warning("No speech bubble spot for speaker '%s'" % speaker)
 	bubble.say(line["text"], Vector2(0, -60), SIDE_BOTTOM)
 
@@ -336,6 +367,7 @@ func enter_waiting() -> void:
 	state = MenuState.WAITING
 	bubble.hide()
 	_show_text(status if status != "" else "* %s is about to attack!" % battle.enemy.display_name)
+	battle.player_done()
 
 
 # --- VISUALS ---

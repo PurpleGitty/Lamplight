@@ -188,19 +188,99 @@ const TYPES := {
 		"params": [
 			{"name": "harmful", "type": "bool", "default": true},
 		]},
+	"change_objects": {
+		"lane": "board", "label": "Change Objects", "color": Color("9fe0ff"), "length": 1.0,
+		"help": "Changes any number of objects at once on this beat: blue/orange, see-through, tint, size, damage. With an easing other than instant, alpha and scale fade over the node's length.",
+		"params": [
+			{"name": "objects", "type": "object_list", "default": [], "help": "Tick the objects to change (only ones used in this attack are listed)"},
+			{"name": "changes", "type": "object_changes", "default": []},
+			{"name": "easing", "type": "enum", "default": "instant", "options": EASINGS},
+		]},
+
+	# --- META LANE ---
+	"change_rules": {
+		"lane": "meta", "label": "Change Rules", "color": Color("c8ff6b"), "instant": true,
+		"help": "Changes rules or character stats mid-fight, on this beat: phase changes, someone joining or leaving the fight, and so on.",
+		"params": [
+			{"name": "changes", "type": "rule_changes", "default": []},
+		]},
+	"play_anim": {
+		"lane": "meta", "label": "Play Animation", "color": Color("a8e060"), "length": 2.0,
+		"help": "Plays frames of a character's sprite sheet across the node's length, then goes back to idle.",
+		"params": [
+			{"name": "character", "type": "character", "default": ""},
+			{"name": "first_frame", "type": "int", "default": 0, "min": 0, "max": 255},
+			{"name": "frame_count", "type": "int", "default": 1, "min": 1, "max": 255},
+		]},
+	"soul_teleport": {
+		"lane": "meta", "label": "Move Soul", "color": Color("ff80c0"), "instant": true,
+		"help": "Puts the soul somewhere on this beat, measured from the board's centre.",
+		"params": [
+			{"name": "x", "type": "float", "default": 0.0, "min": -310.0, "max": 310.0},
+			{"name": "y", "type": "float", "default": 0.0, "min": -230.0, "max": 230.0},
+		]},
+	"soul_speed": {
+		"lane": "meta", "label": "Soul Speed", "color": Color("ff60a0"), "instant": true,
+		"help": "Changes how fast the soul moves from this beat on.",
+		"params": [
+			{"name": "speed", "type": "float", "default": 128.0, "min": 0.0, "max": 1000.0, "help": "Pixels per second (normal is 128)"},
+		]},
+	"play_sound": {
+		"lane": "meta", "label": "Play Sound", "color": Color("ffd24f"), "instant": true,
+		"help": "Plays a sound on this beat.",
+		"params": [
+			{"name": "sound", "type": "audio", "default": ""},
+			{"name": "volume", "type": "float", "default": 1.0, "min": 0.0, "max": 2.0},
+		]},
+	"music_volume": {
+		"lane": "meta", "label": "Music Volume", "color": Color("ffb82f"), "length": 4.0,
+		"help": "Fades the song's volume over the node's length.",
+		"params": [
+			{"name": "volume", "type": "float", "default": 0.5, "min": 0.0, "max": 1.0},
+		]},
 }
 
+## The drop-up tabs in the editor. A plain string is a node; a {"group", "items"}
+## row opens a side column of its own.
+const TABS := [
+	{"name": "Soul", "color": Color("ff60a0"), "items": ["soul_teleport", "soul_speed"]},
+	{"name": "Music", "color": Color("ffd24f"), "items": ["play_sound", "music_volume"]},
+	{"name": "Attack", "color": Color("ff5c5c"), "items": [
+		"begin_attack", "end_attack", "change_objects",
+		{"group": "Spawning", "items": ["spawn", "despawn", "telegraph", "set_harmful"]},
+		{"group": "Movement", "items": ["move_to", "move_by", "random_point", "target_soul", "launch", "stop", "orbit"]},
+		{"group": "Looks", "items": ["spin", "face_soul", "scale_to", "fade_to"]},
+	]},
+	{"name": "Board", "color": Color("3fd0ff"), "items": ["rotate_board", "resize_board", "move_board", "shake_board"]},
+	{"name": "Meta", "color": Color("c8ff6b"), "items": ["text", "change_rules", "play_anim"]},
+]
+
 ## Settings every object (lane) has. Shown when you click a lane's name.
+const OBJECT_MODES := ["normal", "blue", "orange"]
 const OBJECT_PARAMS := [
 	{"name": "name", "type": "string", "default": "pellet", "help": "Shown as the cause of death: \"Testicina's pellet\""},
 	{"name": "lane_label", "type": "string", "default": "", "help": "Name on the timeline (blank = same as name)"},
-	{"name": "sprite", "type": "texture", "default": "res://sprites/pellet.png"},
+	{"name": "sprite", "type": "texture", "default": "res://sprites/pellet.png", "help": "A sprite or sprite sheet (imports from anywhere on your PC)"},
 	{"name": "hframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames across in the sprite sheet"},
 	{"name": "frame", "type": "int", "default": 0, "min": 0, "max": 255},
+	{"name": "anim_frames", "type": "int", "default": 1, "min": 1, "max": 255, "help": "How many frames to loop through, starting at frame"},
+	{"name": "anim_beats", "type": "float", "default": 1.0, "min": 0.01, "max": 1000.0, "help": "How long one loop takes"},
 	{"name": "sprite_scale", "type": "float", "default": 0.5, "min": 0.05, "max": 16.0},
 	{"name": "tint", "type": "color", "default": "ffffff"},
+	{"name": "mode", "type": "enum", "default": "normal", "options": OBJECT_MODES, "help": "blue: only hurts if you move. orange: only hurts if you stay still"},
+	{"name": "spawn_sound", "type": "audio", "default": "", "help": "Plays each time it spawns"},
 	{"name": "hitbox_w", "type": "float", "default": 12.0, "min": 0.0, "max": 640.0},
 	{"name": "hitbox_h", "type": "float", "default": 12.0, "min": 0.0, "max": 480.0},
+	{"name": "damage", "type": "int", "default": 20, "min": 0, "max": 999},
+]
+
+## What Change Objects can change.
+const OBJECT_CHANGE_KEYS := [
+	{"name": "mode", "type": "enum", "default": "blue", "options": OBJECT_MODES},
+	{"name": "alpha", "type": "float", "default": 0.5, "min": 0.0, "max": 1.0},
+	{"name": "scale", "type": "float", "default": 1.0, "min": 0.0, "max": 20.0},
+	{"name": "tint", "type": "color", "default": "ffffff"},
+	{"name": "harmful", "type": "bool", "default": true},
 	{"name": "damage", "type": "int", "default": 20, "min": 0, "max": 999},
 ]
 
@@ -211,12 +291,145 @@ const CHART_PARAMS := [
 	{"name": "offset", "type": "float", "default": 0.0, "min": -10.0, "max": 10.0, "help": "Seconds from the start of the audio to beat 0"},
 ]
 
+## The fight's rules (the Rules tab). Change Rules nodes can alter all but battle_type.
+const RULE_PARAMS := [
+	{"name": "battle_type", "type": "enum", "default": "timed", "options": ["timed", "traditional"], "help": "timed: turns follow the song and you lose when it ends. traditional: the song loops, no time limit, and attacks are measured in frames (60 a second) and start when the player finishes their turn"},
+	{"name": "tp_enabled", "type": "bool", "default": true, "help": "Off: no TP box, and specials are free"},
+	{"name": "start_tp", "type": "float", "default": 0.0, "min": 0.0, "max": 1000.0},
+	{"name": "max_tp", "type": "float", "default": 100.0, "min": 1.0, "max": 1000.0},
+	{"name": "graze_tp", "type": "float", "default": 2.0, "min": 0.0, "max": 100.0, "help": "TP when a bullet is first grazed"},
+	{"name": "graze_tp_per_second", "type": "float", "default": 4.0, "min": 0.0, "max": 100.0, "help": "TP while staying close to it"},
+	{"name": "perfect_tp", "type": "float", "default": 10.0, "min": 0.0, "max": 100.0, "help": "TP for a PERFECT basic attack"},
+	{"name": "auto_revive", "type": "bool", "default": true, "help": "Downed characters get back up while someone's still standing"},
+	{"name": "revive_seconds", "type": "float", "default": 60.0, "min": 0.1, "max": 600.0},
+	{"name": "defend_factor", "type": "float", "default": 0.5, "min": 0.0, "max": 1.0, "help": "Damage is multiplied by this while defending"},
+	{"name": "invincibility", "type": "float", "default": 1.0, "min": 0.0, "max": 10.0, "help": "Seconds of safety after a hit"},
+	{"name": "soul_speed", "type": "float", "default": 128.0, "min": 0.0, "max": 1000.0},
+]
+
+## Settings shared by player characters and enemies (the Characters tab).
+const CHARACTER_PARAMS := [
+	{"name": "name", "type": "string", "default": "Character"},
+	{"name": "present", "type": "bool", "default": true, "help": "In the fight from the start (Change Rules can bring them in later)"},
+	{"name": "sprite", "type": "texture", "default": "res://sprites/purplecina.png"},
+	{"name": "hframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames across in the sprite sheet"},
+	{"name": "sprite_scale", "type": "float", "default": 4.0, "min": 0.05, "max": 16.0},
+	{"name": "x", "type": "float", "default": 0.0, "min": -320.0, "max": 320.0, "help": "From the middle of the screen"},
+	{"name": "y", "type": "float", "default": 0.0, "min": -240.0, "max": 240.0},
+	{"name": "max_hp", "type": "int", "default": 100, "min": 1, "max": 999999},
+	{"name": "voice", "type": "audio", "default": "", "help": "Sound byte per letter of speech (blank = default blip)"},
+	{"name": "idle_first", "type": "int", "default": 0, "min": 0, "max": 255, "help": "First frame of the idle animation"},
+	{"name": "idle_count", "type": "int", "default": 1, "min": 1, "max": 255},
+	{"name": "idle_beats", "type": "float", "default": 4.0, "min": 0.25, "max": 256.0, "help": "Beats one idle loop takes"},
+	{"name": "bob", "type": "string", "default": "1, 2", "help": "Hop height per beat, in sprite pixels, repeating. Blank = no bobbing"},
+]
+## Extra settings for player characters.
+const PARTY_PARAMS := [
+	{"name": "fight_damage", "type": "int", "default": 300, "min": 0, "max": 999999},
+	{"name": "attack_first", "type": "int", "default": 0, "min": 0, "max": 255, "help": "First frame of the attack animation"},
+	{"name": "attack_count", "type": "int", "default": 0, "min": 0, "max": 255, "help": "0 = no attack animation"},
+	{"name": "attack_seconds", "type": "float", "default": 0.4, "min": 0.01, "max": 10.0},
+]
+
+const SONG_LOOP_FRAMES := 36000.0 # how far the timeline runs in a traditional battle
+
+## What Change Rules can change about a character.
+const CHARACTER_CHANGE_KEYS := [
+	{"name": "present", "type": "bool", "default": true, "help": "In the fight or not"},
+	{"name": "hp", "type": "int", "default": 100, "min": 0, "max": 999999},
+	{"name": "max_hp", "type": "int", "default": 100, "min": 1, "max": 999999},
+	{"name": "fight_damage", "type": "int", "default": 300, "min": 0, "max": 999999},
+]
+
+
+static func new_character(character_name: String, is_party: bool) -> Dictionary:
+	var c := defaults(CHARACTER_PARAMS)
+	c["name"] = character_name
+	if is_party:
+		c.merge(defaults(PARTY_PARAMS), true)
+		c["specials"] = []
+	else:
+		c["sprite"] = "res://sprites/purple_head.png"
+		c["max_hp"] = 10000
+		c["bob"] = ""
+		c["x"] = 176.0
+		c["y"] = -32.0
+		c["acts"] = [{"name": "Check", "text": "* %s - Placeholder check text." % character_name}]
+	return c
+
+
+## The first fight's cast, so charts made before characters lived in charts still work.
+static func default_party() -> Array:
+	var purple := new_character("Purple", true)
+	purple["x"] = -276.0
+	purple["y"] = 168.0
+	purple["voice"] = "res://sounds/voice_purple.wav"
+	purple["specials"] = [
+		{"name": "Crucible", "cost": 15.0, "damage": 500.0},
+		{"name": "Guitar", "cost": 70.0, "damage": 1200.0},
+	]
+	var violet := new_character("Violet", true)
+	violet["sprite"] = "res://sprites/violetcina.png"
+	violet["x"] = -112.0
+	violet["y"] = 168.0
+	violet["specials"] = [
+		{"name": "P90", "cost": 20.0, "damage": 700.0},
+		{"name": "AWP", "cost": 80.0, "damage": 1600.0},
+	]
+	return [purple, violet]
+
+
+static func default_enemies() -> Array:
+	var enemy := new_character("Testicina", false)
+	enemy["hframes"] = 8
+	enemy["idle_first"] = 6
+	enemy["acts"] = [
+		{"name": "Check", "text": "* TESTICINA - Placeholder check text."},
+		{"name": "Taunt", "text": "* You make a face at Testicina.\n* It doesn't seem to care."},
+	]
+	return [enemy]
+
 
 static func new_chart() -> Dictionary:
-	var chart := {"version": VERSION, "next_id": 1, "turn_events": [], "text_events": [], "board_events": [], "objects": []}
+	var chart := {"version": VERSION, "next_id": 1, "turn_events": [], "text_events": [], "meta_events": [], "board_events": [], "objects": []}
 	for p in CHART_PARAMS:
 		chart[p["name"]] = p["default"]
+	chart["rules"] = defaults(RULE_PARAMS)
+	chart["party"] = default_party()
+	chart["enemies"] = default_enemies()
 	return chart
+
+
+## The settings Change Rules can change on a target ("rules" or a character's name).
+static func change_keys(_chart: Dictionary, target: String) -> Array:
+	if target == "rules":
+		return RULE_PARAMS.filter(func(p): return p["name"] != "battle_type")
+	return CHARACTER_CHANGE_KEYS
+
+
+## In a traditional battle the timeline counts frames instead of beats.
+static func uses_frames(chart: Dictionary) -> bool:
+	return chart["rules"]["battle_type"] == "traditional"
+
+
+## Timeline units per second.
+static func units_per_second(chart: Dictionary) -> float:
+	return 60.0 if uses_frames(chart) else chart["bpm"] / 60.0
+
+
+## Which frame of a looping animation to show.
+static func anim_frame(first: int, count: int, loop_length: float, now: float) -> int:
+	if count <= 1 or loop_length <= 0.0:
+		return first
+	return first + posmod(floori(now / loop_length * count), count)
+
+
+## A bob string ("1, 2") as a list of hop heights.
+static func parse_bob(text: String) -> Array[float]:
+	var heights: Array[float] = []
+	for part in text.split(",", false):
+		heights.append(part.strip_edges().to_float())
+	return heights
 
 
 static func lane_label(obj: Dictionary) -> String:
@@ -231,7 +444,10 @@ static func take_id(chart: Dictionary) -> int:
 
 static func new_event(chart: Dictionary, type: String, beat: float) -> Dictionary:
 	var def: Dictionary = TYPES[type]
-	return {"id": take_id(chart), "type": type, "beat": beat, "length": def.get("length", 1.0), "params": defaults(def["params"])}
+	var length: float = def.get("length", 1.0)
+	if chart.has("rules") and uses_frames(chart):
+		length *= 15.0 # a default-length node shouldn't be a blink in frames
+	return {"id": take_id(chart), "type": type, "beat": beat, "length": length, "params": defaults(def["params"])}
 
 
 static func new_object(chart: Dictionary, object_name: String) -> Dictionary:
@@ -245,7 +461,8 @@ static func new_object(chart: Dictionary, object_name: String) -> Dictionary:
 static func defaults(param_defs: Array) -> Dictionary:
 	var values := {}
 	for p in param_defs:
-		values[p["name"]] = p["default"]
+		var value = p["default"]
+		values[p["name"]] = value.duplicate(true) if value is Array else value
 	return values
 
 
@@ -258,7 +475,7 @@ static func event_end(ev: Dictionary) -> float:
 
 
 ## The enemy's turns: [{"begin": event, "start": beat, "end": beat}, ...] in order.
-## An attack with no End Attack after it lasts 24 beats.
+## An attack with no End Attack after it lasts 24 beats (or 360 frames).
 static func attacks(chart: Dictionary) -> Array:
 	var turn_events: Array = chart["turn_events"].duplicate()
 	turn_events.sort_custom(func(a, b): return a["beat"] < b["beat"])
@@ -267,7 +484,7 @@ static func attacks(chart: Dictionary) -> Array:
 		var ev: Dictionary = turn_events[i]
 		if ev["type"] != "begin_attack":
 			continue
-		var end: float = ev["beat"] + 24.0
+		var end: float = ev["beat"] + (360.0 if uses_frames(chart) else 24.0)
 		for j in range(i + 1, turn_events.size()):
 			end = turn_events[j]["beat"]
 			break
@@ -304,9 +521,17 @@ static func parse_chart(text: String) -> Dictionary:
 	for key in base:
 		if not chart.has(key):
 			chart[key] = base[key]
-	for ev in chart["turn_events"] + chart["text_events"] + chart["board_events"]:
+	for ev in chart["turn_events"] + chart["text_events"] + chart["meta_events"] + chart["board_events"]:
 		_fill_event(ev)
 	chart["next_id"] = int(chart["next_id"])
+	var rules := defaults(RULE_PARAMS)
+	rules.merge(chart["rules"], true)
+	chart["rules"] = rules
+	for list in [[chart["party"], true], [chart["enemies"], false]]:
+		for i in list[0].size():
+			var full := new_character(list[0][i].get("name", "Character"), list[1])
+			full.merge(list[0][i], true)
+			list[0][i] = full
 	for obj in chart["objects"]:
 		obj["id"] = int(obj["id"])
 		for p in OBJECT_PARAMS:
@@ -335,12 +560,49 @@ static func save_chart(chart: Dictionary, path: String) -> Error:
 	return OK
 
 
+static var _loaded_files := {} # files read directly (imported from the chart maker, not yet seen by Godot)
+
+
+## Loads a sprite. Files just imported from the chart maker aren't in Godot's
+## import system until the Godot editor next opens, so they're read directly.
 static func load_texture(path: String) -> Texture2D:
 	if path != "" and ResourceLoader.exists(path):
 		var res = load(path)
 		if res is Texture2D:
 			return res
+	if path != "" and FileAccess.file_exists(path):
+		if not _loaded_files.has(path):
+			var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+			_loaded_files[path] = ImageTexture.create_from_image(image) if image else null
+		if _loaded_files[path]:
+			return _loaded_files[path]
 	return preload("res://sprites/pellet.png")
+
+
+## Loads a sound or song the same way. Returns null if there isn't one.
+static func load_audio(path: String) -> AudioStream:
+	if path == "":
+		return null
+	if ResourceLoader.exists(path):
+		return load(path) as AudioStream
+	if not FileAccess.file_exists(path):
+		return null
+	if not _loaded_files.has(path):
+		var full := ProjectSettings.globalize_path(path)
+		match path.get_extension().to_lower():
+			"mp3": _loaded_files[path] = AudioStreamMP3.load_from_file(full)
+			"ogg": _loaded_files[path] = AudioStreamOggVorbis.load_from_file(full)
+			"wav": _loaded_files[path] = AudioStreamWAV.load_from_file(full)
+			_: _loaded_files[path] = null
+	return _loaded_files[path]
+
+
+## Makes a song or sound loop, whatever kind of file it is.
+static func set_looping(stream: AudioStream, on: bool) -> void:
+	if stream is AudioStreamWAV:
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD if on else AudioStreamWAV.LOOP_DISABLED
+	elif stream is AudioStreamMP3 or stream is AudioStreamOggVorbis:
+		stream.loop = on
 
 
 ## Text nodes from `start` (inclusive) to `end` (exclusive), in order.

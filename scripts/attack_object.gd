@@ -7,6 +7,7 @@ extends Area2D
 var damage := 20
 var source_name := "a bullet" # shown as the cause of death on the game over screen
 var harmful := true
+var mode := "normal" # normal, blue (hurts if you move), orange (hurts if you stay still)
 var sprite := Sprite2D.new()
 var hitbox := CollisionShape2D.new()
 
@@ -28,3 +29,18 @@ func setup(data: Dictionary, enemy_name: String) -> void:
 
 	damage = int(data["damage"])
 	source_name = "%s's %s" % [enemy_name, data["name"]]
+
+
+const BLUE := Color(0.3, 0.7, 1.0)
+const ORANGE := Color(1.0, 0.65, 0.2)
+
+
+## Blue and orange objects are coloured so the player can tell them apart.
+func set_look(new_mode: String, tint: String) -> void:
+	mode = new_mode
+	var color := Color(tint)
+	if mode == "blue":
+		color *= BLUE
+	elif mode == "orange":
+		color *= ORANGE
+	sprite.self_modulate = color

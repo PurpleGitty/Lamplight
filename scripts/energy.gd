@@ -7,10 +7,8 @@ extends UIBox
 @onready var label: Label = $"energy left"
 
 
-func _ready() -> void:
-	bar.max_value = Battle.MAX_TP
-
-
 func _process(_delta: float) -> void:
+	visible = battle.rules["tp_enabled"]
+	bar.max_value = battle.rules["max_tp"]
 	bar.value = battle.tp
 	label.text = str(floori(battle.tp))

@@ -21,6 +21,7 @@ var _invincible := 0.0
 var _drag := "" # "", "soul", "marker"
 var _drag_marker: Dictionary
 var _textures := {}
+var _sound: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -56,6 +57,11 @@ func _process(delta: float) -> void:
 				hits = 0
 			_attack_id = id
 		runtime.advance(editor.beat)
+		for o in runtime.objects:
+			if o.spawn_count > o.sounded:
+				o.sounded = o.spawn_count
+				if editor.playing and editor.direction > 0.0:
+					_play(o.data["spawn_sound"])
 
 	if editor.playtest and editor.playing and runtime != null:
 		_playtest(delta)
@@ -75,10 +81,22 @@ func _playtest(delta: float) -> void:
 	if _invincible > 0.0:
 		return
 	for o in runtime.objects:
-		if runtime.is_shown(o) and o.harmful and _touches(o):
+		var moving := dir != Vector2.ZERO
+		if runtime.is_shown(o) and o.harmful and _touches(o) and (o.mode == "normal" or (o.mode == "blue") == moving):
 			hits += 1
 			_invincible = 1.0
 			return
+
+
+func _play(path: String) -> void:
+	var stream := ChartDefs.load_audio(path)
+	if stream == null:
+		return
+	if _sound == null:
+		_sound = AudioStreamPlayer.new()
+		add_child(_sound)
+	_sound.stream = stream
+	_sound.play()
 
 
 func _touches(o) -> bool:
@@ -128,7 +146,7 @@ func _draw() -> void:
 		var next := "no more attacks"
 		for a in ChartDefs.attacks(editor.chart):
 			if a["start"] > editor.beat:
-				next = "next attack at beat %s" % snappedf(a["start"], 0.01)
+				next = "next attack at %s %s" % [editor.unit_name(), snappedf(a["start"], 0.01)]
 				break
 		draw_string(FONT, Vector2(-200, 0), "PLAYER'S TURN  (%s)" % next, HORIZONTAL_ALIGNMENT_CENTER, 400, 16, Color(1, 1, 1, 0.6))
 
@@ -154,14 +172,19 @@ func _draw_object(view: Transform2D, o, is_current: bool) -> void:
 	var tex := _texture(data["sprite"])
 	var frames := maxi(int(data["hframes"]), 1)
 	var frame_size := Vector2(tex.get_width() / frames, tex.get_height())
-	var src := Rect2(Vector2(clampi(int(data["frame"]), 0, frames - 1) * frame_size.x, 0), frame_size)
+	var shown_frame := ChartDefs.anim_frame(int(data["frame"]), int(data["anim_frames"]), data["anim_beats"], editor.beat)
+	var src := Rect2(Vector2(clampi(shown_frame, 0, frames - 1) * frame_size.x, 0), frame_size)
 	var alpha: float = o.alpha
 	if runtime.clip and not runtime.is_inside_board(o.pos):
 		alpha *= 0.3 # would be hidden in the game
 	if o.blink_hidden:
 		alpha *= 0.2
 	draw_set_transform_matrix(view * runtime.object_transform(o))
-	var tint := Color(data["tint"])
+	var tint := Color(o.tint)
+	if o.mode == "blue":
+		tint *= AttackObject.BLUE
+	elif o.mode == "orange":
+		tint *= AttackObject.ORANGE
 	tint.a *= alpha
 	draw_texture_rect_region(tex, Rect2(-frame_size / 2, frame_size), src, tint)
 

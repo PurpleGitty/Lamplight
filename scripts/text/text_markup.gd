@@ -5,6 +5,8 @@ extends RefCounted
 ##
 ##   [wave]...[/wave]       wavy letters          [shake]...[/shake]  shaky letters
 ##   [swirl]...[/swirl]     letters circle        [rainbow]...        colour cycling
+##   [astral]...[/astral]   each letter shakes as it appears, with faint shaking
+##                          copies behind it, then settles into normal text
 ##   [pulse]...[/pulse]     flashing              [color=#ff4040]...  coloured
 ##   [tiny]...[/tiny]       small text            [big]...[/big]      large text
 ##   [spaced]...[/spaced]   letters spread out    [u] underline   [s] strikethrough
@@ -15,9 +17,33 @@ extends RefCounted
 ##
 ## Tags can be nested. Unknown tags are shown as plain text.
 
-const TAGS := ["wave", "shake", "swirl", "rainbow", "pulse", "color", "tiny", "big", "spaced", "u", "s", "time", "quiet"]
+const TAGS := ["astral", "wave", "shake", "swirl", "rainbow", "pulse", "color", "tiny", "big", "spaced", "u", "s", "time", "quiet"]
 const TINY_FONT = preload("res://fonts/PixelOperator8.ttf")
 const QUIET_CHARS := " \n.,!?*-'\""
+
+## Shakes letters briefly as they appear. On the ghost copies it also fades
+## them out, and hides them for good once the letter has settled.
+class AstralEffect extends RichTextEffect:
+	const SETTLE_TIME := 0.45
+	var writer # the Typewriter, for the clock
+	var times: PackedFloat32Array # when each letter of the whole text appears
+	var first := 0 # this run's first letter in `times`
+	var ghost := false
+
+	func _process_custom_fx(fx: CharFXTransform) -> bool:
+		var i: int = mini(first + fx.relative_index, times.size() - 1)
+		var age: float = (writer.elapsed - times[i]) if writer else INF
+		var left := 1.0 - clampf(age / SETTLE_TIME, 0.0, 1.0)
+		if age < 0.0 or left <= 0.0:
+			if ghost:
+				fx.color.a = 0.0
+			return true
+		var reach := (5.0 if ghost else 2.0) * left
+		fx.offset += Vector2(randf_range(-reach, reach), randf_range(-reach, reach))
+		if ghost:
+			fx.color.a *= 0.4 * left
+		return true
+
 
 ## One run of text with the same formatting.
 class Segment:
@@ -90,8 +116,9 @@ static func plain(markup: String) -> String:
 
 ## Fills `label` with the formatted text. `char_time` is the normal seconds per
 ## letter. Returns {"times": when each letter appears, "quiet": no-blip flags,
-## "plain": the text without tags}.
-static func build(label: RichTextLabel, markup: String, char_time: float) -> Dictionary:
+## "plain": the text without tags}. `writer` runs [astral] text's clock; with
+## `ghost` on, only the faint copies of [astral] letters are drawn.
+static func build(label: RichTextLabel, markup: String, char_time: float, writer = null, ghost := false) -> Dictionary:
 	label.bbcode_enabled = true
 	label.clear()
 	var base_font: Font = label.get_theme_font("normal_font")
@@ -100,11 +127,27 @@ static func build(label: RichTextLabel, markup: String, char_time: float) -> Dic
 	var quiet := PackedByteArray()
 	var plain_text := ""
 	var t := 0.0
+	var segments := parse(markup)
 
-	for seg in parse(markup):
+	# Work out the timing first, since [astral] needs it while building
+	for seg in segments:
+		t += seg.pause_before
+		var per := char_time
+		if seg.mods.has("time"):
+			per = seg.mods["time"].to_float() / maxf(seg.text.length(), 1.0)
+		for ch in seg.text:
+			t += per
+			times.append(t)
+			quiet.append(1 if seg.mods.has("quiet") or ch in QUIET_CHARS else 0)
+
+	for seg in segments:
 		var m: Dictionary = seg.mods
 		var pops := 0
-		if m.has("color"):
+		var first_letter := plain_text.length()
+		if ghost and not m.has("astral"):
+			label.push_color(Color(0, 0, 0, 0)) # copies only draw the astral letters
+			pops += 1
+		elif m.has("color"):
 			label.push_color(Color.from_string(m["color"], Color.WHITE))
 			pops += 1
 		var font: Font = base_font
@@ -128,6 +171,15 @@ static func build(label: RichTextLabel, markup: String, char_time: float) -> Dic
 			label.push_strikethrough()
 			pops += 1
 
+		if m.has("astral"):
+			var fx := AstralEffect.new()
+			fx.writer = writer
+			fx.times = times
+			fx.first = first_letter
+			fx.ghost = ghost
+			label.push_customfx(fx, {})
+			pops += 1
+
 		var open := ""
 		var close := ""
 		for effect in [["wave", "[wave amp=24.0 freq=6.0]", "[/wave]"],
@@ -142,14 +194,6 @@ static func build(label: RichTextLabel, markup: String, char_time: float) -> Dic
 		for k in pops:
 			label.pop()
 
-		t += seg.pause_before
-		var per := char_time
-		if m.has("time"):
-			per = m["time"].to_float() / maxf(seg.text.length(), 1.0)
-		for ch in seg.text:
-			t += per
-			times.append(t)
-			quiet.append(1 if m.has("quiet") or ch in QUIET_CHARS else 0)
 		plain_text += seg.text
 	return {"times": times, "quiet": quiet, "plain": plain_text}
 
@@ -164,27 +208,54 @@ class Typewriter extends RefCounted:
 	var quiet := PackedByteArray()
 	var elapsed := 0.0
 	var shown := 0
+	var ghosts: Array[RichTextLabel] = [] # faint copies behind [astral] text
 
 	func start(target: RichTextLabel, markup: String, char_time: float) -> void:
 		label = target
-		var built := TextMarkup.build(label, markup, char_time)
+		for old in ghosts:
+			old.queue_free()
+		ghosts.clear()
+		var built := TextMarkup.build(label, markup, char_time, self)
 		times = built["times"]
 		quiet = built["quiet"]
 		elapsed = 0.0
 		shown = 0
 		label.visible_characters = 0
+		if "[astral]" in markup:
+			for i in 2:
+				var copy := RichTextLabel.new()
+				copy.show_behind_parent = true
+				copy.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				copy.scroll_active = false
+				copy.clip_contents = false
+				copy.horizontal_alignment = label.horizontal_alignment
+				copy.size = label.size
+				copy.add_theme_font_override("normal_font", label.get_theme_font("normal_font"))
+				copy.add_theme_font_size_override("normal_font_size", label.get_theme_font_size("normal_font_size"))
+				copy.add_theme_color_override("default_color", label.get_theme_color("default_color"))
+				copy.add_theme_constant_override("line_separation", label.get_theme_constant("line_separation"))
+				label.add_child(copy)
+				TextMarkup.build(copy, markup, char_time, self, true)
+				copy.visible_characters = 0
+				ghosts.append(copy)
 
 	## Advances the typing. Returns true if a letter that should blip appeared.
 	func update(delta: float) -> bool:
-		if label == null or not is_typing():
+		if label == null:
 			return false
-		elapsed += delta
+		elapsed += delta # keeps going after the typing's done, so [astral] letters finish settling
+		for copy in ghosts:
+			copy.size = label.size
+		if not is_typing():
+			return false
 		var blip := false
 		while shown < times.size() and times[shown] <= elapsed:
 			if quiet[shown] == 0:
 				blip = true
 			shown += 1
 		label.visible_characters = shown if is_typing() else -1
+		for copy in ghosts:
+			copy.visible_characters = label.visible_characters
 		return blip
 
 	func is_typing() -> bool:
@@ -192,5 +263,9 @@ class Typewriter extends RefCounted:
 
 	func finish() -> void:
 		shown = times.size()
+		if not times.is_empty():
+			elapsed = maxf(elapsed, times[-1])
 		if label:
 			label.visible_characters = -1
+		for copy in ghosts:
+			copy.visible_characters = -1

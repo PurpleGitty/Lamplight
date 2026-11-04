@@ -1,0 +1,118 @@
+LAMPLIGHT NODE ICONS
+====================
+Save each icon in sprites/node_icons/ as the file name shown here.
+It's drawn square at about 26x26 on the timeline and in the tabs,
+so 16x16 or 26x26 pixel art works best.
+
+
+SOUL TAB
+--------
+
+soul_teleport.png
+  Move Soul: Puts the soul somewhere on this beat, measured from the board's centre.
+
+soul_speed.png
+  Soul Speed: Changes how fast the soul moves from this beat on.
+
+
+MUSIC TAB
+---------
+
+play_sound.png
+  Play Sound: Plays a sound on this beat.
+
+music_volume.png
+  Music Volume: Fades the song's volume over the node's length.
+
+
+ATTACK TAB
+----------
+
+begin_attack.png
+  Begin Attack: The enemy's turn starts here. Sets up the board and where the soul starts.
+
+end_attack.png
+  End Attack: The enemy's turn ends here: the board retracts and every object disappears.
+
+change_objects.png
+  Change Objects: Changes any number of objects at once on this beat: blue/orange, see-through, tint, size, damage. With an easing other than instant, alpha and scale fade over the node's length.
+
+[Spawning group]
+
+spawn.png
+  Spawn: The object appears (or reappears, so one lane can be reused).
+
+despawn.png
+  Despawn: The object disappears.
+
+telegraph.png
+  Telegraph: Blinks as a warning and can't hurt you until the node ends.
+
+set_harmful.png
+  Set Harmful: Turns the object's hitbox on or off.
+
+[Movement group]
+
+move_to.png
+  Move To: Moves to a point over the node's length.
+
+move_by.png
+  Move By: Moves by an offset from wherever it is, over the node's length.
+
+random_point.png
+  Random Position in Board: Flies to a random spot inside the board, arriving at the end of the node. Longer node = slower.
+
+target_soul.png
+  Target Soul: Aims at where the soul is when this node starts and covers that distance in the node's length. Short node = very fast.
+
+launch.png
+  Launch: Starts it flying at a steady speed until something else moves it.
+
+stop.png
+  Stop: Stops any movement right where it is.
+
+orbit.png
+  Orbit: Circles around a point, keeping its current distance, over the node's length.
+
+[Looks group]
+
+spin.png
+  Spin: Rotates the object itself.
+
+face_soul.png
+  Face Soul: Turns to point at the soul (where it is when the node starts).
+
+scale_to.png
+  Scale: Grows or shrinks the object (and its hitbox).
+
+fade_to.png
+  Fade: Fades the object in or out. It still hurts while faded unless you also use Set Harmful.
+
+
+BOARD TAB
+---------
+
+rotate_board.png
+  Rotate Board: Turns the board over the node's length.
+
+resize_board.png
+  Resize Board: Changes the board's size over the node's length.
+
+move_board.png
+  Move Board: Slides the board somewhere else over the node's length.
+
+shake_board.png
+  Shake Board: Rattles the board (and everything in it), fading out over the node's length.
+
+
+META TAB
+--------
+
+text.png
+  Text: Words on screen. Between attacks: dialogue (shown in order, if the player's quick), the menu's flavor text, or a status message (replaces "X is about to attack!"). During an attack: a status caption above the board, at this beat.
+
+change_rules.png
+  Change Rules: Changes rules or character stats mid-fight, on this beat: phase changes, someone joining or leaving the fight, and so on.
+
+play_anim.png
+  Play Animation: Plays frames of a character's sprite sheet across the node's length, then goes back to idle.

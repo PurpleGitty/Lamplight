@@ -1,6 +1,6 @@
 extends Control
 ## The editor's timeline: one column per beat of the song, one lane per object
-## (plus the Turns and Board lanes at the top). Nodes are drawn as blocks as
+## (plus the Turns, Text, Meta and Board lanes at the top). Nodes are drawn as blocks as
 ## long as the beats they span. Nodes that overlap on one lane stack into rows.
 
 const HEADER := 170.0 # width of the lane names on the left
@@ -23,6 +23,8 @@ var _mouse := Vector2(-1, -1)
 var _tops: Array[float] = [] # top of each lane from first_lane down
 var _heights: Array[float] = []
 var _layouts: Array = []
+var _drop_type := "" # the tab node being dragged over the timeline
+var _ctrl_hit: Dictionary = {} # ctrl-pressed on this node: selects it if it isn't dragged
 
 
 func _ready() -> void:
@@ -179,17 +181,20 @@ func _draw() -> void:
 			draw_rect(Rect2(x1, 0, x2 - x1, 4), Color(1, 0.3, 0.3, 0.6))
 
 	# Beat grid and numbers. Every beat is a step; bars (4 beats) are brighter.
+	var bar_length: int = editor.bar_length()
 	var label_step := 1
 	while label_step * ppb < 30:
-		label_step *= 2
-	var line_step := 1 if ppb >= 6 else 4
+		label_step = _next_label_step(label_step)
+	var line_step := 1 if ppb >= 6 else bar_length
+	if line_step * ppb < 4:
+		line_step = bar_length * 8
 	for b in range(maxi(floori(scroll), 0), ceili(right_beat) + 1):
 		if b % line_step != 0:
 			continue
 		var x := beat_to_x(b)
 		if x < HEADER:
 			continue
-		var bar := b % 4 == 0
+		var bar := b % bar_length == 0
 		draw_line(Vector2(x, RULER), Vector2(x, size.y), Color(1, 1, 1, 0.16 if bar else 0.06))
 		if b % label_step == 0:
 			draw_string(FONT, Vector2(x + 2, 17), str(b), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.9 if bar else 0.55))
@@ -213,23 +218,23 @@ func _draw() -> void:
 		var header := Rect2(0, lane_top(i), HEADER, lane_height(i))
 		var is_current: bool = lane["kind"] == "object" and lane["object"] == current
 		draw_rect(header, Color(0.24, 0.22, 0.12) if is_current else Color(0.17, 0.17, 0.2))
-		var strip: Color = {"turn": Color("e04848"), "text": Color("e8e8e8"), "board": Color("3fd0ff"), "object": Color("ffb03b")}[lane["kind"]]
+		var strip: Color = {"turn": Color("e04848"), "text": Color("e8e8e8"), "meta": Color("c8ff6b"), "board": Color("3fd0ff"), "object": Color("ffb03b")}[lane["kind"]]
 		draw_rect(Rect2(0, header.position.y, 4, header.size.y), strip)
 		draw_string(FONT, Vector2(10, header.position.y + 20), _fit(lane["label"], HEADER - 14), HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
 		draw_line(Vector2(0, header.end.y), Vector2(size.x, header.end.y), Color(0, 0, 0, 0.5))
 
 	draw_rect(Rect2(0, 0, HEADER, RULER), Color(0.17, 0.17, 0.2))
-	draw_string(FONT, Vector2(8, 17), "beat", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.5))
+	draw_string(FONT, Vector2(8, 17), editor.unit_name(), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.5))
 	draw_line(Vector2(HEADER, 0), Vector2(HEADER, size.y), Color(0, 0, 0, 0.8), 2.0)
 	draw_line(Vector2(0, RULER), Vector2(size.x, RULER), Color(1, 1, 1, 0.3))
 
 	# Ghost of the node about to be placed
-	if editor.armed_type != "" and _mouse.x > HEADER:
+	if _drop_type != "" and _mouse.x > HEADER:
 		var i := lane_index_at(_mouse.y)
-		if i >= 0 and lanes[i]["kind"] == ChartDefs.TYPES[editor.armed_type]["lane"]:
-			var ghost := ChartDefs.new_event({"next_id": -1}, editor.armed_type, editor.snap_beat(x_to_beat(_mouse.x)))
+		if i >= 0 and lanes[i]["kind"] == ChartDefs.TYPES[_drop_type]["lane"]:
+			var ghost := ChartDefs.new_event(editor.chart.merged({"next_id": -1}, true), _drop_type, _drop_beat(_mouse.x))
 			var r := _node_rect(ghost, i, 0, 1)
-			var c: Color = ChartDefs.TYPES[editor.armed_type]["color"]
+			var c: Color = ChartDefs.TYPES[_drop_type]["color"]
 			draw_rect(r, Color(c, 0.4))
 			draw_rect(r, c, false, 1.0)
 
@@ -239,8 +244,8 @@ func _draw() -> void:
 		draw_line(Vector2(px, 0), Vector2(px, size.y), Color(1, 0.25, 0.25), 2.0)
 		draw_colored_polygon(PackedVector2Array([Vector2(px - 6, 0), Vector2(px + 6, 0), Vector2(px, 9)]), Color(1, 0.25, 0.25))
 
-	if lanes.size() <= 3:
-		draw_string(FONT, Vector2(HEADER + 12, lane_top(3) + 22), "Press \"+ Object\" to add an object lane.", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.5))
+	if lanes.size() <= 4:
+		draw_string(FONT, Vector2(HEADER + 12, lane_top(4) + 22), "Press \"+ Object\" to add an object lane.", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.5))
 
 
 func _draw_node(ev: Dictionary, r: Rect2) -> void:
@@ -264,6 +269,16 @@ func _draw_node(ev: Dictionary, r: Rect2) -> void:
 			draw_line(Vector2(r.end.x - 3, r.position.y + 3), Vector2(r.end.x - 3, r.end.y - 3), Color.BLACK, 2.0)
 	else:
 		draw_rect(r, Color(0, 0, 0, 0.6), false, 1.0)
+
+
+## Label spacing on the ruler: 1, 2, 4, 8... beats, or 5, 10, 15, 30... frames.
+func _next_label_step(step: int) -> int:
+	if not editor.uses_frames():
+		return step * 2
+	for candidate in [5, 10, 15, 30, 60, 120, 300, 600, 1200, 3000, 6000]:
+		if candidate > step:
+			return candidate
+	return step * 2
 
 
 func _fit(text: String, width: float, font_size := 16) -> String:
@@ -293,8 +308,6 @@ func _gui_input(event: InputEvent) -> void:
 			var hit := _event_at(mb.position)
 			if not hit.is_empty():
 				editor.delete_events([hit])
-			elif editor.armed_type != "":
-				editor.arm(editor.armed_type)
 		accept_event()
 		queue_redraw()
 	elif event is InputEventMouseMotion:
@@ -307,6 +320,35 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_MOUSE_EXIT:
 		_mouse = Vector2(-1, -1)
 		queue_redraw()
+	elif what == NOTIFICATION_DRAG_END:
+		_drop_type = ""
+		queue_redraw()
+
+
+# --- dropping nodes from the tabs ---
+
+func _can_drop_data(pos: Vector2, data: Variant) -> bool:
+	if not data is Dictionary or not data.has("node_type"):
+		return false
+	_measure()
+	_mouse = pos
+	_drop_type = data["node_type"]
+	queue_redraw()
+	var i := lane_index_at(pos.y)
+	return i >= 0 and pos.x > HEADER and editor.lane_list()[i]["kind"] == ChartDefs.TYPES[_drop_type]["lane"]
+
+
+func _drop_data(pos: Vector2, data: Variant) -> void:
+	_measure()
+	var lane: Dictionary = editor.lane_list()[lane_index_at(pos.y)]
+	editor.place(data["node_type"], lane, _drop_beat(pos.x))
+	_drop_type = ""
+
+
+## Holding Ctrl places it freely instead of snapping.
+func _drop_beat(x: float) -> float:
+	var b := x_to_beat(x)
+	return b if Input.is_key_pressed(KEY_CTRL) else editor.snap_beat(b)
 
 
 func _wheel(mb: InputEventMouseButton) -> void:
@@ -314,7 +356,7 @@ func _wheel(mb: InputEventMouseButton) -> void:
 	if mb.ctrl_pressed:
 		# Zoom around the mouse
 		var anchor := x_to_beat(mb.position.x)
-		ppb = clampf(ppb * (1.15 if dir < 0 else 1.0 / 1.15), 2.0, 240.0)
+		ppb = clampf(ppb * (1.15 if dir < 0 else 1.0 / 1.15), 0.25, 240.0)
 		scroll = maxf(0.0, anchor - (mb.position.x - HEADER) / ppb)
 	elif mb.shift_pressed:
 		first_lane = clampi(first_lane + int(dir), 0, maxi(editor.lane_list().size() - 1, 0))
@@ -343,15 +385,9 @@ func _press(mb: InputEventMouseButton) -> void:
 
 	var hit := _event_at(pos)
 	if not hit.is_empty():
-		if mb.ctrl_pressed:
-			var sel: Array = editor.selected.duplicate()
-			if hit in sel:
-				sel.erase(hit)
-			else:
-				sel.append(hit)
-			editor.select(sel)
-			return
-		if hit not in editor.selected:
+		# Ctrl: a click adds to the selection (on release), a drag moves freely
+		_ctrl_hit = hit if mb.ctrl_pressed else {}
+		if hit not in editor.selected and not mb.ctrl_pressed:
 			editor.select([hit])
 		_drag_from = pos
 		_drag_pushed_undo = false
@@ -360,25 +396,30 @@ func _press(mb: InputEventMouseButton) -> void:
 		for item in layout["items"]:
 			if item[0] == hit:
 				r = _node_rect(hit, i, item[1], layout["rows"])
-		if editor.selected.size() == 1 and not ChartDefs.is_instant(hit["type"]) and pos.x > r.end.x - EDGE:
+		if hit in editor.selected and editor.selected.size() == 1 and not ChartDefs.is_instant(hit["type"]) and pos.x > r.end.x - EDGE:
 			_drag = "resize"
 			_drag_origin = [[hit, hit["length"]]]
 		else:
 			_drag = "move"
-			_drag_origin = editor.selected.map(func(ev): return [ev, ev["beat"]])
+			var moving: Array = editor.selected if hit in editor.selected else [hit]
+			_drag_origin = moving.map(func(ev): return [ev, ev["beat"]])
 		return
 
-	var b: float = editor.snap_beat(x_to_beat(pos.x))
-	if editor.armed_type != "":
-		editor.place(editor.armed_type, lane, b)
-	else:
-		editor.select([])
-		editor.seek(maxf(b, 0.0))
+	editor.select([])
+	editor.seek(maxf(editor.snap_beat(x_to_beat(pos.x)), 0.0))
 
 
 func _release() -> void:
 	if _drag in ["move", "resize"] and _drag_pushed_undo:
 		editor.changed()
+	elif not _ctrl_hit.is_empty():
+		var sel: Array = editor.selected.duplicate()
+		if _ctrl_hit in sel:
+			sel.erase(_ctrl_hit)
+		else:
+			sel.append(_ctrl_hit)
+		editor.select(sel)
+	_ctrl_hit = {}
 	_drag = ""
 
 
@@ -390,20 +431,26 @@ func _motion(e: InputEventMouseMotion) -> void:
 			scroll = maxf(0.0, scroll - e.relative.x / ppb)
 		"move":
 			var delta := x_to_beat(e.position.x) - x_to_beat(_drag_from.x)
-			delta = delta if editor.snap <= 0.0 else roundf(delta / editor.snap) * editor.snap
+			# Holding Ctrl places it freely, off the grid
+			if editor.snap > 0.0 and not e.ctrl_pressed:
+				delta = roundf(delta / editor.snap) * editor.snap
 			if not _drag_pushed_undo:
 				if delta == 0.0 and lane_index_at(e.position.y) == lane_index_at(_drag_from.y):
 					return
 				editor.push_undo()
 				_drag_pushed_undo = true
+				if not _ctrl_hit.is_empty() and _ctrl_hit not in editor.selected:
+					editor.select([_ctrl_hit])
 			for pair in _drag_origin:
 				pair[0]["beat"] = maxf(0.0, pair[1] + delta)
 			_maybe_change_lane(e.position)
 			editor.changed(false)
 		"resize":
 			var ev: Dictionary = _drag_origin[0][0]
-			var min_len: float = editor.snap if editor.snap > 0.0 else 0.0625
-			var new_len := maxf(min_len, editor.snap_beat(x_to_beat(e.position.x)) - ev["beat"])
+			var free: bool = e.ctrl_pressed or editor.snap <= 0.0
+			var min_len: float = 0.0625 if free else editor.snap
+			var end: float = x_to_beat(e.position.x) if free else editor.snap_beat(x_to_beat(e.position.x))
+			var new_len := maxf(min_len, end - ev["beat"])
 			if new_len != ev["length"]:
 				if not _drag_pushed_undo:
 					editor.push_undo()
@@ -414,8 +461,9 @@ func _motion(e: InputEventMouseMotion) -> void:
 			var hover := _event_at(e.position)
 			if not hover.is_empty():
 				var def: Dictionary = ChartDefs.TYPES[hover["type"]]
-				var span := "" if ChartDefs.is_instant(hover["type"]) else ", %s beats" % snappedf(hover["length"], 0.001)
-				editor.set_status("%s at beat %s%s - %s" % [def["label"], snappedf(hover["beat"], 0.001), span, def["help"]])
+				var unit: String = editor.unit_name()
+				var span := "" if ChartDefs.is_instant(hover["type"]) else ", %s %ss" % [snappedf(hover["length"], 0.001), unit]
+				editor.set_status("%s at %s %s%s - %s" % [def["label"], unit, snappedf(hover["beat"], 0.001), span, def["help"]])
 
 
 ## Dragging a single object node onto another object's lane moves it there.
