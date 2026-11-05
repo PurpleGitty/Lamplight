@@ -122,7 +122,8 @@ func close() -> void:
 func _retract_step(amount: float) -> void:
 	var s := _last_size * amount
 	_place(_last_center, s, _last_angle)
-	ghosts.add(Transform2D(deg_to_rad(_last_angle), _last_center), s)
+	if GameSettings.values["fx_trails"]:
+		ghosts.add(Transform2D(deg_to_rad(_last_angle), _last_center), s)
 
 
 func _sync() -> void:

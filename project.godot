@@ -13,6 +13,7 @@ config_version=5
 config/name="Lamplight"
 config/version="beta-1.4"
 run/main_scene="res://menu.tscn"
+run/main_scene.mobile="res://mobile_root.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 run/max_fps=30
 config/icon="res://icon.svg"
@@ -28,6 +29,8 @@ window/size/viewport_height=480
 window/size/mode=3
 window/size/borderless=true
 window/stretch/mode="viewport"
+window/stretch/mode.mobile="disabled"
+window/handheld/orientation=4
 
 [input]
 
@@ -54,5 +57,7 @@ BACK={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=3
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
 rendering_device/driver.windows="d3d12"
 environment/defaults/default_clear_color=Color(0.27387273, 0.27387273, 0.27387273, 1)

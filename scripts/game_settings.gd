@@ -4,6 +4,7 @@ extends Node
 ## set up here, so keyboard and controller both work and both can be remapped.
 
 signal device_changed
+signal settings_changed
 
 const PATH := "user://settings.cfg"
 const ACTIONS := ["UP", "DOWN", "LEFT", "RIGHT", "ACCEPT", "BACK", "MENU"]
@@ -37,14 +38,25 @@ const BUSES := {"master_volume": "Master", "music_volume": "Music", "sfx_volume"
 const WINDOW_MODES := ["FULLSCREEN", "WINDOWED"]
 const FPS_LIMITS := [30, 60, 120]
 const WINDOWED_SIZE := Vector2i(1280, 960)
+const DEFAULT_PHONE_AUDIO_DELAY := 120 # milliseconds: measured on a phone's own speaker
+const TOUCH_NAMES := {"ACCEPT": "A", "BACK": "B", "MENU": "Y"}
+const TOUCH_STICKS := ["AUTO", "DPAD", "JOYSTICK"]
+const TOUCH_SIZES := ["SMALL", "MEDIUM", "LARGE"]
 
 var values := {
 	"master_volume": 100, "music_volume": 100, "sfx_volume": 100,
 	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true, "auto_run": false,
+	"fx_shadows": true, "fx_backgrounds": true, "fx_trails": true,
+	"touch_stick": "AUTO", "touch_size": "MEDIUM", "touch_opacity": 100, "finger_ui": true,
+	"audio_delay_ms": -1, # below 0: use the platform's usual
 }
 var bindings := {"key": DEFAULT_KEYS.duplicate(), "pad": DEFAULT_PAD.duplicate(true)}
 ## "key" or "pad": what the player last pressed, so prompts name the right thing.
 var device := "key"
+## True on phones: no editors, touch controls, and the game runs inside game_holder.
+var mobile := OS.has_feature("mobile")
+var game_holder: Node = null
+var _scene_path := ""
 var _latched := {} # actions a stick is holding, so one push counts as one press
 var _window_mode_saved := false
 
@@ -111,7 +123,9 @@ func _input(event: InputEvent) -> void:
 			_latched.erase(action)
 	var now := device
 	if event is InputEventKey and event.pressed:
-		now = "key"
+		# (A phone's own back button counts as a key, but it isn't a keyboard)
+		if not (mobile and event.keycode == KEY_BACK):
+			now = "key"
 	elif event is InputEventJoypadButton and event.pressed:
 		now = "pad"
 	elif event is InputEventJoypadMotion and absf(event.axis_value) > STICK_DEADZONE:
@@ -119,6 +133,66 @@ func _input(event: InputEvent) -> void:
 	if now != device:
 		device = now
 		device_changed.emit()
+
+
+# --- phones ---
+
+## Goes to a scene. On a phone it's put in the game's own view (see MobileRoot).
+func go_to(path: String) -> void:
+	if game_holder == null:
+		get_tree().change_scene_to_file(path)
+	else:
+		_swap_scene.call_deferred(path)
+
+
+func reload_scene() -> void:
+	if game_holder == null:
+		get_tree().reload_current_scene()
+	else:
+		go_to(_scene_path)
+
+
+func _swap_scene(path: String) -> void:
+	_scene_path = path
+	for child in game_holder.get_children():
+		game_holder.remove_child(child)
+		child.free()
+	game_holder.add_child(load(path).instantiate())
+
+
+## The scene the player's in: for picking a joystick over a d-pad.
+func in_action_scene() -> bool:
+	if game_holder == null or game_holder.get_child_count() == 0:
+		return false
+	var scene := game_holder.get_child(0)
+	return scene is Overworld or scene is Battle
+
+
+## Acts as if a control was pressed or let go, so the game can't tell the difference.
+func send_action(action: String, is_pressed: bool, strength := 1.0) -> void:
+	var event := InputEventAction.new()
+	event.action = action
+	event.pressed = is_pressed
+	event.strength = strength
+	Input.parse_input_event(event)
+
+
+## A quick press and let go.
+func tap_action(action: String) -> void:
+	send_action(action, true)
+	send_action.call_deferred(action, false)
+
+
+## Where a fresh tap landed, if it's one menus should react to. Vector2.INF if not.
+func tap_at(event: InputEvent) -> Vector2:
+	if mobile and values["finger_ui"] and event is InputEventScreenTouch and event.pressed:
+		return event.position
+	return Vector2.INF
+
+
+## Whether a point (in the game's view) is on this control, wherever it's sitting.
+func tap_hits(control: Control, point: Vector2) -> bool:
+	return control.is_visible_in_tree() and (control.get_global_transform_with_canvas() * Rect2(Vector2.ZERO, control.size)).has_point(point)
 
 
 ## Changes one binding. If another action already uses it they swap, so nothing
@@ -151,6 +225,8 @@ func binding_from(event: InputEvent, column: String) -> Variant:
 
 
 func binding_name(action: String, column: String) -> String:
+	if column == "touch":
+		return TOUCH_NAMES.get(action, action)
 	var binding: Variant = bindings[column][action]
 	if column == "key":
 		return OS.get_keycode_string(int(binding)).to_upper()
@@ -202,6 +278,9 @@ func _sort_sound(node: Node) -> void:
 
 ## The game's fixed 640x480 view, scaled to the window. The editor turns this off.
 func apply_game_view() -> void:
+	if mobile:
+		Engine.max_fps = values["fps"]
+		return
 	var window := get_window()
 	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
 	window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
@@ -210,6 +289,8 @@ func apply_game_view() -> void:
 
 
 func apply_window() -> void:
+	if mobile:
+		return
 	var window := get_window()
 	if values["window_mode"] == "FULLSCREEN":
 		window.mode = Window.MODE_FULLSCREEN
@@ -234,6 +315,27 @@ func change(key: String, value: Variant) -> void:
 		"master_volume", "music_volume", "sfx_volume":
 			apply_volumes()
 	save()
+	settings_changed.emit()
+
+
+func _notification(what: int) -> void:
+	# A phone's own back button
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST and mobile:
+		tap_action("BACK")
+
+
+## Extra seconds between the game playing a sound and it being heard, beyond what the
+## engine knows about. Android reports none, though a phone's speaker takes around 120 ms,
+## and Bluetooth takes more, so it's a setting there.
+func audio_delay() -> float:
+	return audio_delay_ms() / 1000.0
+
+
+func audio_delay_ms() -> int:
+	var chosen := int(values["audio_delay_ms"])
+	if chosen >= 0:
+		return chosen
+	return DEFAULT_PHONE_AUDIO_DELAY if mobile else 0
 
 
 func shake_scale() -> float:

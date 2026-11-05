@@ -137,6 +137,8 @@ func fire_sound(path: String) -> void:
 
 ## Remembers where the weapon is, for its afterimages. Call once a frame.
 func trail_add(where: Transform2D) -> void:
+	if not GameSettings.values["fx_trails"]:
+		return
 	_trail.append(where)
 	if _trail.size() > TRAIL_LENGTH:
 		_trail.pop_front()

@@ -92,6 +92,8 @@ var _menu_open := false
 var _menu_mode := "main" # main, save, load, options or member
 var _menu_member: Dictionary # whose stats are showing
 var _menu_tab := 0
+var _choice_at := 0
+var _menu_hits: Array = [] # [{"rect": where on screen, "row": index}] or {"tab": index}
 var _guard_frame := -1 # a press on or before this frame was for what came before
 var _menu_from_step := false # a Save step opened it, so leaving it closes it
 var _last_player_spot := Vector2.INF
@@ -109,7 +111,7 @@ class ShadowLayer extends Node2D:
 		queue_redraw()
 
 	func _draw() -> void:
-		if world != null and not world.room.is_empty() and LocaleDefs.sun_on(world.room, world.rules):
+		if world != null and not world.room.is_empty() and LocaleDefs.sun_on(world.room, world.rules) and GameSettings.values["fx_shadows"]:
 			for actor in world.things.get_children():
 				actor.draw_shadow_on(self, world.rules)
 
@@ -235,6 +237,10 @@ func _build_scene() -> void:
 	_build_menu()
 
 
+func _update_sun() -> void:
+	view.set_sun(LocaleDefs.sun_on(room, rules) and GameSettings.values["fx_shadows"], rules)
+
+
 ## The world's pixels per screen pixel: always a whole number.
 func _zoom() -> int:
 	return maxi(roundi(float(rules["zoom"])), 1)
@@ -250,6 +256,8 @@ func _apply_zoom() -> void:
 ## Rooms scale to the window by a whole number where they can, so pixels stay square
 ## and even. The window has to fit at least 2x: below that it'd be a tiny picture.
 func _apply_stretch() -> void:
+	if GameSettings.mobile:
+		return
 	var window := get_window()
 	var fits := minf(window.size.x / SCREEN.x, window.size.y / SCREEN.y)
 	window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_INTEGER if fits >= 2.0 else Window.CONTENT_SCALE_STRETCH_FRACTIONAL
@@ -312,7 +320,7 @@ func _enter_room(new_room: Dictionary, spot: Vector2) -> void:
 	_touching.clear()
 	view.show_room(room, int(rules["tile_size"]))
 	_drawn = view.drawn_rect()
-	view.set_sun(LocaleDefs.sun_on(room, rules), rules)
+	_update_sun()
 	for obj in room["objects"]:
 		if LocaleDefs.OBJECT_TYPES[obj["type"]]["visible"]:
 			var actor := Actor.new()
@@ -375,10 +383,11 @@ func _apply_background() -> void:
 		return
 	_background_key = key
 	background_fill.color = Color(str(source["background_color"]))
-	var image := str(source["background"])
+	var fancy: bool = GameSettings.values["fx_backgrounds"]
+	var image := str(source["background"]) if fancy else ""
 	background_image.visible = image != ""
 	background_image.texture = ChartDefs.load_texture(image) if image != "" else null
-	var video := ChartDefs.load_video(str(source["background_video"]))
+	var video := ChartDefs.load_video(str(source["background_video"])) if fancy else null
 	background_video.stop()
 	background_video.visible = video != null
 	background_video.stream = video
@@ -451,6 +460,25 @@ func _party_during_cutscene(delta: float) -> void:
 		for f in followers:
 			if not f.on_path:
 				f.set_walking(false, delta)
+
+
+## Tapping: on the text box to carry on, on a choice to pick it, and all over the menu.
+func _input(event: InputEvent) -> void:
+	var tap := GameSettings.tap_at(event)
+	if tap == Vector2.INF:
+		return
+	if _menu_open:
+		_menu_tap(tap)
+	elif choice_box.visible:
+		for i in choice_box.get_child_count():
+			if GameSettings.tap_hits(choice_box.get_child(i), tap):
+				_choice_at = i
+				GameSettings.tap_action("ACCEPT")
+	elif box.visible or cutscene_video.visible:
+		GameSettings.tap_action("ACCEPT")
+	else:
+		return
+	get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -963,7 +991,7 @@ func _set_rule(rule: String, value: float) -> void:
 	elif rule == "zoom":
 		_apply_zoom()
 	elif rule.begins_with("sun"):
-		view.set_sun(LocaleDefs.sun_on(room, rules), rules)
+		_update_sun()
 
 
 func _say(step: Dictionary) -> void:
@@ -1043,25 +1071,25 @@ func _ask(step: Dictionary) -> float:
 		label.add_theme_font_override("font", FONT)
 		label.add_theme_font_size_override("font_size", TEXT_SIZE)
 		choice_box.add_child(label)
-	var at := 0
+	_choice_at = 0
 	choice_box.position = Vector2(60, BOX_TOP - 8.0 - options.size() * 38.0)
 	choice_box.show()
 	while true:
 		for i in options.size():
 			var label: Label = choice_box.get_child(i)
-			label.text = ("> " if i == at else "  ") + options[i].strip_edges()
-			label.add_theme_color_override("font_color", Color.YELLOW if i == at else Color.WHITE)
+			label.text = ("> " if i == _choice_at else "  ") + options[i].strip_edges()
+			label.add_theme_color_override("font_color", Color.YELLOW if i == _choice_at else Color.WHITE)
 		await get_tree().process_frame
 		if _just("ACCEPT"):
 			break
 		var move := int(Input.is_action_just_pressed("DOWN")) - int(Input.is_action_just_pressed("UP"))
 		if move != 0:
-			at = posmod(at + move, options.size())
+			_choice_at = posmod(_choice_at + move, options.size())
 			_menu_sound(MOVE_SOUND)
 	choice_box.hide()
 	box.hide()
 	_menu_sound(SELECT_SOUND)
-	return float(at + 1)
+	return float(_choice_at + 1)
 
 
 func _menu_sound(stream: AudioStream) -> void:
@@ -1104,7 +1132,7 @@ func _start_fight(step: Dictionary) -> bool:
 	Battle.overworld_party = _party_for_fight() if step["use_party"] else {}
 	Battle.give_up_label = "BACK TO LAST SAVE" if step["if_lost"] == "back to last save" else "CARRY ON"
 	GameSettings.apply_game_view() # the fight scales the way the settings say
-	get_tree().change_scene_to_file("res://node_2d.tscn")
+	GameSettings.go_to("res://node_2d.tscn")
 	return true
 
 
@@ -1134,7 +1162,7 @@ func _restore() -> void:
 	flags["won_fight"] = 1.0 if Battle.last_fight_won else 0.0
 	if not Battle.last_fight_won and saved["if_lost"] == "back to last save":
 		load_slot = SaveGame.latest(locale)
-		get_tree().change_scene_to_file.call_deferred(SCENE)
+		GameSettings.go_to.call_deferred(SCENE)
 		return
 	player.facing = saved["facing"]
 	var back: Variant = LocaleDefs.find_room(locale, int(saved["room"]))
@@ -1315,7 +1343,7 @@ func _use_slot(slot: int) -> void:
 		_refresh_menu()
 	elif not SaveGame.read(locale, slot).is_empty():
 		load_slot = slot
-		get_tree().change_scene_to_file(SCENE)
+		GameSettings.go_to(SCENE)
 
 
 func _row_text(row: Dictionary) -> String:
@@ -1350,6 +1378,7 @@ func _refresh_menu() -> void:
 	for child in menu_root.get_children():
 		menu_root.remove_child(child)
 		child.queue_free()
+	_menu_hits.clear()
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color.BLACK
 	style.border_color = Color.WHITE
@@ -1365,6 +1394,7 @@ func _refresh_menu() -> void:
 		for i in tabs.size():
 			var chosen: bool = i == _menu_tab
 			panel.add_child(_menu_label(tabs[i], Vector2(24 + i * 150, 12), Color.YELLOW if chosen else Color(0.5, 0.5, 0.55), 16, MENU_FONT))
+			_menu_hits.append({"rect": Rect2(panel.position + Vector2(14 + i * 150, 0), Vector2(150, 38)), "tab": i})
 			if chosen:
 				var line := ColorRect.new()
 				line.color = Color.YELLOW
@@ -1385,7 +1415,9 @@ func _refresh_menu() -> void:
 			gap = 72.0
 			row_at = Vector2(24, top + i * gap)
 			_add_member_row(panel, row, row_at, chosen)
+			_menu_hits.append({"rect": Rect2(panel.position + row_at, Vector2(512, gap)), "row": i})
 			continue
+		_menu_hits.append({"rect": Rect2(panel.position + row_at, Vector2(512, gap)), "row": i})
 		panel.add_child(_menu_label(("> " if chosen else "  ") + _row_text(row), row_at, Color.YELLOW if chosen else Color.WHITE))
 	if not _menu_rows.is_empty() and _menu_rows[_menu_at]["kind"] in ["item", "move"]:
 		var chosen_row: Dictionary = _menu_rows[_menu_at]
@@ -1460,6 +1492,29 @@ func _member_picture(data: Dictionary, at: Vector2) -> TextureRect:
 	return picture
 
 
+func _menu_tap(tap: Vector2) -> void:
+	for hit in _menu_hits:
+		if hit["rect"].has_point(tap):
+			if hit.has("tab"):
+				_menu_tab = hit["tab"]
+				_show_tab()
+				_menu_sound(MOVE_SOUND)
+				_refresh_menu()
+			else:
+				_menu_at = hit["row"]
+				var row: Dictionary = _menu_rows[_menu_at]
+				if row["kind"] == "volume":
+					_menu_sideways(1 if tap.x > SCREEN.x / 2.0 else -1)
+				else:
+					_refresh_menu()
+					_menu_pick(row)
+			return
+	# Outside the box
+	if not Rect2(40, 40, 560, 400).has_point(tap):
+		_menu_sound(BACK_SOUND)
+		_menu_back()
+
+
 func _menu_input(event: InputEvent) -> void:
 	if GameSettings.pressed(event, "BACK") or GameSettings.pressed(event, "MENU") or event.is_action_pressed("ui_cancel"):
 		_menu_sound(BACK_SOUND)
@@ -1511,7 +1566,7 @@ func _menu_pick(row: Dictionary) -> void:
 		"slot":
 			_use_slot(row["slot"])
 		"quit":
-			get_tree().change_scene_to_file(return_scene)
+			GameSettings.go_to(return_scene)
 		"item":
 			var scene: Variant = LocaleDefs.find_cutscene(locale, int(row["item"]["use"]))
 			if scene != null:

@@ -42,6 +42,9 @@ const PARENTS := {
 	Page.SOUND: [Page.SETTINGS, 0], Page.GRAPHICS: [Page.SETTINGS, 1], Page.CONTROLS: [Page.SETTINGS, 2],
 }
 
+## The phone's menu has no editor pages in the way.
+const MOBILE_PARENTS := {Page.PLAY: [Page.MAIN, 1], Page.LOCALE_PLAY: [Page.MAIN, 2], Page.SETTINGS: [Page.MAIN, 3]}
+
 ## The page to come back to from a fight or the editor.
 static var page := Page.MAIN
 ## The overworld whose saves are listed.
@@ -140,7 +143,13 @@ func _open_page(new_page: Page, start_on := 0) -> void:
 func _build_main() -> void:
 	_title("LAMPLIGHT", 48, 110)
 	var picks := [
-		["CAMPAIGN", func(): get_tree().change_scene_to_file(BATTLE_SCENE), true],
+		["CAMPAIGN", func(): GameSettings.go_to(BATTLE_SCENE), true],
+		["SCRAPS", func(): _open_page(Page.PLAY), false],
+		["OVERWORLDS", func(): _open_page(Page.LOCALE_PLAY), false],
+		["SETTINGS", func(): _open_page(Page.SETTINGS), false],
+		["QUIT", func(): get_tree().quit(), true],
+	] if GameSettings.mobile else [
+		["CAMPAIGN", func(): GameSettings.go_to(BATTLE_SCENE), true],
 		["SCRAP O' MATIC", func(): _open_page(Page.SCRAP), false],
 		["LOCALE-INATOR", func(): _open_page(Page.LOCALE), false],
 		["SETTINGS", func(): _open_page(Page.SETTINGS), false],
@@ -153,14 +162,14 @@ func _build_main() -> void:
 
 func _build_scrap() -> void:
 	_title("SCRAP O' MATIC", 32, 70)
-	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): get_tree().change_scene_to_file(EDITOR_SCENE), true)
+	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): GameSettings.go_to(EDITOR_SCENE), true)
 	_icon_option(1, "PLAY", ICON_PLAY, func(): _open_page(Page.PLAY), false)
 	_hint([["ACCEPT", "PICK"], ["BACK", "BACK"]])
 
 
 func _build_locale() -> void:
 	_title("LOCALE-INATOR", 32, 70)
-	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): get_tree().change_scene_to_file(LOCALE_EDITOR_SCENE), true)
+	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): GameSettings.go_to(LOCALE_EDITOR_SCENE), true)
 	_icon_option(1, "PLAY", ICON_PLAY, func(): _open_page(Page.LOCALE_PLAY), false)
 	_hint([["ACCEPT", "PICK"], ["BACK", "BACK"]])
 
@@ -170,7 +179,10 @@ func _build_locale_play() -> void:
 	for path in LocaleFile.list():
 		var chosen: String = path
 		_add_row(chosen.get_file().get_basename().to_upper(), "OVERWORLD", DIM, func(): _pick_locale(chosen), false)
-	_add_row("OPEN LOCALES FOLDER", "Put .lcal files here to play them", DIM, func(): OS.shell_open(ProjectSettings.globalize_path(LocaleFile.folder())), false)
+	if GameSettings.mobile:
+		_add_row("IMPORT A FILE", "Pick a .scrp or .lcal from your phone", DIM, _import_file, false)
+	else:
+		_add_row("OPEN LOCALES FOLDER", "Put .lcal files here to play them", DIM, func(): OS.shell_open(ProjectSettings.globalize_path(LocaleFile.folder())), false)
 	_add_row("BACK", "", DIM, _go_back, false)
 	_hint([["ACCEPT", "PLAY"], ["BACK", "BACK"]])
 
@@ -202,7 +214,7 @@ func _start_locale(slot: int) -> void:
 	Overworld.test_spawn = Vector2.INF
 	var scene := Overworld.play(locale_path)
 	Overworld.load_slot = slot
-	get_tree().change_scene_to_file(scene)
+	GameSettings.go_to(scene)
 
 
 func _icon_option(index: int, text: String, texture: Texture2D, action: Callable, leaves: bool) -> void:
@@ -225,7 +237,10 @@ func _build_play() -> void:
 	_title("PLAY", 32, 40)
 	for fight in _all_fights():
 		_add_fight_row(fight)
-	_add_row("OPEN SCRAPS FOLDER", "Put .scrp files here to play them", DIM, func(): OS.shell_open(ProjectSettings.globalize_path(ScrapFile.folder())), false)
+	if GameSettings.mobile:
+		_add_row("IMPORT A FILE", "Pick a .scrp or .lcal from your phone", DIM, _import_file, false)
+	else:
+		_add_row("OPEN SCRAPS FOLDER", "Put .scrp files here to play them", DIM, func(): OS.shell_open(ProjectSettings.globalize_path(ScrapFile.folder())), false)
 	_add_row("BACK", "", DIM, _go_back, false)
 	_hint([["ACCEPT", "PLAY"], ["BACK", "BACK"]])
 
@@ -278,7 +293,21 @@ func _fit(text: String, limit: int) -> String:
 
 func _play(path: String) -> void:
 	Battle.chart_to_play = path
-	get_tree().change_scene_to_file(BATTLE_SCENE)
+	GameSettings.go_to(BATTLE_SCENE)
+
+
+## The phone's own file picker. Copies what's picked in; the game only ever reads it.
+func _import_file() -> void:
+	var dialog := FileDialog.new()
+	dialog.access = FileDialog.ACCESS_FILESYSTEM
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	dialog.use_native_dialog = true
+	dialog.file_selected.connect(func(path):
+		var placed := LocaleFile.import_file(path)
+		_open_page(page)
+		_set_hint(placed.get_file() + " added" if placed != "" else LocaleFile.last_error))
+	add_child(dialog)
+	dialog.popup_centered()
 
 
 func _build_settings() -> void:
@@ -300,11 +329,52 @@ func _build_sound() -> void:
 		var text: String = rows[i][0]
 		_setting_row(i, func(): return "%s  %d%%" % [text, GameSettings.values[key]], func(step: int):
 			GameSettings.change(key, clampi(GameSettings.values[key] + step * VOLUME_STEP, 0, 100)))
-	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + rows.size() * SUB_GAP), _go_back, false)
+	var extra := 0
+	if GameSettings.mobile:
+		# The beat can be nudged to match what's heard: Bluetooth headphones need much more
+		extra = 1
+		_setting_row(rows.size(), func(): return "AUDIO DELAY  %d MS" % GameSettings.audio_delay_ms(), func(step: int):
+			GameSettings.change("audio_delay_ms", clampi(GameSettings.audio_delay_ms() + step * 10, 0, 500)))
+	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + (rows.size() + extra) * SUB_GAP), _go_back, false)
+	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
+
+
+## Phones: fewer settings, and effects can be turned off to read better and run faster.
+func _build_mobile_graphics() -> void:
+	_title("GRAPHICS", 32, 60)
+	_setting_row(0, func(): return "FPS LIMIT  %d" % GameSettings.values["fps"], func(step: int):
+		GameSettings.change("fps", _cycled(GameSettings.FPS_LIMITS.filter(func(f): return f <= 60), GameSettings.values["fps"], step)))
+	var toggles := [["PIXEL PERFECT", "pixel_perfect"], ["SHAKING", "screen_shake"], ["SHADOWS", "fx_shadows"], ["BACKGROUNDS", "fx_backgrounds"], ["DUST + TRAILS", "fx_trails"]]
+	for i in toggles.size():
+		var words: String = toggles[i][0]
+		var key: String = toggles[i][1]
+		_setting_row(i + 1, func(): return "%s  %s" % [words, _on_off(key)], func(_step: int):
+			GameSettings.change(key, not GameSettings.values[key]))
+	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + 6 * SUB_GAP), _go_back, false)
+	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
+
+
+## Phones: how the on-screen controls work. A controller just works, with no setup.
+func _build_mobile_controls() -> void:
+	_title("CONTROLS", 32, 60)
+	_setting_row(0, func(): return "STICK  %s" % GameSettings.values["touch_stick"], func(step: int):
+		GameSettings.change("touch_stick", _cycled(GameSettings.TOUCH_STICKS, GameSettings.values["touch_stick"], step)))
+	_setting_row(1, func(): return "BUTTON SIZE  %s" % GameSettings.values["touch_size"], func(step: int):
+		GameSettings.change("touch_size", _cycled(GameSettings.TOUCH_SIZES, GameSettings.values["touch_size"], step)))
+	_setting_row(2, func(): return "BUTTON OPACITY  %d%%" % GameSettings.values["touch_opacity"], func(step: int):
+		GameSettings.change("touch_opacity", clampi(GameSettings.values["touch_opacity"] + step * 25, 25, 100)))
+	_setting_row(3, func(): return "TAP MENUS  %s" % _on_off("finger_ui"), func(_step: int):
+		GameSettings.change("finger_ui", not GameSettings.values["finger_ui"]))
+	_setting_row(4, func(): return "AUTO RUN  %s" % _on_off("auto_run"), func(_step: int):
+		GameSettings.change("auto_run", not GameSettings.values["auto_run"]))
+	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + 5 * SUB_GAP), _go_back, false)
 	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
 
 
 func _build_graphics() -> void:
+	if GameSettings.mobile:
+		_build_mobile_graphics()
+		return
 	_title("GRAPHICS", 32, 60)
 	_setting_row(0, func(): return "WINDOW  %s" % GameSettings.values["window_mode"], func(step: int):
 		GameSettings.change("window_mode", _cycled(GameSettings.WINDOW_MODES, GameSettings.values["window_mode"], step)))
@@ -337,6 +407,9 @@ func _setting_row(index: int, text: Callable, adjust: Callable) -> void:
 
 
 func _build_controls() -> void:
+	if GameSettings.mobile:
+		_build_mobile_controls()
+		return
 	_title("CONTROLS", 32, 40)
 	var y := 84.0
 	var heading := _label(_bind_line("", "KEYBOARD", "CONTROLLER"), OPTION_FONT, 16, y)
@@ -405,8 +478,32 @@ func _reset_controls() -> void:
 	_refresh_texts()
 
 
+## A finger on a row picks it. On a setting, the left half lowers it and the right raises it.
+func _menu_tap(tap: Vector2) -> void:
+	if _leaving:
+		return
+	for i in options.size():
+		var option: Dictionary = options[i]
+		var hit: bool = GameSettings.tap_hits(option["label"], tap)
+		if option.has("icon"):
+			hit = hit or GameSettings.tap_hits(option["icon"], tap)
+		if not hit:
+			continue
+		_select(i, false)
+		if option.has("adjust"):
+			_adjust(1 if tap.x > 320.0 else -1)
+		else:
+			_choose()
+		return
+
+
 ## The press after choosing a control to change.
 func _input(event: InputEvent) -> void:
+	var tap := GameSettings.tap_at(event)
+	if tap != Vector2.INF:
+		_menu_tap(tap)
+		get_viewport().set_input_as_handled()
+		return
 	if _rebinding == "":
 		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
@@ -581,6 +678,8 @@ func _go_back() -> void:
 		return
 	back_sound.play()
 	var parent: Array = PARENTS[page]
+	if GameSettings.mobile and MOBILE_PARENTS.has(page):
+		parent = MOBILE_PARENTS[page]
 	_open_page(parent[0], parent[1])
 
 

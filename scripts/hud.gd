@@ -145,6 +145,41 @@ func end_turn() -> void:
 
 # --- PICKING MOVES ---
 
+## Tapping: tabs and rows pick themselves; off the box goes back; anything else, while
+## a minigame or dialogue's on, counts as pressing A.
+func _input(event: InputEvent) -> void:
+	var tap := GameSettings.tap_at(event)
+	if tap == Vector2.INF:
+		return
+	match state:
+		MenuState.TAB_SELECT:
+			for i in tabs.size():
+				if GameSettings.tap_hits(tabs[i], tap):
+					selected_tab = i
+					update_tab_visuals()
+					GameSettings.tap_action("ACCEPT")
+		MenuState.LIST_SELECT, MenuState.TARGET_SELECT:
+			var rows := menucontent.get_children().filter(func(r): return r != _hint_label)
+			var tapped := -1
+			for i in rows.size():
+				if GameSettings.tap_hits(rows[i], tap):
+					tapped = i
+			if tapped >= 0:
+				if state == MenuState.LIST_SELECT:
+					selected_index = tapped
+				else:
+					target_index = tapped
+				_highlight_row(tapped)
+				GameSettings.tap_action("ACCEPT")
+			elif not GameSettings.tap_hits(self, tap):
+				GameSettings.tap_action("BACK")
+		MenuState.DIALOGUE:
+			GameSettings.tap_action("ACCEPT")
+		MenuState.EXECUTING:
+			if minigame:
+				GameSettings.tap_action("ACCEPT")
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	match state:
 		MenuState.TAB_SELECT: _tab_input(event)

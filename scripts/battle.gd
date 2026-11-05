@@ -171,12 +171,12 @@ func _process(delta: float) -> void:
 		if can_restart and return_scene != "" and last_fight_won and Input.is_action_just_pressed("ACCEPT"):
 			_go_back_to_overworld()
 		elif can_restart and Input.is_action_just_pressed("ACCEPT"):
-			get_tree().reload_current_scene()
+			GameSettings.reload_scene()
 		elif can_restart and Input.is_action_just_pressed("BACK"):
 			if return_scene != "":
 				_go_back_to_overworld()
 			else:
-				get_tree().change_scene_to_file("res://menu.tscn")
+				GameSettings.go_to("res://menu.tscn")
 		return
 
 	_fight_seconds += delta
@@ -350,7 +350,7 @@ func _go_back_to_overworld() -> void:
 	var scene := return_scene
 	return_scene = ""
 	chart_to_play = ""
-	get_tree().change_scene_to_file(scene)
+	GameSettings.go_to(scene)
 
 
 func lose(cause: String) -> void:
@@ -666,6 +666,8 @@ func _apply_change(change: Dictionary) -> void:
 func _apply_look() -> void:
 	var background: Sprite2D = $Background
 	background.frame = 0
+	background.visible = true
+	background.self_modulate.a = 1.0
 	var path: String = rules["background"]
 	if path == "":
 		background.texture = _default_background
@@ -680,7 +682,10 @@ func _apply_look() -> void:
 		# Covers the whole screen, whatever shape it is
 		var cover := maxf(SCREEN_SIZE.x / frame_size.x, SCREEN_SIZE.y / frame_size.y)
 		background.scale = Vector2(cover, cover)
-	_apply_background_video(background)
+	if GameSettings.values["fx_backgrounds"]:
+		_apply_background_video(background)
+	else:
+		background.self_modulate.a = 0.0 # plain black: easier to read, and less to draw
 	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
 	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
 	soul.set_look(rules)

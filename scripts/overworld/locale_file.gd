@@ -16,6 +16,9 @@ static func is_locale(path: String) -> bool:
 
 
 static func folder() -> String:
+	if GameSettings.mobile:
+		DirAccess.make_dir_recursive_absolute("user://locales")
+		return "user://locales"
 	var documents := OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 	var path := documents.path_join(LIST_FOLDER) if documents != "" else "user://locales"
 	if DirAccess.make_dir_recursive_absolute(path) != OK:
@@ -41,6 +44,57 @@ static func unused_path(base_name: String) -> String:
 	while FileAccess.file_exists(path):
 		path = base.path_join("%s_%d.%s" % [base_name, number, EXTENSION])
 		number += 1
+	return path
+
+
+## Brings a .scrp or .lcal into the game from anywhere the phone's file picker can reach.
+## It works out which it is from what's inside, whatever the file's called. Returns where
+## it went, or "" (see last_error).
+static func import_file(source: String) -> String:
+	var data := FileAccess.get_file_as_bytes(source)
+	if data.is_empty():
+		last_error = "Couldn't read that file."
+		return ""
+	if data.size() > ScrapFile.MAX_SCRAP_BYTES or not SafeFiles.bytes_match("scrp", data):
+		last_error = "That isn't a scrap or overworld file."
+		return ""
+	var temp := "user://importing.tmp"
+	var out := FileAccess.open(temp, FileAccess.WRITE)
+	if out == null:
+		last_error = "Couldn't save it."
+		return ""
+	out.store_buffer(data)
+	out.close()
+	var zip := ZIPReader.new()
+	var folder_to := ""
+	var extension := ""
+	if zip.open(temp) == OK:
+		if zip.file_exists(LOCALE):
+			folder_to = folder()
+			extension = EXTENSION
+		elif zip.file_exists(ScrapFile.CHART):
+			folder_to = ScrapFile.folder()
+			extension = ScrapFile.EXTENSION
+		zip.close()
+	if folder_to == "":
+		DirAccess.remove_absolute(temp)
+		last_error = "That isn't a scrap or overworld file."
+		return ""
+	# Only the file's own name, cleaned up, and never replacing one that's there
+	var base := source.uri_decode().get_file().get_basename().validate_filename().left(48)
+	if base == "" or base == ".":
+		base = "Imported"
+	var path := folder_to.path_join("%s.%s" % [base, extension])
+	var number := 2
+	while FileAccess.file_exists(path):
+		path = folder_to.path_join("%s_%d.%s" % [base, number, extension])
+		number += 1
+	var err := DirAccess.rename_absolute(temp, path)
+	if err != OK:
+		DirAccess.remove_absolute(temp)
+		last_error = "Couldn't save it."
+		return ""
+	last_error = ""
 	return path
 
 

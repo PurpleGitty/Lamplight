@@ -37,6 +37,9 @@ static func is_scrap(path: String) -> bool:
 
 ## Where scraps live: a folder in Documents that's easy to find and drop files into.
 static func folder() -> String:
+	if GameSettings.mobile:
+		DirAccess.make_dir_recursive_absolute("user://scraps")
+		return "user://scraps" # imported from the phone's files, from the Play menu
 	var documents := OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 	var path := documents.path_join(LIST_FOLDER) if documents != "" else "user://scraps"
 	if DirAccess.make_dir_recursive_absolute(path) != OK:

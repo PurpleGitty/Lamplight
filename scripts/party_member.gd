@@ -98,9 +98,10 @@ func _go_down() -> void:
 
 
 func _crumble() -> void:
-	var dust := DustEffect.from_sprite(self)
-	dust.z_index = z_index + 1
-	get_parent().add_child(dust)
+	if GameSettings.values["fx_trails"]:
+		var dust := DustEffect.from_sprite(self)
+		dust.z_index = z_index + 1
+		get_parent().add_child(dust)
 	material.set_shader_parameter("dissolve_value", 1.1) # the dust replaces the sprite
 
 

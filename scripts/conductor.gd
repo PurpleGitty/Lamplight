@@ -64,7 +64,7 @@ func _process(delta: float) -> void:
 	if player and player.playing:
 		# The audio hardware is the real clock; correct for mixing delay so the
 		# beat lines up with what the player hears.
-		var heard := player.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
+		var heard := player.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency() - GameSettings.audio_delay()
 		song_position = heard if looping else maxf(song_position, heard)
 	else:
 		song_position += delta
