@@ -45,7 +45,7 @@ func _ready() -> void:
 	GameSettings.settings_changed.connect(_fit)
 	_fit()
 	GameSettings.game_holder = game_view
-	GameSettings.go_to("res://menu.tscn")
+	GameSettings.go_to("res://boot_screen.tscn")
 
 
 ## Scales the game to the screen's height, in whole numbers if pixel perfect's on.

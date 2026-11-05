@@ -168,6 +168,11 @@ func in_action_scene() -> bool:
 	return scene is Overworld or scene is Battle
 
 
+## Whether the screen before the main menu's up: no buttons to show yet.
+func on_boot_screen() -> bool:
+	return game_holder != null and game_holder.get_child_count() > 0 and game_holder.get_child(0) is BootScreen
+
+
 ## Acts as if a control was pressed or let go, so the game can't tell the difference.
 func send_action(action: String, is_pressed: bool, strength := 1.0) -> void:
 	var event := InputEventAction.new()

@@ -40,6 +40,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	visible = _shown() and not GameSettings.on_boot_screen()
 	# Auto swaps between d-pad and joystick when the scene changes
 	var kind := _stick_kind()
 	if kind != _last_kind:
