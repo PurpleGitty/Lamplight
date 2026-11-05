@@ -12,11 +12,22 @@ extends Node2D
 ## The fight ends when every enemy is dead or everyone in the party is down.
 
 signal phase_changed(phase: Phase)
+signal tp_gained(amount: float)
 
 enum Phase { PLAYER, ENEMY, OVER }
 
 const FALLBACK_CHART := "res://charts/testicina.json"
 const TRADITIONAL_PAUSE := 1.0 # seconds of "about to attack" before a traditional enemy turn
+const SCREEN_SIZE := Vector2(640, 480)
+const SPEECH_FONT = preload("res://fonts/PixelOperator.ttf")
+## Which sound node each rule replaces.
+const SOUND_RULES := {
+	"hurt_sound": "Spanked", "enemy_hurt_sound": "Damage", "menu_move_sound": "LightningbulbSpacebarClickKeyboard199448",
+	"menu_select_sound": "Select", "menu_back_sound": "Deselect", "text_sound": "Txt",
+}
+## Rules that change how the fight looks or sounds, and so need putting into effect.
+const LOOK_RULES := ["background", "background_hframes", "background_vframes", "speech_font", "menu_font",
+	"soul_sprite", "soul_hframes", "soul_hitbox_w", "soul_hitbox_h", "soul_hitbox_x", "soul_hitbox_y"]
 
 ## Which chart to play next. The chart maker's Test Fight sets this.
 static var chart_to_play := ""
@@ -51,19 +62,24 @@ var can_restart := false
 var traditional := false
 var attack_time := 0.0 # traditional battles: the current frame of the attack
 var _fight_seconds := 0.0
-var _shares := {} # PartyMember -> how much of each hit they take this enemy turn
+var _focus_deal := {} # PartyMember -> shares dealt to them at the start of this player turn
+var _shares := {} # PartyMember -> how much of each hit they take: the deal, plus focus effects
 var _captions_shown := 0 # status captions of the current attack already shown
 var _meta: Array = [] # meta nodes in order
 var _next_meta := 0
 var _leaving: Array[Node] = [] # characters who left, freed at the next player turn
 var _player_turn_id := 0
+var _mods: Array = [] # timed effects in play: {"kind", "value", "turns", "targets"}
+var _default_background: Texture2D
+var _default_background_scale := Vector2.ONE
+var _default_sounds := {} # rule -> the stream its node started with
 
 
 func _ready() -> void:
 	var path := chart_to_play if chart_to_play != "" else FALLBACK_CHART
 	chart = ChartDefs.load_chart(path)
 	if chart.is_empty():
-		push_error("No chart at %s - make one in the chart maker" % path)
+		push_error("Couldn't load a chart from %s - make one in the Scrap O' Matic" % path)
 		chart = ChartDefs.new_chart()
 	rules = chart["rules"].duplicate()
 	traditional = ChartDefs.uses_frames(chart)
@@ -71,6 +87,16 @@ func _ready() -> void:
 	attacks = ChartDefs.attacks(chart)
 	_meta = chart["meta_events"].duplicate()
 	_meta.sort_custom(func(a, b): return a["beat"] < b["beat"] or (a["beat"] == b["beat"] and a["id"] < b["id"]))
+	_default_background = $Background.texture
+	_default_background_scale = $Background.scale
+	for rule in SOUND_RULES:
+		_default_sounds[rule] = get_node(SOUND_RULES[rule]).stream
+	_apply_look()
+	_apply_sounds()
+	var reticle := FocusReticle.new()
+	reticle.battle = self
+	reticle.z_index = 4
+	layer.add_child(reticle) # the party are on this layer, and it goes over them
 
 	for entry in chart["enemies"]:
 		if entry["present"]:
@@ -84,6 +110,7 @@ func _ready() -> void:
 	conductor.offset = chart["offset"]
 	conductor.looping = traditional
 	conductor.song_finished.connect(lose.bind("The song ran out"))
+	$Music.bus = &"Music"
 	$Music.stream = ChartDefs.load_audio(chart["song"])
 	ChartDefs.set_looping($Music.stream, traditional)
 	conductor.start()
@@ -111,6 +138,7 @@ func _add_enemy(entry: Dictionary) -> Enemy:
 
 
 func _process(delta: float) -> void:
+	_animate_background()
 	if phase == Phase.OVER:
 		if can_restart and Input.is_action_just_pressed("ACCEPT"):
 			get_tree().reload_current_scene()
@@ -138,6 +166,7 @@ func _process_timed() -> void:
 			next_attack += 1
 	elif beat >= current_attack["end"]:
 		turn_number += 1
+		_tick_mods()
 		start_player_turn()
 	else:
 		_show_due_captions(beat)
@@ -149,6 +178,7 @@ func _process_traditional(delta: float) -> void:
 	attack_time += delta * 60.0
 	if attack_time >= current_attack["end"]:
 		turn_number += 1
+		_tick_mods()
 		start_player_turn()
 	else:
 		_show_due_captions(attack_time)
@@ -197,7 +227,7 @@ func _show_due_captions(now: float) -> void:
 
 func _show_caption(markup: String) -> void:
 	var caption := RichTextLabel.new()
-	caption.add_theme_font_override("normal_font", preload("res://fonts/PixelOperator.ttf"))
+	caption.add_theme_font_override("normal_font", speech_font())
 	caption.add_theme_constant_override("outline_size", 6)
 	caption.add_theme_color_override("font_outline_color", Color.BLACK)
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -232,6 +262,7 @@ func start_player_turn() -> void:
 		if next_attack < attacks.size():
 			_fire_meta(attacks[next_attack]["start"] - 0.0001)
 	phase_end_beat = attacks[next_attack]["start"] if next_attack < attacks.size() else INF
+	_roll_focus() # now, so the player can see it coming
 	board.close()
 	soul.hide()
 	hud.begin_turn(current_turn())
@@ -262,7 +293,7 @@ func start_enemy_turn(attack: Dictionary) -> void:
 	_captions_shown = 0
 	phase_end_beat = attack["end"]
 	hud.end_turn()
-	_roll_focus()
+	_update_shares()
 	var runtime := AttackRuntime.new(chart, attack, func(): return soul.global_position)
 	soul.reset(runtime.soul_start)
 	soul.show()
@@ -273,7 +304,7 @@ func start_enemy_turn(attack: Dictionary) -> void:
 func win() -> void:
 	if not _end_battle():
 		return
-	_show_banner("YOU WON\n* %s was defeated!\n\n[Z] play again   [X] main menu" % enemies[0].display_name)
+	_show_banner("YOU WON\n* %s was defeated!\n\n%s" % [enemies[0].display_name, GameSettings.hint([["ACCEPT", "PLAY AGAIN"], ["BACK", "MAIN MENU"]])])
 	can_restart = true
 
 
@@ -286,14 +317,14 @@ func lose(cause: String) -> void:
 	var lasted := _clock(_fight_seconds)
 	if not traditional:
 		lasted += " / " + _clock(conductor.song_length)
-	var stats: Array[String] = [
-		"%s had %d%% HP left" % [enemy.display_name, enemy.hp_percent()],
-		"Cause of death: %s" % cause,
-		"You lasted %s" % lasted,
-	]
+	var stats: Array[String] = []
+	for foe in living_enemies():
+		stats.append("%s had %d%% HP left" % [foe.display_name, foe.hp_percent()])
+	stats.append("Cause of death: %s" % cause)
+	stats.append("You lasted %s" % lasted)
 	var screen := GameOver.new()
 	add_child(screen)
-	await screen.play(soul_position, stats, $Break, $GigaTalk)
+	await screen.play(soul_position, stats, $Break, $GigaTalk, soul.sprite.texture, soul.frame_size())
 	can_restart = true
 
 
@@ -348,32 +379,154 @@ func find_character(character_name: String) -> Character:
 	return null
 
 
-## Each enemy turn, four shares of the damage get dealt out at random.
+## Each player turn, four shares of the next enemy turn's damage get dealt out at
+## random, for the reticles to show.
 func _roll_focus() -> void:
+	_focus_deal.clear()
+	var able: Array = living_members() if not living_members().is_empty() else party
+	for member in party:
+		_focus_deal[member] = 0.0
+	if not able.is_empty():
+		for i in 4:
+			_focus_deal[able[randi() % able.size()]] += 1.0
+	_update_shares()
+
+
+## The deal, with any focus effects (Taunt and the like) pulling some or all of it
+## onto their targets.
+func _update_shares() -> void:
 	_shares.clear()
 	for member in party:
-		_shares[member] = 0
+		_shares[member] = _focus_deal.get(member, 0.0)
 	if party.is_empty():
 		return
-	for i in 4:
-		_shares[party[randi() % party.size()]] += 1
+	for m in _mods:
+		if m["kind"] != "focus":
+			continue
+		var targets: Array = m["targets"].filter(func(t): return t in party and not t.is_down)
+		if targets.is_empty():
+			continue
+		var pull: float = clampf(m["value"], 0.0, 1.0)
+		for member in party:
+			_shares[member] *= 1.0 - pull
+		for t in targets:
+			_shares[t] += 4.0 * pull / targets.size()
+
+
+## How much of each hit lands on this character, 0 to 1. If everyone it was aiming
+## at is down, whoever's left shares it evenly.
+func focus_share(member: PartyMember) -> float:
+	if member.is_down:
+		return 0.0
+	var alive := living_members()
+	var total := 0.0
+	for other in alive:
+		total += _shares.get(other, 0.0)
+	return _shares.get(member, 0.0) / total if total > 0.0 else 1.0 / alive.size()
+
+
+## Whether the enemy is mostly aiming at this character right now.
+func is_focused(member: PartyMember) -> bool:
+	var most := 0.0
+	for s in _shares.values():
+		most = maxf(most, s)
+	return phase == Phase.ENEMY and most > 0.0 and _shares.get(member, 0.0) >= most
+
+
+# --- effects from specials and maneuvers ---
+
+## Does everything on a move's effect list.
+func apply_effects(effects: Array, user: PartyMember) -> void:
+	for effect in effects:
+		var info: Dictionary = ChartDefs.EFFECTS.get(effect["kind"], {})
+		if info.is_empty():
+			continue
+		var targets := _effect_targets(effect.get("target", ""), user)
+		if info["timed"]:
+			_mods.append({"kind": effect["kind"], "value": float(effect["value"]), "turns": int(effect.get("turns", 1)), "targets": targets})
+			continue
+		match effect["kind"]:
+			"heal":
+				for t in targets:
+					if not t.is_down:
+						t.set_hp(t.hp + roundi(effect["value"]))
+			"hurt":
+				for t in targets:
+					if not t.is_down:
+						t.set_hp(maxi(t.hp - roundi(effect["value"]), 1))
+			"gain_tp":
+				add_tp(float(effect["value"]))
+			"revive":
+				for t in targets:
+					t.revive_now(float(effect["value"]) / 100.0)
+	_update_shares()
+
+
+func _effect_targets(target: String, user: PartyMember) -> Array:
+	match target:
+		"self":
+			return [user]
+		"allies":
+			return party.filter(func(m): return m != user)
+		"party":
+			return party.duplicate()
+		"downed":
+			return party.filter(func(m): return m.is_down)
+		"lowest_hp":
+			var worst: PartyMember = null
+			for m in living_members():
+				if worst == null or float(m.hp) / m.max_hp < float(worst.hp) / worst.max_hp:
+					worst = m
+			return [worst] if worst else []
+	return []
+
+
+## All the timed effects of a kind multiplied together. Pass a character for
+## effects aimed at someone; leave it out for effects on the whole fight.
+func mod(kind: String, member: PartyMember = null) -> float:
+	var total := 1.0
+	for m in _mods:
+		if m["kind"] == kind and (member == null or member in m["targets"]):
+			total *= m["value"]
+	return total
+
+
+## A shield on this character eats the hit, if there is one.
+func block_hit(member: PartyMember) -> bool:
+	for m in _mods:
+		if m["kind"] == "shield" and member in m["targets"] and m["value"] >= 1.0:
+			m["value"] -= 1.0
+			return true
+	return false
+
+
+## Earned TP (grazes, PERFECTs), which effects like Back Up multiply.
+func earn_tp(amount: float) -> void:
+	add_tp(amount * mod("tp_gain"))
+
+
+## An enemy turn just ended: timed effects count down.
+func _tick_mods() -> void:
+	for m in _mods:
+		m["turns"] -= 1
+	_mods = _mods.filter(func(m): return m["turns"] > 0)
 
 
 ## Splits a hit between the party based on who the enemy is focusing this turn.
 func damage_party(amount: int, source := "") -> void:
 	last_hit_by = source
-	var alive := living_members()
-	var total := 0
-	for member in alive:
-		total += _shares.get(member, 0)
-	for member in alive:
-		# If everyone it was aiming at is down, the rest share it evenly
-		var share: float = float(_shares.get(member, 0)) / total if total > 0 else 1.0 / alive.size()
-		member.take_damage(floori(amount * share))
+	var split := {}
+	for member in living_members():
+		split[member] = focus_share(member) # worked out first: a hit can down someone
+	for member in split:
+		member.take_damage(floori(amount * split[member]))
 
 
 func add_tp(amount: float) -> void:
+	var before := tp
 	tp = clampf(tp + amount, 0, rules["max_tp"])
+	if tp > before:
+		tp_gained.emit(tp - before)
 
 
 func spend_tp(amount: float) -> void:
@@ -425,6 +578,10 @@ func _apply_change(change: Dictionary) -> void:
 	if change["target"] == "rules":
 		rules[key] = value
 		add_tp(0.0) # re-clamps TP if the maximum shrank
+		if key in LOOK_RULES:
+			_apply_look()
+		elif SOUND_RULES.has(key):
+			_apply_sounds()
 		return
 	if key == "present":
 		_set_present(change["target"], value)
@@ -444,8 +601,64 @@ func _apply_change(change: Dictionary) -> void:
 				who.set_hp(int(value))
 			else:
 				who.hp = clampi(int(value), 1, who.max_hp)
+		"sprite":
+			if value != "":
+				who.data[key] = value
+				who.texture = ChartDefs.load_texture(value)
+		"hframes":
+			who.data[key] = value
+			who.frame = 0
+			who.hframes = maxi(int(value), 1)
+		"voice":
+			who.data[key] = value
+			who.voice = ChartDefs.load_audio(value)
 		_:
 			who.data[key] = value # fight_damage and the like are read when they're used
+
+
+## Puts the background and fonts from the rules into effect.
+func _apply_look() -> void:
+	var background: Sprite2D = $Background
+	background.frame = 0
+	var path: String = rules["background"]
+	if path == "":
+		background.texture = _default_background
+		background.hframes = 1
+		background.vframes = 1
+		background.scale = _default_background_scale
+	else:
+		background.texture = ChartDefs.load_texture(path)
+		background.hframes = maxi(int(rules["background_hframes"]), 1)
+		background.vframes = maxi(int(rules["background_vframes"]), 1)
+		var frame_size := background.texture.get_size() / Vector2(background.hframes, background.vframes)
+		# Covers the whole screen, whatever shape it is
+		var cover := maxf(SCREEN_SIZE.x / frame_size.x, SCREEN_SIZE.y / frame_size.y)
+		background.scale = Vector2(cover, cover)
+	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
+	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
+	soul.set_look(rules)
+
+
+func _apply_sounds() -> void:
+	for rule in SOUND_RULES:
+		var chosen := ChartDefs.load_audio(rules[rule])
+		get_node(SOUND_RULES[rule]).stream = chosen if chosen else _default_sounds[rule]
+
+
+func _animate_background() -> void:
+	var background: Sprite2D = $Background
+	var total := background.hframes * background.vframes
+	if total <= 1:
+		return
+	var count: int = int(rules["background_frames"])
+	if count <= 0 or count > total:
+		count = total
+	background.frame = ChartDefs.anim_frame(0, count, rules["background_beats"], maxf(conductor.song_beat, 0.0)) % total
+
+
+func speech_font() -> Font:
+	var chosen := ChartDefs.load_font(rules["speech_font"])
+	return chosen if chosen else SPEECH_FONT
 
 
 ## Brings a character into the fight or takes them out, mid-fight.
@@ -457,7 +670,8 @@ func _set_present(character_name: String, present: bool) -> void:
 		for entry in chart["party"]:
 			if entry["name"] == character_name:
 				_add_member(entry)
-				_shares[party[-1]] = 1
+				_focus_deal[party[-1]] = 1.0
+				_update_shares()
 				hud.layout_party()
 		for entry in chart["enemies"]:
 			if entry["name"] == character_name:
@@ -503,7 +717,7 @@ func _show_banner(text: String) -> void:
 	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	banner.add_theme_font_override("font", preload("res://fonts/PixelOperatorMono8-Bold.ttf"))
-	banner.add_theme_font_size_override("font_size", 24)
+	banner.add_theme_font_size_override("font_size", 16) # the bold font is wide: 16 keeps every line on screen
 	banner.add_theme_constant_override("outline_size", 8)
 	banner.add_theme_color_override("font_outline_color", Color.BLACK)
 	banner.position = Vector2(-300, -120)

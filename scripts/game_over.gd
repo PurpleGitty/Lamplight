@@ -5,12 +5,13 @@ extends CanvasLayer
 ## letter by letter, and the stats fade in.
 
 const FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
-const SOUL_TEXTURE = preload("res://sprites/candy_soul.png")
-const SOUL_FRAME := Rect2(0, 0, 16, 16)
 const SHARD_COUNT := 6
 const GRAVITY := 500.0
 const TITLE_SIZE := 48 # the font is drawn at 8px, so keep sizes multiples of 8
 const LETTER_DELAY := 0.12
+const STATS_TOP := -20.0
+const STATS_ROOM := 170.0 # stats can use this much height before the controls
+const STATS_GAP := 32.0 # closer together if there are lots of enemies
 
 var _shards: Array[Sprite2D] = []
 var _shard_velocity: Array[Vector2] = []
@@ -19,7 +20,7 @@ var _letter_home: Array[Vector2] = []
 var _shake_timer := 0.0
 
 
-func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStreamPlayer, shatter_sound: AudioStreamPlayer) -> void:
+func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStreamPlayer, shatter_sound: AudioStreamPlayer, soul_texture: Texture2D, soul_size: Vector2) -> void:
 	layer = 10
 	follow_viewport_enabled = true # same coordinates as the battle
 
@@ -33,10 +34,10 @@ func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStream
 	var halves: Array[Sprite2D] = []
 	for side in 2:
 		var half := Sprite2D.new()
-		half.texture = SOUL_TEXTURE
+		half.texture = soul_texture
 		half.region_enabled = true
-		half.region_rect = Rect2(SOUL_FRAME.position + Vector2(side * 8, 0), Vector2(8, 16))
-		half.position = soul_position + Vector2(-4 + side * 8, 1)
+		half.region_rect = Rect2(Vector2(side * soul_size.x / 2.0, 0), Vector2(soul_size.x / 2.0, soul_size.y))
+		half.position = soul_position + Vector2((side - 0.5) * soul_size.x / 2.0, 1)
 		add_child(half)
 		halves.append(half)
 
@@ -53,9 +54,9 @@ func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStream
 		half.queue_free()
 	for i in SHARD_COUNT:
 		var shard := Sprite2D.new()
-		shard.texture = SOUL_TEXTURE
+		shard.texture = soul_texture
 		shard.region_enabled = true
-		shard.region_rect = Rect2(SOUL_FRAME.position + Vector2(randi_range(3, 9), randi_range(3, 9)), Vector2(4, 4))
+		shard.region_rect = Rect2(Vector2(randf_range(0.2, 0.6) * soul_size.x, randf_range(0.2, 0.6) * soul_size.y).floor(), (soul_size / 4.0).ceil())
 		shard.position = soul_position
 		add_child(shard)
 		_shards.append(shard)
@@ -79,9 +80,10 @@ func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStream
 
 	await _wait(0.5)
 	var lines: Array[Label] = []
+	var gap := minf(STATS_GAP, STATS_ROOM / stats.size())
 	for i in stats.size():
-		lines.append(_add_label(stats[i].to_upper(), 16, Vector2(0, -20 + i * 32)))
-	lines.append(_add_label("[Z] TRY AGAIN    [X] MAIN MENU", 16, Vector2(0, 170)))
+		lines.append(_add_label(stats[i].to_upper(), 16, Vector2(0, STATS_TOP + i * gap)))
+	lines.append(_add_label(GameSettings.hint([["ACCEPT", "TRY AGAIN"], ["BACK", "MAIN MENU"]]), 16, Vector2(0, 170)))
 	for i in lines.size():
 		var label := lines[i]
 		label.modulate.a = 0.0

@@ -53,8 +53,24 @@ func play_anim(first: int, count: int, seconds: float) -> void:
 	_anim_time = 0.0
 
 
+## A move's icon floats up from them when they use it.
+func show_icon(path: String) -> void:
+	if path == "":
+		return
+	var icon := Sprite2D.new()
+	icon.texture = ChartDefs.load_texture(path)
+	icon.position = Vector2(position.x, top_y() - 8)
+	icon.z_index = 5
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	get_parent().add_child(icon)
+	var t := icon.create_tween().set_parallel()
+	t.tween_property(icon, "position:y", icon.position.y - 24, 0.8).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	t.tween_property(icon, "modulate:a", 0.0, 0.5).set_delay(0.3)
+	t.chain().tween_callback(icon.queue_free)
+
+
 func shake(strength: float, seconds: float) -> void:
-	_shake_strength = strength
+	_shake_strength = strength * GameSettings.shake_scale()
 	_shake_time = seconds
 	_shake_length = seconds
 

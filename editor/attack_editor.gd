@@ -1,7 +1,7 @@
 extends Control
 ## The attack editor. Open editor/attack_editor.tscn and press F6 (Run Current
-## Scene). It edits a chart (charts/*.json) that the fight plays: when the
-## enemy attacks and everything that happens during each attack.
+## Scene). It edits a chart (a .scrp file, or charts/*.json) that the fight plays:
+## when the enemy attacks and everything that happens during each attack.
 ##
 ## This file is the window: toolbar, playback, selection, undo and files.
 ## The timeline, preview and context panel live in their own scripts.
@@ -20,30 +20,43 @@ const AUTOSAVE_PATH := "user://attack_editor_autosave.json"
 const SNAPS := [[1.0, "Snap: 1 beat"], [0.5, "Snap: 1/2"], [1.0 / 3.0, "Snap: 1/3"], [0.25, "Snap: 1/4"], [0.125, "Snap: 1/8"], [0.0, "Snap: off"]]
 const FRAME_SNAPS := [[1.0, "Snap: 1 frame"], [5.0, "Snap: 5"], [10.0, "Snap: 10"], [15.0, "Snap: 15"], [30.0, "Snap: 30"], [0.0, "Snap: off"]]
 const ICON_FOLDER := "res://sprites/node_icons/"
+## What each kind of file picker shows, and where a plain chart's copies go.
+const BROWSE_KINDS := {
+	"texture": [["*.png,*.jpg,*.jpeg,*.webp;Images"], "sprites"],
+	"audio": [["*.mp3,*.ogg,*.wav;Audio"], "sounds"],
+	"font": [["*.ttf,*.otf,*.woff,*.woff2;Fonts"], "fonts"],
+}
+const OPEN_FILTERS := ["*.scrp,*.json;Fights"]
+const SAVE_FILTERS := ["*.scrp;Scrap file (the fight and all its files)", "*.json;Plain chart (the fight only)"]
 const SPEEDS := [0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
 const UNDO_LIMIT := 200
-const HELP := """MOUSE
-- Hover a tab at the bottom to see its nodes. Hover a group to open it. The wheel scrolls a long list.
-- Click a node in a tab to add it right after the latest node, or drag it onto the timeline.
-- Click a node on the timeline to select it; Ctrl+click to select several.
-- Drag a node to move it (drag an object node onto another object lane to move it there).
-- Hold Ctrl while dragging to place it freely, without snapping.
-- Drag a node's right edge to stretch it.
-- Right-click a node to delete it.
-- Click a lane's name to edit that object (sprite, sound, hitbox, damage...).
-- Click or drag the numbers along the top to move the playhead. Clicking an empty spot also moves it.
-- Mouse wheel: scroll the timeline. Ctrl+wheel: zoom. Shift+wheel: scroll lanes. Middle-drag: pan.
-- In the preview: drag the soul to move it, and drag yellow markers to set positions.
+const CHARACTERS_TAB := 1
+const HELP := """TABS
+[HOVER TAB] SHOW ITS NODES      [HOVER GROUP] OPEN IT      [WHEEL] SCROLL A LONG LIST
+[LMB] ON A NODE: ADD AFTER THE LATEST NODE      [LMB DRAG] PLACE ON THE TIMELINE
 
-KEYS (when you're not typing in a box)
-- Space: play / pause      Home: back to the start
-- Left / Right: step one snap (Shift: further)
-- Delete: delete selected      Ctrl+Z / Ctrl+Y: undo / redo
-- Ctrl+C / Ctrl+V: copy / paste at the playhead      Ctrl+D: duplicate
-- Ctrl+S: save      Esc: deselect
+TIMELINE
+[LMB] SELECT NODE      [CTRL+LMB] SELECT SEVERAL      [RMB] DELETE NODE
+[LMB DRAG] MOVE NODE, OR ONTO ANOTHER OBJECT LANE      [CTRL+LMB DRAG] MOVE WITHOUT SNAPPING
+[LMB DRAG] A NODE'S RIGHT EDGE: STRETCH IT
+[LMB] A LANE'S NAME: EDIT THAT OBJECT (SPRITE, SOUND, HITBOX, DAMAGE...)
+[LMB] OR [LMB DRAG] THE NUMBERS ALONG THE TOP, OR [LMB] AN EMPTY SPOT: MOVE THE PLAYHEAD
+[WHEEL] SCROLL      [CTRL+WHEEL] ZOOM      [SHIFT+WHEEL] SCROLL LANES      [MMB DRAG] PAN
+
+PREVIEW
+[LMB DRAG] THE SOUL: MOVE IT      [LMB] THE SOUL: SELECT IT      [LMB DRAG] A YELLOW MARKER: SET ITS POSITION
+[LMB DRAG] THE SELECTED OBJECT OR SOUL'S HITBOX: MOVE IT (HITBOXES MUST BE ON)
+[LMB] A CHARACTER: SELECT THEM      [LMB DRAG] THE SELECTED CHARACTER: MOVE THEM
+
+KEYS (WHEN YOU'RE NOT TYPING IN A BOX)
+[SPACE] PLAY / PAUSE      [HOME] BACK TO THE START
+[LEFT] [RIGHT] STEP ONE SNAP      [SHIFT+LEFT] [SHIFT+RIGHT] STEP FURTHER
+[DEL] DELETE SELECTED      [CTRL+Z] UNDO      [CTRL+Y] REDO
+[CTRL+C] COPY      [CTRL+V] PASTE AT THE PLAYHEAD      [CTRL+D] DUPLICATE
+[CTRL+S] SAVE      [ESC] DESELECT
 
 PLAYTEST
-Tick Playtest and press play to dodge with the arrow keys, like in the fight.
+Tick Playtest and press play to dodge with the game's controls.
 Test Fight saves the chart and plays it for real."""
 
 ## The chart that was open, so coming back from a test fight reopens it.
@@ -66,6 +79,7 @@ var follow := true
 
 var selected: Array = [] # selected node dictionaries
 var selected_object: Variant = null # object whose lane name was clicked
+var soul_selected := false # the soul was clicked in the preview
 var latest_event: Dictionary = {} # the node added most recently
 var clipboard: Array = []
 
@@ -109,6 +123,7 @@ func _ready() -> void:
 	editor_theme.set_icon("unchecked", "CheckBox", _empty_box_icon())
 	theme = editor_theme
 	add_child(player)
+	player.bus = &"Music"
 	_build_ui()
 
 	var loaded := ChartDefs.load_chart(last_chart_path)
@@ -146,16 +161,16 @@ func _build_ui() -> void:
 	root.add_child(top)
 	_button(top, "Menu", _back_to_menu, "Back to the main menu (unsaved changes are kept in the autosave)")
 	_button(top, "New", _confirm_new)
-	_button(top, "Open", func(): _browse("Open chart", ["*.json ; Attack charts"], FileDialog.FILE_MODE_OPEN_FILE, _open_file))
+	_button(top, "Open", func(): _browse("Open fight", OPEN_FILTERS, FileDialog.FILE_MODE_OPEN_FILE, _open_file, ScrapFile.folder()))
 	_button(top, "Save", save)
-	_button(top, "Save As", func(): _browse("Save chart as", ["*.json ; Attack charts"], FileDialog.FILE_MODE_SAVE_FILE, _save_as))
+	_button(top, "Save As", func(): _browse("Save fight as", SAVE_FILTERS, FileDialog.FILE_MODE_SAVE_FILE, _save_as, ScrapFile.folder()))
 	title_label = Label.new()
 	title_label.custom_minimum_size.x = 220
 	top.add_child(title_label)
 	top.add_child(VSeparator.new())
-	_button(top, "|<", func(): seek(0.0), "Back to the start (Home)")
+	_button(top, "|<", func(): seek(0.0), "[HOME] BACK TO THE START")
 	_button(top, "<<", func(): play(-1.0), "Play backwards (silent)")
-	play_button = _button(top, ">", toggle_play, "Play / pause (Space)")
+	play_button = _button(top, ">", toggle_play, "[SPACE] PLAY / PAUSE")
 	_button(top, ">>", func(): play(1.0, true), "Fast forward (2x)")
 	var speeds := OptionButton.new()
 	speeds.focus_mode = FOCUS_NONE
@@ -174,7 +189,7 @@ func _build_ui() -> void:
 	snap_picker.focus_mode = FOCUS_NONE
 	snap_picker.item_selected.connect(func(i): snap = _snap_list()[i][0])
 	top.add_child(snap_picker)
-	_toggle(top, "Playtest", playtest, func(on): playtest = on, "Dodge with the arrow keys while it plays")
+	_toggle(top, "Playtest", playtest, func(on): playtest = on, "Dodge with the game's controls while it plays")
 	_toggle(top, "Hitboxes", show_hitboxes, func(on): show_hitboxes = on)
 	_toggle(top, "Follow", follow, func(on): follow = on, "Keep the playhead in view while playing")
 	_button(top, "Test Fight", _test_fight, "Save this chart and play it for real")
@@ -192,7 +207,7 @@ func _build_ui() -> void:
 	preview.editor = self
 	preview.size_flags_horizontal = SIZE_EXPAND_FILL
 	middle.add_child(preview)
-	side_tabs.custom_minimum_size.x = 380
+	side_tabs.custom_minimum_size.x = 440
 	middle.add_child(side_tabs)
 	inspector = _add_panel(Inspector.new(), "Selection")
 	characters_panel = _add_panel(CharactersPanel.new(), "Characters")
@@ -221,8 +236,9 @@ func _build_ui() -> void:
 	status_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 	root.add_child(status_label)
 
-	file_dialog.access = FileDialog.ACCESS_RESOURCES
-	file_dialog.use_native_dialog = false
+	# Windows' own file picker (Godot only offers it for the whole filesystem)
+	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog.use_native_dialog = true
 	file_dialog.file_selected.connect(func(path): _file_callback.call(path))
 	file_dialog.size = Vector2i(800, 520)
 	add_child(file_dialog)
@@ -478,6 +494,7 @@ func current_object() -> Variant:
 func select(events: Array) -> void:
 	selected = events
 	selected_object = null
+	soul_selected = false
 	if not events.is_empty():
 		side_tabs.current_tab = 0
 	inspector.refresh()
@@ -487,6 +504,7 @@ func select(events: Array) -> void:
 func select_object(obj: Dictionary) -> void:
 	selected = []
 	selected_object = obj
+	soul_selected = false
 	side_tabs.current_tab = 0
 	inspector.refresh()
 	timeline.queue_redraw()
@@ -510,6 +528,25 @@ func character_names() -> Array:
 ## What a Change Rules node can aim at.
 func change_targets() -> Array:
 	return ["rules"] + character_names()
+
+
+## The character selected on the Characters tab, or null if that tab isn't open.
+func selected_character() -> Variant:
+	return characters_panel.current_data() if side_tabs.current_tab == CHARACTERS_TAB else null
+
+
+func select_character(data: Dictionary) -> void:
+	side_tabs.current_tab = CHARACTERS_TAB
+	characters_panel.pick(data)
+
+
+func select_soul() -> void:
+	selected = []
+	selected_object = null
+	soul_selected = true
+	side_tabs.current_tab = 0
+	inspector.refresh()
+	timeline.queue_redraw()
 
 
 # --- editing ---
@@ -742,24 +779,30 @@ func move_object(step: int) -> void:
 
 # --- files ---
 
-func _browse(title: String, filters: Array, mode: FileDialog.FileMode, on_pick: Callable, access := FileDialog.ACCESS_RESOURCES) -> void:
-	file_dialog.access = access
+func _browse(title: String, filters: Array, mode: FileDialog.FileMode, on_pick: Callable, start_folder := "") -> void:
 	file_dialog.title = title
+	if start_folder != "":
+		file_dialog.current_dir = ProjectSettings.globalize_path(start_folder)
 	file_dialog.file_mode = mode
 	file_dialog.filters = PackedStringArray(filters)
 	_file_callback = on_pick
 	file_dialog.popup_centered()
 
 
-## For the Browse buttons: pick a sprite or sound from anywhere on the PC. Files
-## from outside the project get copied in, so the chart keeps working.
-func browse_file(kind: String, on_pick: Callable) -> void:
-	var filters := ["*.png ; Images"] if kind == "texture" else ["*.mp3, *.ogg, *.wav ; Audio"]
-	var folder := "sprites" if kind == "texture" else "sounds"
-	_browse("Pick a file", filters, FileDialog.FILE_MODE_OPEN_FILE, func(path): on_pick.call(_import_file(path, folder)), FileDialog.ACCESS_FILESYSTEM)
+## For the Browse buttons: pick a sprite or sound from anywhere on the PC. Scraps
+## pack their files when saved; for a plain chart, files from outside the project
+## get copied in so the chart keeps working.
+func browse_file(kind: String, on_pick: Callable, for_new_scrap := false) -> void:
+	var filters: Array = BROWSE_KINDS[kind][0]
+	var folder: String = BROWSE_KINDS[kind][1]
+	_browse("Pick a file", filters, FileDialog.FILE_MODE_OPEN_FILE, func(path):
+		var packs_itself := for_new_scrap or ScrapFile.is_scrap(chart_path)
+		on_pick.call(ProjectSettings.localize_path(path) if packs_itself else _import_file(path, folder)))
 
 
 func _import_file(path: String, folder: String) -> String:
+	if not OS.has_feature("editor"):
+		return path # a built game can't copy into itself; saving packs it into a scrap
 	var inside := ProjectSettings.localize_path(path)
 	if inside.begins_with("res://"):
 		return inside
@@ -773,27 +816,72 @@ func _import_file(path: String, folder: String) -> String:
 
 
 func save() -> void:
+	# A built game can't write inside itself, so its own fights save as a scrap
+	if chart_path.begins_with("res://") and not OS.has_feature("editor"):
+		chart_path = ScrapFile.unused_path(chart_path.get_file().get_basename())
+		last_chart_path = chart_path
 	var err := ChartDefs.save_chart(chart, chart_path)
 	if err == OK:
 		dirty = false
 		_update_title()
-		set_status("Saved %s" % chart_path)
+		var missing: Array = ScrapFile.last_missing if ScrapFile.is_scrap(chart_path) else []
+		if missing.is_empty():
+			set_status("Saved %s" % chart_path)
+		else:
+			set_status("Saved %s, but couldn't find: %s" % [chart_path, ", ".join(missing.map(func(m): return m.get_file()))])
 	else:
 		set_status("Couldn't save %s (error %d)" % [chart_path, err])
 
 
 func _save_as(path: String) -> void:
-	chart_path = path
+	if path.get_extension() == "":
+		path += "." + ScrapFile.EXTENSION
+	chart_path = ProjectSettings.localize_path(path)
 	save()
 
 
 func _open_file(path: String) -> void:
+	path = ProjectSettings.localize_path(path)
 	var loaded := ChartDefs.load_chart(path)
 	if loaded.is_empty():
-		set_status("Couldn't read %s" % path)
+		set_status(ScrapFile.last_error if ScrapFile.is_scrap(path) else "Couldn't read %s" % path)
 		return
 	set_chart(loaded, path)
 	set_status("Opened %s" % path)
+
+
+## Plays a minigame in a little window, to try out its settings. Z to tap, and it
+## starts over when it ends.
+func try_minigame(id: String, settings: Dictionary) -> void:
+	var window := Window.new()
+	window.title = "Try it: %s (it restarts when it ends)" % GameSettings.hint([["ACCEPT", "TAP"]])
+	var box := Minigame.box_size(id, settings)
+	var game_size := box - Vector2(20, 16) if box != Vector2.ZERO else Vector2(296, 94)
+	var zoom := 1.5 if box != Vector2.ZERO else 2.0
+	window.size = Vector2i(game_size * zoom + Vector2(40, 40))
+	window.close_requested.connect(window.queue_free)
+	var backdrop := ColorRect.new()
+	backdrop.color = Color.BLACK
+	backdrop.set_anchors_preset(PRESET_FULL_RECT)
+	window.add_child(backdrop)
+	add_child(window)
+	window.popup_centered()
+	var play_again := func(again: Callable) -> void:
+		if not is_instance_valid(window):
+			return
+		var game := Minigame.create(id)
+		game.position = Vector2(20, 20)
+		game.size = game_size
+		game.scale = Vector2(zoom, zoom)
+		window.add_child(game)
+		game.start(ChartDefs.MINIGAMES[id]["label"], settings)
+		var multiplier: float = await game.finished
+		set_status("%s: damage x%.2f" % [ChartDefs.MINIGAMES[id]["label"], multiplier])
+		await get_tree().create_timer(1.2).timeout
+		if is_instance_valid(game):
+			game.queue_free()
+		again.call(again)
+	play_again.call(play_again)
 
 
 func _confirm_new() -> void:
@@ -875,8 +963,5 @@ func _test_fight() -> void:
 	save()
 	stop_playback()
 	Battle.chart_to_play = chart_path
-	var window := get_window()
-	window.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
-	window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
-	Engine.max_fps = ProjectSettings.get_setting("application/run/max_fps")
+	GameSettings.apply_game_view()
 	get_tree().change_scene_to_file("res://node_2d.tscn")

@@ -7953,7 +7953,7 @@
 			"params": {
 				"kind": "dialogue",
 				"speaker": "Testicina",
-				"text": "How are you viewing this? This isn't visible in-game!"
+				"text": "(Placeholder dialogue.)"
 			},
 			"type": "text"
 		},
@@ -8074,7 +8074,7 @@
 			"params": {
 				"kind": "dialogue",
 				"speaker": "Testicina",
-				"text": "How are you viewing this? This isn't visible in-game!"
+				"text": "(Placeholder dialogue.)"
 			},
 			"type": "text"
 		},
@@ -8173,7 +8173,7 @@
 			"params": {
 				"kind": "dialogue",
 				"speaker": "Testicina",
-				"text": "How are you viewing this? This isn't visible in-game!"
+				"text": "(Placeholder dialogue.)"
 			},
 			"type": "text"
 		},

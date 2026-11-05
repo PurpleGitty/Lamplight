@@ -1,28 +1,22 @@
 class_name AttackMeter
-extends Control
+extends Minigame
 ## The basic FIGHT minigame, modelled on Undertale's: a bar slides across the
 ## left half of the "eye" toward the target line on its flat edge. Press ACCEPT
 ## as close to the line as you can. Runs on real time, not the song's BPM.
 
-signal finished(multiplier: float)
-
-const FONT = preload("res://fonts/Mojang-Regular.ttf")
-const CROSS_TIME := 0.9 # seconds for the bar to reach the target
 const OVERSHOOT := 20.0 # pixels past the target before it counts as a miss
 # [max distance from the target line in pixels, label, damage multiplier, colour]
-## (The bar moves ~11px per frame at 30 FPS, so PERFECT must be at least that wide.)
+## (The bar moves ~11px per frame at 30 FPS, so PERFECT's full width, both sides of
+## the line, must be at least that: then exactly one frame of it is always catchable.)
 const GRADES := [
-	[12.0, "PERFECT", 1.5, Color.YELLOW],
-	[30.0, "GREAT", 1.0, Color.CYAN],
-	[60.0, "OK", 0.6, Color.WHITE],
+	[6.0, "PERFECT", 1.5, Color.YELLOW],
+	[16.0, "GREAT", 1.0, Color.CYAN],
+	[40.0, "OK", 0.6, Color.WHITE],
 	[INF, "BAD", 0.3, Color.GRAY],
 ]
 const EYE_TOP := 26.0 # leaves room for the title
 const RING_COLORS := [Color(0.02, 0.02, 0.02), Color(0.0, 0.22, 0.16), Color(0.0, 0.38, 0.27), Color(0.05, 0.6, 0.42)]
 
-var title := ""
-var active := false
-var perfect := false # whether the last attack was a PERFECT
 var bar_x := 0.0
 var _elapsed := 0.0
 var _flash_time := 0.0
@@ -30,45 +24,32 @@ var _result_text := ""
 var _result_color := Color.WHITE
 
 
-func start(text: String) -> void:
-	title = text
+func begin() -> void:
 	_elapsed = 0.0
 	_flash_time = 0.0
 	bar_x = 0.0
 	_result_text = ""
-	perfect = false
-	active = true
-	show()
-
-
-func cancel() -> void:
-	hide()
-	if active:
-		active = false
-		finished.emit(0.0)
 
 
 func target_x() -> float:
 	return size.x - 6.0
 
 
-func _process(delta: float) -> void:
-	if not visible:
-		return
-	if active:
+func tick(delta: float) -> void:
+	if running:
 		_elapsed += delta
-		bar_x = _elapsed / CROSS_TIME * target_x()
+		bar_x = _elapsed / settings.get("cross_time", 0.9) * target_x()
 		if bar_x > target_x() + OVERSHOOT:
 			_resolve("MISS", 0.0, Color.RED)
 	else:
 		_flash_time += delta
-	queue_redraw()
 
 
-func _input(event: InputEvent) -> void:
-	if not active or not event.is_action_pressed("ACCEPT"):
+func tapped() -> void:
+	# Once it's gone past the line it's too late, however close it still is
+	if bar_x - target_x() > GRADES[0][0]:
+		_resolve("MISS", 0.0, Color.RED)
 		return
-	get_viewport().set_input_as_handled()
 	var distance := absf(bar_x - target_x())
 	for grade in GRADES:
 		if distance <= grade[0]:
@@ -78,10 +59,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _resolve(text: String, multiplier: float, color: Color) -> void:
-	active = false
 	_result_text = text
 	_result_color = color
-	finished.emit(multiplier)
+	end(multiplier)
 
 
 ## Outline of half an eye: pointed at the left, widest at the target line.
@@ -104,9 +84,9 @@ func _half_eye(scale: float) -> PackedVector2Array:
 
 
 func _draw() -> void:
-	draw_string(FONT, Vector2(0, 16), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
+	draw_string(font, Vector2(0, 16), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
 	if _result_text:
-		draw_string(FONT, Vector2(0, 16), _result_text, HORIZONTAL_ALIGNMENT_RIGHT, size.x, 16, _result_color)
+		draw_string(font, Vector2(0, 16), _result_text, HORIZONTAL_ALIGNMENT_RIGHT, size.x, 16, _result_color)
 
 	# The eye: nested rings, brighter toward the target
 	for i in RING_COLORS.size():
@@ -120,7 +100,7 @@ func _draw() -> void:
 	# The bar: white with a black outline, flashing after it's been stopped
 	var bar := Rect2(bar_x - 4, EYE_TOP - 2, 8, size.y - EYE_TOP + 4)
 	var fill := Color.WHITE
-	if not active and _result_text and int(_flash_time / 0.06) % 2 == 1:
+	if not running and _result_text and int(_flash_time / 0.06) % 2 == 1:
 		fill = Color.BLACK
 	draw_rect(bar, fill)
 	draw_rect(bar, Color.BLACK if fill == Color.WHITE else Color.WHITE, false, 2.0)

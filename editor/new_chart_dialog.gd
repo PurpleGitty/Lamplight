@@ -26,7 +26,7 @@ func _ready() -> void:
 	song_row.add_child(song)
 	var browse := Button.new()
 	browse.text = "Browse..."
-	browse.pressed.connect(func(): editor.browse_file("audio", func(picked): song.text = picked))
+	browse.pressed.connect(func(): editor.browse_file("audio", func(picked): song.text = picked, true))
 	song_row.add_child(browse)
 	_row(box, "Song", song_row)
 
@@ -95,4 +95,4 @@ func _create() -> void:
 	chart["enemies"] = new_enemies
 
 	var clean := file_name.text.strip_edges().validate_filename()
-	editor.create_chart(chart, "res://charts/%s.json" % (clean if clean != "" else "new_fight"))
+	editor.create_chart(chart, ScrapFile.unused_path(clean if clean != "" else "new_fight"))

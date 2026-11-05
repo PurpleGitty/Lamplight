@@ -3,7 +3,14 @@ extends VBoxContainer
 ## an object lane, or the chart itself when nothing is). Built from the
 ## parameter lists in ChartDefs, so new node types show up here automatically.
 
+const SpritePreviewPanel = preload("res://editor/sprite_preview.gd")
+
+## Which folding sections are shut, remembered across redraws.
+static var folded := {}
+
 var editor
+var show_hints := true # false: help stays in tooltips only
+var container: Control # where new rows go (the open section, or the panel itself)
 
 
 func refresh() -> void:
@@ -12,14 +19,17 @@ func refresh() -> void:
 		_show_event(editor.selected[0])
 	elif editor.selected.size() > 1:
 		_title("%d nodes selected" % editor.selected.size(), Color.WHITE)
-		_note("Drag any of them to move them all. Delete removes them all. Ctrl+C / Ctrl+V copies them.")
+		_note("[LMB DRAG] MOVE ALL   [DEL] DELETE ALL   [CTRL+C] COPY   [CTRL+V] PASTE")
 	elif editor.selected_object != null:
 		_show_object(editor.selected_object)
+	elif editor.soul_selected:
+		_show_soul()
 	else:
 		_show_chart()
 
 
 func _clear() -> void:
+	container = null
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -175,10 +185,27 @@ func _character_row(ev: Dictionary, def: Dictionary) -> void:
 func _show_object(obj: Dictionary) -> void:
 	_title("Object: %s" % ChartDefs.lane_label(obj), Color("ffb03b"))
 	_note("%d nodes on this lane. These settings apply every time it spawns." % obj["events"].size())
+	var preview := SpritePreviewPanel.new()
+	preview.editor = editor
+	preview.data = obj
+	preview.first_key = "frame"
+	preview.count_key = "anim_frames"
+	preview.length_key = "anim_beats"
+	add_child(preview)
 	for p in ChartDefs.OBJECT_PARAMS:
 		_row(p, obj[p["name"]], func(v): editor.set_param(obj, p["name"], v, false))
 	_action("Duplicate object", editor.duplicate_object)
 	_action("Delete object", editor.delete_object)
+
+
+func _show_soul() -> void:
+	_title("Soul", Color("ff60a0"))
+	_note("[LMB DRAG] THE HITBOX: MOVE IT      [LMB DRAG] THE REST OF THE SOUL: MOVE THE SOUL")
+	_note("A Change Rules node can change all of these mid-fight.")
+	var rules: Dictionary = editor.chart["rules"]
+	for p in ChartDefs.RULE_PARAMS:
+		if p["name"].begins_with("soul_") and p["name"] != "soul_speed":
+			_row(p.merged({"label": p["name"].trim_prefix("soul_").replace("_", " ")}), rules[p["name"]], func(v): editor.set_param(rules, p["name"], v, false))
 
 
 func _show_chart() -> void:
@@ -188,24 +215,53 @@ func _show_chart() -> void:
 		_row(p, editor.chart[p["name"]], func(v): editor.set_param(editor.chart, p["name"], v, false))
 	var attack_count: int = ChartDefs.attacks(editor.chart).size()
 	_note("%d attacks, %d object lanes." % [attack_count, editor.chart["objects"].size()])
-	_note("Select a node to edit it, or click a lane's name to edit that object. Press Help for all the controls.")
+	_note("[LMB] on a node: edit it. [LMB] on a lane's name: edit that object. Help lists all the controls.")
 
 
 # --- building rows ---
+
+func _into() -> Control:
+	return container if container != null else self
+
+
+## Starts a folding section; rows added after this go inside it.
+func _card(heading: String, color: Color) -> void:
+	var key := "%s/%s" % [get_script().resource_path.get_file(), heading]
+	var is_folded: bool = folded.get(key, false)
+	var header := Button.new()
+	header.text = ("+  " if is_folded else "-  ") + heading
+	header.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.focus_mode = FOCUS_NONE
+	header.add_theme_color_override("font_color", color)
+	header.add_theme_color_override("font_hover_color", color.lightened(0.3))
+	add_child(header)
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	margin.visible = not is_folded
+	add_child(margin)
+	var box := VBoxContainer.new()
+	margin.add_child(box)
+	header.pressed.connect(func():
+		folded[key] = margin.visible
+		margin.visible = not margin.visible
+		header.text = ("+  " if not margin.visible else "-  ") + heading)
+	container = box
+
 
 func _title(text: String, color: Color) -> void:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_color", color)
-	add_child(label)
+	_into().add_child(label)
 
 
 func _section(text: String) -> void:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_color_override("font_color", Color.WHITE)
-	add_child(label)
+	_into().add_child(label)
 
 
 func _note(text: String) -> void:
@@ -214,7 +270,7 @@ func _note(text: String) -> void:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.custom_minimum_size.x = 300
 	label.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
-	add_child(label)
+	_into().add_child(label)
 
 
 func _hint(text: String) -> void:
@@ -223,7 +279,7 @@ func _hint(text: String) -> void:
 	help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	help.custom_minimum_size.x = 300
 	help.add_theme_color_override("font_color", Color(0.55, 0.55, 0.6))
-	add_child(help)
+	_into().add_child(help)
 
 
 func _action(text: String, action: Callable) -> void:
@@ -231,7 +287,7 @@ func _action(text: String, action: Callable) -> void:
 	b.text = text
 	b.focus_mode = FOCUS_NONE
 	b.pressed.connect(action)
-	add_child(b)
+	_into().add_child(b)
 
 
 func _options(items: Array, current, on_pick: Callable) -> OptionButton:
@@ -248,7 +304,7 @@ func _options(items: Array, current, on_pick: Callable) -> OptionButton:
 func _row(def: Dictionary, value, on_change: Callable) -> void:
 	var row := HBoxContainer.new()
 	var label := Label.new()
-	label.text = def["name"].replace("_", " ")
+	label.text = def.get("label", def["name"].replace("_", " "))
 	label.custom_minimum_size.x = 130
 	label.tooltip_text = def.get("help", "")
 	label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -257,8 +313,8 @@ func _row(def: Dictionary, value, on_change: Callable) -> void:
 	field.size_flags_horizontal = SIZE_EXPAND_FILL
 	field.tooltip_text = def.get("help", "")
 	row.add_child(field)
-	add_child(row)
-	if def.has("help"):
+	_into().add_child(row)
+	if show_hints and def.has("help"):
 		_hint(def["help"])
 
 
@@ -278,6 +334,13 @@ func _field(def: Dictionary, value, on_change: Callable) -> Control:
 			var is_int: bool = def["type"] == "int"
 			spin.value_changed.connect(func(v): on_change.call(int(v) if is_int else v))
 			return spin
+		"multiline":
+			var box := TextEdit.new()
+			box.text = str(value)
+			box.custom_minimum_size.y = 56
+			box.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+			box.text_changed.connect(func(): on_change.call(box.text))
+			return box
 		"bool":
 			var check := CheckBox.new()
 			check.button_pressed = value
@@ -292,7 +355,7 @@ func _field(def: Dictionary, value, on_change: Callable) -> Control:
 			picker.custom_minimum_size = Vector2(60, 24)
 			picker.color_changed.connect(func(c): on_change.call(c.to_html(false)))
 			return picker
-		"texture", "audio":
+		"texture", "audio", "font":
 			var box := HBoxContainer.new()
 			var path := LineEdit.new()
 			path.text = value

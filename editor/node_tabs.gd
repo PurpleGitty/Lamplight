@@ -108,7 +108,7 @@ func _make_node_row(type: String) -> Button:
 	row.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	row.icon = editor.icon_for(type)
 	row.expand_icon = false
-	row.tooltip_text = def["help"] + "\n\nClick: add it after the latest node. Drag: place it on the timeline."
+	row.tooltip_text = def["help"] + "\n\n[LMB] ADD AFTER THE LATEST NODE   [LMB DRAG] PLACE ON THE TIMELINE"
 	row.custom_minimum_size.y = ROW_HEIGHT
 	row.focus_mode = FOCUS_NONE
 	_style(row, def["color"])

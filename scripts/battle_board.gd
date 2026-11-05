@@ -109,10 +109,10 @@ func _retract_step(amount: float) -> void:
 
 
 func _sync() -> void:
-	_last_center = runtime.board_center + runtime.shake
+	_last_center = runtime.board_center + runtime.shake * GameSettings.shake_scale()
 	_last_angle = runtime.board_angle
-	_last_size = runtime.board_size
-	_place(_last_center, runtime.board_size * _open, _last_angle)
+	_last_size = current_size()
+	_place(_last_center, _last_size * _open, _last_angle)
 
 	contents.global_transform = runtime.content_transform()
 	for o in runtime.objects:
@@ -124,11 +124,20 @@ func _sync() -> void:
 		node.scale = Vector2.ONE * maxf(o.scale * o.data["sprite_scale"], 0.001)
 		node.modulate.a = o.alpha
 		node.damage = o.damage
+		node.hitbox.scale = Vector2.ONE * battle.mod("bullet_size")
 		node.set_look(o.mode, o.tint)
+		if o.sprite != "" and o.sprite != node.sprite_path:
+			node.sprite_path = o.sprite
+			node.sprite.texture = ChartDefs.load_texture(o.sprite)
 		node.sprite.frame = clampi(ChartDefs.anim_frame(int(o.data["frame"]), int(o.data["anim_frames"]), o.data["anim_beats"], battle.clock()), 0, node.sprite.hframes - 1)
 		if o.spawn_count > o.sounded:
 			o.sounded = o.spawn_count
 			battle.play_sound(o.data["spawn_sound"])
+
+
+## The board's size, with effects like Make Room applied.
+func current_size() -> Vector2:
+	return runtime.board_size * battle.mod("board_size")
 
 
 func _place(center: Vector2, board_size: Vector2, angle: float) -> void:

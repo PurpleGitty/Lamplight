@@ -22,6 +22,7 @@ func setup(entry: Dictionary, owner_battle: Battle) -> void:
 	var dissolve := ShaderMaterial.new()
 	dissolve.shader = DISSOLVE_SHADER
 	dissolve.set_shader_parameter("noise_texture", DISSOLVE_NOISE)
+	dissolve.set_shader_parameter("flash", 0.0) # a tween can't animate it until it has a value
 	material = dissolve
 
 
@@ -44,7 +45,7 @@ func _process(delta: float) -> void:
 		return
 	if battle.living_members().is_empty():
 		return
-	revive_progress += delta
+	revive_progress += delta * battle.mod("revive_speed", self)
 	hp_bar.value = revive_progress
 	if revive_progress >= battle.rules["revive_seconds"]:
 		_revive()
@@ -53,9 +54,13 @@ func _process(delta: float) -> void:
 func take_damage(amount: int) -> void:
 	if is_down or amount <= 0:
 		return
+	if battle.block_hit(self):
+		shake(1.0, 0.15)
+		return
+	var taken: float = amount * (1.0 - float(data["defense"]) / 100.0) * battle.mod("damage_taken", self)
 	if defending:
-		amount = ceili(amount * battle.rules["defend_factor"])
-	set_hp(hp - amount)
+		taken *= battle.rules["defend_factor"]
+	set_hp(hp - maxi(ceili(taken), 1))
 	if is_down:
 		return
 	shake(2.0, 0.3)
@@ -99,9 +104,15 @@ func _crumble() -> void:
 	material.set_shader_parameter("dissolve_value", 1.1) # the dust replaces the sprite
 
 
-func _revive() -> void:
+## Back up right now, with this fraction of their HP.
+func revive_now(fraction: float) -> void:
+	if is_down:
+		_revive(fraction)
+
+
+func _revive(fraction := 1.0) -> void:
 	is_down = false
-	hp = max_hp
+	hp = maxi(roundi(max_hp * fraction), 1)
 	_show_hp()
 
 	# Fade back in as a white silhouette, slightly raised, then snap into place

@@ -11,13 +11,19 @@ const OPEN_POS := Vector2(4, 96)
 const PEEK_POS := Vector2(4, 200) # enemy turn: only the names and HP bars stay on screen
 const TYPE_SPEED := 0.02 # seconds per character
 const HIT_DELAY := 0.3 # pause between stopping the bar and the hit landing (weapon animations go here)
+const WEAPON_SOUND_LEAD := 0.1 # how long before the hit the weapon's own sound plays
+const BIG_BOX_OPEN_TIME := 0.12
+const BIG_BOX_MARGIN := Vector2(10, 8)
+const VISIBLE_ROWS := 3 # rows that fit in the box above the description
 
 @onready var battle: Battle = owner
 @onready var tabs: Array[Control] = [$fight, $special, $maneuver, $defend]
 @onready var flavortext: RichTextLabel = $flavortext
 @onready var menucontent: VBoxContainer = $menucontent
 @onready var menu_font: Font = $mc1.get_theme_font("font")
-var meter := AttackMeter.new()
+var minigame: Minigame # the attack minigame on screen, if any
+var _minigame_box: UIBox # the bigger box it plays in, if it asked for one
+@onready var _default_menu_font: Font = menu_font
 var bubble := SpeechBubble.new()
 
 var state := MenuState.HIDDEN
@@ -39,18 +45,27 @@ var turn_token := 0
 var slide_tween: Tween
 var tab_tween: Tween
 var writer := TextMarkup.Typewriter.new() # types the menu text (with formatting)
+var _row_hints: Array = []
+var _hint_label: Label
 var status := "" # replaces "* X is about to attack!" this turn, if set
 
 
 func _ready() -> void:
 	flavortext.bbcode_enabled = true
 	flavortext.clip_contents = false # wavy/shaky letters may poke out a little
-	meter.position = flavortext.position
-	meter.size = flavortext.size
-	meter.hide()
-	add_child(meter)
 	$mc1.hide() # the template the party's name and HP rows are copied from
 	get_parent().add_child.call_deferred(bubble)
+
+
+## Swaps the font in the command box (null = the game's own).
+func set_menu_font(font: Font) -> void:
+	var wanted: Font = font if font else _default_menu_font
+	if wanted == menu_font:
+		return
+	menu_font = wanted
+	flavortext.add_theme_font_override("normal_font", wanted)
+	$mc1.add_theme_font_override("font", wanted)
+	layout_party()
 
 
 ## Lays out one name + HP bar per party member, however many there are.
@@ -83,6 +98,8 @@ func _process(delta: float) -> void:
 	for member in battle.party:
 		if member == picking:
 			member.name_label.self_modulate = Color.YELLOW
+		elif battle.is_focused(member):
+			member.name_label.self_modulate = Color(1.0, 0.55, 0.3) # the enemy's aiming at them
 		elif member.is_down:
 			member.name_label.self_modulate = Color.DIM_GRAY
 		else:
@@ -116,7 +133,9 @@ func begin_turn(turn: Dictionary) -> void:
 func end_turn() -> void:
 	turn_token += 1
 	state = MenuState.HIDDEN
-	meter.cancel()
+	if minigame:
+		minigame.cancel() # anything it built up still lands
+		_close_minigame()
 	bubble.hide()
 	menucontent.hide()
 	_show_text("")
@@ -142,15 +161,15 @@ func enter_tab_select() -> void:
 
 
 func _tab_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_right") and selected_tab < tabs.size() - 1:
+	if GameSettings.pressed(event, "RIGHT") and selected_tab < tabs.size() - 1:
 		selected_tab += 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		update_tab_visuals()
-	elif event.is_action_pressed("ui_left") and selected_tab > 0:
+	elif GameSettings.pressed(event, "LEFT") and selected_tab > 0:
 		selected_tab -= 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		update_tab_visuals()
-	elif event.is_action_pressed("ACCEPT"):
+	elif GameSettings.pressed(event, "ACCEPT"):
 		_sfx("Select")
 		match selected_tab:
 			0: # FIGHT
@@ -159,10 +178,10 @@ func _tab_input(event: InputEvent) -> void:
 			1: # SPECIAL
 				open_list("special", current_member().data["specials"])
 			2: # MANEUVER
-				open_list("act", battle.all_acts())
+				open_list("maneuver", current_member().data["maneuvers"] + battle.all_acts())
 			3: # DEFEND
 				lock_choice({"type": "defend"})
-	elif event.is_action_pressed("BACK") and picker > 0:
+	elif GameSettings.pressed(event, "BACK") and picker > 0:
 		# Undo the previous character's pick
 		_sfx("Deselect")
 		picker -= 1
@@ -177,36 +196,35 @@ func open_list(kind: String, items: Array, index := 0) -> void:
 	state = MenuState.LIST_SELECT
 	var rows := []
 	for item in items:
-		if kind == "special":
-			var cost := "%d TP" % item["cost"] if battle.rules["tp_enabled"] else ""
-			rows.append({"text": "%s   %s" % [item["name"], cost], "enabled": item["cost"] <= available_tp()})
-		else:
-			rows.append({"text": item["name"], "enabled": true})
+		var move_cost: float = item.get("cost", 0.0)
+		var cost := "%d TP" % move_cost if battle.rules["tp_enabled"] and move_cost > 0.0 else ""
+		rows.append({"text": "%s   %s" % [item["name"], cost], "enabled": move_cost <= available_tp(), "hint": item.get("description", "")})
 	_show_rows(rows, selected_index)
 
 
 func _list_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_down") and selected_index < list_items.size() - 1:
+	if GameSettings.pressed(event, "DOWN") and selected_index < list_items.size() - 1:
 		selected_index += 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		_highlight_row(selected_index)
-	elif event.is_action_pressed("ui_up") and selected_index > 0:
+	elif GameSettings.pressed(event, "UP") and selected_index > 0:
 		selected_index -= 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		_highlight_row(selected_index)
-	elif event.is_action_pressed("ACCEPT"):
+	elif GameSettings.pressed(event, "ACCEPT"):
 		var item: Dictionary = list_items[selected_index]
+		if item.get("cost", 0.0) > available_tp():
+			_sfx("Deselect") # can't afford it
+			return
+		_sfx("Select")
 		if list_kind == "special":
-			if item["cost"] > available_tp():
-				_sfx("Deselect") # can't afford it
-				return
-			_sfx("Select")
 			pending_choice = {"type": "special", "move": item}
 			enter_target_select()
+		elif item.has("effects"):
+			lock_choice({"type": "maneuver", "move": item})
 		else:
-			_sfx("Select")
 			lock_choice({"type": "act", "act": item})
-	elif event.is_action_pressed("BACK"):
+	elif GameSettings.pressed(event, "BACK"):
 		_sfx("Deselect")
 		enter_tab_select()
 
@@ -222,19 +240,19 @@ func enter_target_select() -> void:
 
 
 func _target_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_down") and target_index < target_options.size() - 1:
+	if GameSettings.pressed(event, "DOWN") and target_index < target_options.size() - 1:
 		target_index += 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		_highlight_row(target_index)
-	elif event.is_action_pressed("ui_up") and target_index > 0:
+	elif GameSettings.pressed(event, "UP") and target_index > 0:
 		target_index -= 1
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		_highlight_row(target_index)
-	elif event.is_action_pressed("ACCEPT"):
+	elif GameSettings.pressed(event, "ACCEPT"):
 		_sfx("Select")
 		pending_choice["target"] = target_options[target_index]
 		lock_choice(pending_choice)
-	elif event.is_action_pressed("BACK"):
+	elif GameSettings.pressed(event, "BACK"):
 		_sfx("Deselect")
 		if pending_choice["type"] == "special":
 			open_list("special", list_items, selected_index)
@@ -259,7 +277,7 @@ func available_tp() -> float:
 		return INF # specials are free
 	var reserved := 0.0
 	for choice in choices.values():
-		if choice["type"] == "special":
+		if choice["type"] in ["special", "maneuver"]:
 			reserved += choice["move"]["cost"]
 	return battle.tp - reserved
 
@@ -282,39 +300,130 @@ func execute_choices() -> void:
 			"act":
 				_show_text(choice["act"]["text"])
 				await _wait(2.5)
+			"maneuver":
+				var move: Dictionary = choice["move"]
+				if battle.rules["tp_enabled"]:
+					battle.spend_tp(move["cost"])
+				_use_move(member, move)
+				battle.apply_effects(move["effects"], member)
+				_show_text(str(move["text"]).replace("{user}", member.display_name))
+				await _wait(1.6)
 			"fight", "special":
-				var damage: float = member.data["fight_damage"]
-				var title := "%s attacks!" % member.display_name
-				if choice["type"] == "special":
-					if battle.rules["tp_enabled"]:
-						battle.spend_tp(choice["move"]["cost"])
-					damage = choice["move"]["damage"]
-					title = "%s uses %s!" % [member.display_name, choice["move"]["name"]]
-				flavortext.hide()
-				meter.start(title)
-				var multiplier: float = await meter.finished
-				if token != turn_token:
-					return
-				if meter.perfect and choice["type"] == "fight":
-					battle.add_tp(battle.rules["perfect_tp"])
-				if int(member.data["attack_count"]) > 0:
-					member.play_anim(int(member.data["attack_first"]), int(member.data["attack_count"]), member.data["attack_seconds"])
-				await _wait(HIT_DELAY)
-				if token != turn_token:
-					return
-				if multiplier > 0.0:
-					var target: Enemy = choice["target"]
-					if target.is_dead() and battle.enemy:
-						target = battle.enemy # someone else got them first
-					target.take_damage(roundi(damage * multiplier))
-				await _wait(0.6)
-				if token != turn_token:
-					return
-				meter.hide()
+				await _attack(member, choice, token)
 		if token != turn_token:
 			return
 
 	start_dialogue()
+
+
+## Plays out a FIGHT or special: the minigame(s), then the hit.
+func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
+	var is_special: bool = choice["type"] == "special"
+	var move: Dictionary = choice.get("move", {})
+	var damage: float = move["damage"] if is_special else member.data["fight_damage"]
+	var title: String = "%s uses %s!" % [member.display_name, move["name"]] if is_special else "%s attacks!" % member.display_name
+	var game_id: String = move["minigame"] if is_special else member.data["fight_minigame"]
+	var game_settings: Dictionary = move["settings"] if is_special else {}
+	if is_special and battle.rules["tp_enabled"]:
+		battle.spend_tp(move["cost"])
+
+	for hit in int(move.get("hits", 1)):
+		flavortext.hide()
+		_open_minigame(game_id, title, game_settings, choice.get("target"))
+		var game := minigame
+		var multiplier: float = await game.finished
+		if token != turn_token:
+			# Interrupted: whatever was built up still lands
+			if multiplier > 0.0:
+				battle.play_sound(game.asset("hit_sound"))
+				_land_hit(member, choice, damage * multiplier)
+			return
+		if minigame.perfect and not is_special:
+			battle.earn_tp(battle.rules["perfect_tp"])
+		var connected := multiplier > 0.0
+		if is_special:
+			_use_move(member, move, connected)
+		else:
+			if connected:
+				battle.play_sound(member.data["attack_sound"])
+			if int(member.data["attack_count"]) > 0:
+				member.play_anim(int(member.data["attack_first"]), int(member.data["attack_count"]), member.data["attack_seconds"])
+		await _wait(HIT_DELAY - WEAPON_SOUND_LEAD)
+		if token != turn_token:
+			return
+		if multiplier > 0.0:
+			battle.play_sound(game.asset("hit_sound")) # just before the enemy's hurt sound
+		await _wait(WEAPON_SOUND_LEAD)
+		if token != turn_token:
+			return
+		if multiplier > 0.0:
+			_land_hit(member, choice, damage * multiplier)
+		await _wait(0.6)
+		if token != turn_token:
+			return
+		_close_minigame()
+	if is_special:
+		battle.apply_effects(move["effects"], member)
+
+
+## A move's animation, sound and icon.
+func _use_move(member: PartyMember, move: Dictionary, with_sound := true) -> void:
+	if int(move["use_count"]) > 0:
+		member.play_anim(int(move["use_first"]), int(move["use_count"]), move["use_seconds"])
+	if with_sound:
+		battle.play_sound(move["sound"])
+	member.show_icon(move["sprite"])
+
+
+func _land_hit(member: PartyMember, choice: Dictionary, damage: float) -> void:
+	var power := battle.mod("attack_power", member)
+	if choice.get("move", {}).get("hits_all", false):
+		for foe in battle.living_enemies():
+			foe.take_damage(roundi(damage * power))
+		return
+	var target: Enemy = choice["target"]
+	if target.is_dead() and battle.enemy:
+		target = battle.enemy # someone else got them first
+	target.take_damage(roundi(damage * power))
+
+
+func _open_minigame(id: String, title: String, game_settings: Dictionary, target: Variant = null) -> void:
+	_close_minigame()
+	minigame = Minigame.create(id)
+	minigame.font = menu_font
+	if target is Enemy:
+		minigame.target_health = target.hp_percent() / 100.0
+	var wanted := Minigame.box_size(id, game_settings)
+	if wanted == Vector2.ZERO:
+		minigame.position = flavortext.position
+		minigame.size = flavortext.size
+		add_child(minigame)
+	else:
+		_open_big_box(wanted)
+	minigame.start(title, game_settings)
+
+
+## A bigger box that grows up and left over the command box, whose corner stays put.
+func _open_big_box(wanted: Vector2) -> void:
+	_minigame_box = UIBox.new()
+	_minigame_box.color = Color.BLACK
+	_minigame_box.size = size
+	add_child(_minigame_box)
+	minigame.position = BIG_BOX_MARGIN
+	minigame.size = wanted - BIG_BOX_MARGIN * 2.0
+	_minigame_box.add_child(minigame)
+	var t := _minigame_box.create_tween().set_parallel()
+	t.tween_property(_minigame_box, "size", wanted, BIG_BOX_OPEN_TIME).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	t.tween_property(_minigame_box, "position", size - wanted, BIG_BOX_OPEN_TIME).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+
+func _close_minigame() -> void:
+	if minigame:
+		minigame.queue_free()
+		minigame = null
+	if _minigame_box:
+		_minigame_box.queue_free()
+		_minigame_box = null
 
 
 func _wait(seconds: float) -> void:
@@ -350,7 +459,7 @@ func _show_dialogue_line() -> void:
 
 
 func _dialogue_input(event: InputEvent) -> void:
-	if not event.is_action_pressed("ACCEPT"):
+	if not GameSettings.pressed(event, "ACCEPT"):
 		return
 	if bubble.is_typing():
 		# First press finishes the line, second press moves on
@@ -397,13 +506,14 @@ func _show_text(text: String) -> void:
 	writer.start(flavortext, text, TYPE_SPEED)
 
 
-## rows: [{"text": String, "enabled": bool, "hp": optional percent}, ...]
+## rows: [{"text": String, "enabled": bool, "hp": optional percent, "hint": optional}, ...]
 func _show_rows(rows: Array, highlighted: int) -> void:
 	flavortext.hide()
 	menucontent.show()
 	for child in menucontent.get_children():
 		menucontent.remove_child(child)
 		child.queue_free()
+	_row_hints = rows.map(func(r): return r.get("hint", ""))
 	for row in rows:
 		var line := HBoxContainer.new()
 		line.add_theme_constant_override("separation", 10)
@@ -413,6 +523,12 @@ func _show_rows(rows: Array, highlighted: int) -> void:
 			line.add_child(_make_hp_bar(row["hp"]))
 			line.add_child(_make_label("%d%%" % row["hp"]))
 		menucontent.add_child(line)
+	_hint_label = Label.new()
+	_hint_label.add_theme_font_override("font", preload("res://fonts/PixelOperator.ttf"))
+	_hint_label.add_theme_color_override("font_color", Color(0.65, 0.65, 0.7))
+	_hint_label.clip_text = true
+	_hint_label.custom_minimum_size.x = 290
+	menucontent.add_child(_hint_label)
 	_highlight_row(highlighted)
 
 
@@ -436,9 +552,16 @@ func _make_hp_bar(percent: int) -> Control:
 	return back
 
 
+## Colours the rows, keeps the chosen one on screen and shows its description.
 func _highlight_row(index: int) -> void:
 	var rows := menucontent.get_children()
+	rows.erase(_hint_label)
+	var first := clampi(index - 1, 0, maxi(rows.size() - VISIBLE_ROWS, 0))
+	var hint: String = _row_hints[index] if index < _row_hints.size() else ""
+	_hint_label.text = hint
+	_hint_label.visible = hint != ""
 	for i in rows.size():
+		rows[i].visible = i >= first and i < first + VISIBLE_ROWS
 		var color := Color.YELLOW if i == index else Color.WHITE
 		if not rows[i].get_meta("enabled"):
 			color = color.darkened(0.6)

@@ -24,6 +24,7 @@ class ObjectState:
 	var alpha := 1.0
 	var harmful := true
 	var blink_hidden := false # in the "off" half of a telegraph blink
+	var sprite := ""
 	var mode := "normal" # normal, blue (hurts if you move), orange (hurts if you stay still)
 	var tint := "ffffff"
 	var damage := 0
@@ -261,6 +262,8 @@ func _change_object(o: ObjectState, changes: Array, start: float, length: float,
 	for change in changes:
 		var value = change["value"]
 		match change["key"]:
+			"sprite":
+				o.sprite = value if value != "" else o.data["sprite"]
 			"mode":
 				o.mode = value
 			"tint":
@@ -284,6 +287,7 @@ func _spawn(o: ObjectState, p: Dictionary, rng: RandomNumberGenerator) -> void:
 	o.active = true
 	o.spawn_count += 1
 	o.mode = o.data["mode"]
+	o.sprite = o.data["sprite"]
 	o.tint = o.data["tint"]
 	o.damage = int(o.data["damage"])
 	o.vel = Vector2.ZERO

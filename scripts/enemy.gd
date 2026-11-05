@@ -23,6 +23,7 @@ func hp_percent() -> int:
 func take_damage(amount: int) -> void:
 	if hp <= 0:
 		return
+	amount = maxi(roundi(amount * (1.0 - float(data["defense"]) / 100.0) * battle.mod("enemy_defense")), 1)
 	hp = maxi(hp - amount, 0)
 	battle.get_node("Damage").play()
 	_damage_popup(amount)

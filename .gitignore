@@ -1,3 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Commercial song used by the showcase chart: local only
+sounds/stressed_out.mp3
+sounds/stressed_out.mp3.import
+
+# Builds to send to people
+build/

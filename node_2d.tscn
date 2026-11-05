@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://um3ubx14dca7"]
 
+[ext_resource type="Texture2D" path="res://sprites/background.png" id="background_tex"]
 [ext_resource type="Script" uid="uid://ct3na04bkanj" path="res://scripts/battle.gd" id="0_battle"]
 [ext_resource type="Script" uid="uid://cqh5pa8dl3stb" path="res://scripts/conductor.gd" id="0_conductor"]
 [ext_resource type="Script" uid="uid://d0usqs6ycnqxe" path="res://scripts/character_body_2d.gd" id="1_0hol4"]
 [ext_resource type="Script" uid="uid://c8s817l4poiw1" path="res://scripts/battle_board.gd" id="2_epypp"]
-[ext_resource type="FontFile" uid="uid://c576fguyytboj" path="res://fonts/Mojang-Regular.ttf" id="4_4d7sh"]
+[ext_resource type="FontVariation" path="res://fonts/mojang_spaced.tres" id="4_4d7sh"]
 [ext_resource type="Texture2D" uid="uid://cclifxtacvaoe" path="res://sprites/hpempty.png" id="5_4d7sh"]
 [ext_resource type="Texture2D" uid="uid://dn2hqgdnpuqay" path="res://sprites/hpfull.png" id="6_ir8iy"]
 [ext_resource type="Script" uid="uid://dqixihepai57n" path="res://scripts/hud.gd" id="7_hud"]
@@ -51,9 +52,6 @@ colors = PackedColorArray(1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1)
 gradient = SubResource("Gradient_540hr")
 width = 84
 height = 33
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kdubu"]
-load_path = "res://.godot/imported/background.png-98289422cd7d93003950872a7b97021f.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q6r6c"]
 size = Vector2(10, 11)
@@ -269,7 +267,7 @@ metadata/_edit_lock_ = true
 z_index = -1
 position = Vector2(2.3841858e-06, -1.6629696e-05)
 scale = Vector2(4, 4.0000005)
-texture = SubResource("CompressedTexture2D_kdubu")
+texture = ExtResource("background_tex")
 metadata/_edit_lock_ = true
 
 [node name="ColorRect" type="ColorRect" parent="Background" unique_id=688515230]
