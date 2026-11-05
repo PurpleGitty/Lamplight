@@ -11,6 +11,7 @@ const OUTLINE_THICKNESS := 1.5
 const FASTEST_GRAZE := 0.05 # seconds, if i-frames are turned right down
 const BOARD_BORDER := Vector2(1, 1)
 const OUTLINE_FADE := 4.0 # per second
+const START_GRACE := 0.5 # seconds of safety once the board's open, so nothing lands on a soul that's only just appeared
 
 @onready var battle: Battle = owner
 @onready var hitbox: Area2D = $"bullet collision"
@@ -164,10 +165,25 @@ func _physics_process(delta: float) -> void:
 				invincible_time = battle.rules["invincibility"] * battle.mod("invincibility")
 				return
 
+	# Math Attacks aren't physics objects: they work out what they touch themselves
+	var runtime: AttackRuntime = battle.board.runtime
+	var bullet_size: float = battle.mod("bullet_size")
+	var box: Vector2 = _collider.shape.size
+	var soul_box := Rect2(_collider.global_position - box / 2.0, box)
+	if invincible_time <= 0.0:
+		var math_hit := runtime.math_hurting(soul_box, moving, bullet_size)
+		if math_hit != null:
+			battle.damage_party(math_hit.damage, "%s's %s" % [battle.enemy.display_name, math_hit.label])
+			battle.get_node("AudioStreamPlayer2D").play()
+			invincible_time = battle.rules["invincibility"] * battle.mod("invincibility")
+			return
+
 	for area in graze_area.get_overlapping_areas():
 		if _is_bullet(area) and area not in touching:
 			_graze()
-			break
+			return
+	if runtime.math_near(global_position, _graze_shape.radius, bullet_size) and runtime.math_hurting(soul_box, moving, bullet_size) == null:
+		_graze()
 
 
 ## Something's in range: the outline shows, and it pays out every half i-frame time.
@@ -216,6 +232,6 @@ func _hurts(area: Area2D, moving: bool) -> bool:
 func reset(at := Vector2.ZERO) -> void:
 	position = at
 	velocity = Vector2.ZERO
-	invincible_time = 0.0
+	invincible_time = START_GRACE
 	_graze_wait = 0.0
 	sprite.frame = 0

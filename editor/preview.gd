@@ -97,6 +97,9 @@ func _playtest(delta: float) -> void:
 			hits += 1
 			_invincible = 1.0
 			return
+	if runtime.math_hurting(_soul_hitbox(), dir != Vector2.ZERO) != null:
+		hits += 1
+		_invincible = 1.0
 
 
 func _play(path: String) -> void:
@@ -168,6 +171,12 @@ func _draw() -> void:
 		for o in runtime.objects:
 			if o.active:
 				_draw_object(view, o, o.data == current)
+		var content_xf := view * runtime.content_transform()
+		var faint := runtime.is_inside_board if runtime.clip else Callable()
+		for m in runtime.maths:
+			m.draw(self, content_xf, faint)
+			if editor.show_hitboxes:
+				m.draw_hitboxes(self, content_xf)
 
 		draw_set_transform_matrix(board_xf)
 		draw_rect(Rect2(-half, runtime.board_size), Color.WHITE, false, 2.0)

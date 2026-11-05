@@ -83,7 +83,7 @@ func play(soul_position: Vector2, stats: Array[String], break_sound: AudioStream
 	var gap := minf(STATS_GAP, STATS_ROOM / stats.size())
 	for i in stats.size():
 		lines.append(_add_label(stats[i].to_upper(), 16, Vector2(0, STATS_TOP + i * gap)))
-	lines.append(_add_label(GameSettings.hint([["ACCEPT", "TRY AGAIN"], ["BACK", "MAIN MENU"]]), 16, Vector2(0, 170)))
+	lines.append(_add_label(GameSettings.hint([["ACCEPT", "TRY AGAIN"], ["BACK", Battle.give_up_label if Battle.return_scene != "" else "MAIN MENU"]]), 16, Vector2(0, 170)))
 	for i in lines.size():
 		var label := lines[i]
 		label.modulate.a = 0.0

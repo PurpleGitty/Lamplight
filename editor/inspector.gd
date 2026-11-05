@@ -4,6 +4,7 @@ extends VBoxContainer
 ## parameter lists in ChartDefs, so new node types show up here automatically.
 
 const SpritePreviewPanel = preload("res://editor/sprite_preview.gd")
+const FormulaEditorWindow = preload("res://editor/formula_editor.gd")
 
 ## Which folding sections are shut, remembered across redraws.
 static var folded := {}
@@ -51,6 +52,8 @@ func _show_event(ev: Dictionary) -> void:
 		match p["type"]:
 			"richtext":
 				_richtext_row(ev, p["name"])
+			"formula":
+				_formula_row(ev)
 			"object_list":
 				_object_list(ev, p)
 			"object_changes":
@@ -85,6 +88,18 @@ func _richtext_row(ev: Dictionary, key: String) -> void:
 	add_child(box)
 	TextMarkup.build(text, ev["params"][key], 0.0)
 	_action("Edit text...", func(): editor.open_text_editor(ev))
+
+
+## Whether a Math Attack's formula works, and a button to open it.
+func _formula_row(ev: Dictionary) -> void:
+	var attack := MathAttack.new(ev)
+	var words := Label.new()
+	words.text = FormulaEditorWindow.status_text(attack)
+	words.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	words.custom_minimum_size.x = 300
+	words.add_theme_color_override("font_color", FormulaEditorWindow.GOOD if attack.can_run() else FormulaEditorWindow.BAD)
+	add_child(words)
+	_action("Edit formula...", func(): editor.open_formula_editor(ev))
 
 
 ## Tick boxes for the objects a Change Objects node affects.
@@ -355,7 +370,7 @@ func _field(def: Dictionary, value, on_change: Callable) -> Control:
 			picker.custom_minimum_size = Vector2(60, 24)
 			picker.color_changed.connect(func(c): on_change.call(c.to_html(false)))
 			return picker
-		"texture", "audio", "font":
+		"texture", "audio", "font", "video":
 			var box := HBoxContainer.new()
 			var path := LineEdit.new()
 			path.text = value

@@ -46,6 +46,9 @@ var clip := true
 var soul_start := Vector2.ZERO
 
 var objects: Array[ObjectState] = []
+var maths: Array[MathAttack] = []
+var _units_per_second := 1.0
+var _bpm := 120.0
 var _step := STEP
 var _by_id := {} # object id -> ObjectState
 var _queue: Array = [] # [{"ev": event, "obj": ObjectState or null}], in firing order
@@ -66,9 +69,14 @@ func _init(chart: Dictionary, attack: Dictionary, soul: Callable) -> void:
 	soul_start = board_center + Vector2(p["soul_x"], p["soul_y"])
 	clip = p["clip"]
 
+	_units_per_second = ChartDefs.units_per_second(chart)
+	_bpm = float(chart["bpm"])
 	for ev in chart["board_events"]:
 		if _in_range(ev):
-			_queue.append({"ev": ev, "obj": null})
+			if ev["type"] == "math_attack":
+				maths.append(MathAttack.new(ev))
+			else:
+				_queue.append({"ev": ev, "obj": null})
 	for data in chart["objects"]:
 		var state := ObjectState.new()
 		state.data = data
@@ -82,6 +90,7 @@ func _init(chart: Dictionary, attack: Dictionary, soul: Callable) -> void:
 			_by_id[int(data["id"])] = state
 	_queue.sort_custom(_fires_before)
 	_fire_due()
+	_run_maths()
 
 
 func _in_range(ev: Dictionary) -> bool:
@@ -114,6 +123,36 @@ func advance(to_beat: float) -> void:
 		t = next_t
 		_apply_ops()
 		_fire_due()
+	_run_maths()
+
+
+## Works out every Math Attack playing now. There's a limit on how much can run in
+## one frame, however many are stacked up, so nothing in a chart can freeze the game.
+func _run_maths() -> void:
+	var allowance := MathFormula.MAX_COST
+	for m in maths:
+		m.active = false
+		if t >= m.start and t < m.end and m.can_run() and m.cost() <= allowance:
+			allowance -= m.cost()
+			m.evaluate(t - m.start, _units_per_second, _bpm, _soul_local(), board_size)
+
+
+## The Math Attack hurting this rectangle (the soul's hitbox, in world coordinates), or null.
+func math_hurting(rect: Rect2, moving: bool, size_scale := 1.0) -> MathAttack:
+	var content := content_transform()
+	for m in maths:
+		if (m.mode == "normal" or (m.mode == "blue") == moving) and m.touches(rect, content, 0.0, size_scale):
+			return m
+	return null
+
+
+## Whether any Math Attack is within this distance of a point, for grazing.
+func math_near(point: Vector2, reach: float, size_scale := 1.0) -> bool:
+	var content := content_transform()
+	for m in maths:
+		if m.touches(Rect2(point, Vector2.ZERO), content, reach, size_scale):
+			return true
+	return false
 
 
 # --- for whoever draws it ---

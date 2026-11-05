@@ -8,9 +8,9 @@ extends RefCounted
 ## one unpacks the assets to a cache and points the chart at those, so the rest of
 ## the game just sees a normal chart with normal file paths.
 ##
-## Scraps come from other people, so nothing in one is trusted: only sprites and
-## sounds are unpacked, only into the cache, and a chart can't point at files
-## elsewhere on the PC or on a network.
+## Scraps come from other people, so nothing in one is trusted: only real sprite,
+## sound and font files are unpacked (see SafeFiles), only into the cache, and a
+## chart can't point at files elsewhere on the PC or on a network.
 
 const EXTENSION := "scrp"
 const FORMAT := 1
@@ -20,7 +20,9 @@ const ASSET_FOLDER := "assets/"
 const ASSET_PREFIX := "scrap://"
 const CACHE := "user://scrap_cache/"
 const CACHE_DONE := ".done"
-const ASSET_TYPES := ["png", "jpg", "jpeg", "webp", "mp3", "ogg", "wav", "ttf", "otf", "woff", "woff2"]
+const ASSET_TYPES := SafeFiles.ALL
+const MAX_SCRAP_BYTES := 1 << 30 # 1 GB: far more than a fight needs
+const NOT_PATHS := ["text", "formula"] # words and maths, which can look like a path by accident
 const LIST_FOLDER := "Lamplight/Scraps"
 
 ## Why the last read failed, in words for the player.
@@ -70,7 +72,7 @@ static func unused_path(base_name: String) -> String:
 ## The fight in a scrap, ready to play or edit, or {} (see last_error).
 static func read(path: String) -> Dictionary:
 	var zip := ZIPReader.new()
-	if zip.open(path) != OK:
+	if _too_big(path) or zip.open(path) != OK:
 		return _fail("%s isn't a scrap file, or it's damaged." % path.get_file())
 	var chart := _read_chart(zip, path)
 	if not chart.is_empty():
@@ -83,11 +85,15 @@ static func read(path: String) -> Dictionary:
 ## Just the fight's details, for showing it in a list: nothing gets unpacked.
 static func peek(path: String) -> Dictionary:
 	var zip := ZIPReader.new()
-	if zip.open(path) != OK:
+	if _too_big(path) or zip.open(path) != OK:
 		return _fail("%s isn't a scrap file, or it's damaged." % path.get_file())
 	var chart := _read_chart(zip, path)
 	zip.close()
 	return chart
+
+
+static func _too_big(path: String) -> bool:
+	return FileAccess.get_size(path) > MAX_SCRAP_BYTES
 
 
 static func _read_chart(zip: ZIPReader, path: String) -> Dictionary:
@@ -158,18 +164,21 @@ static func _strip_outside_paths(value: Variant) -> Variant:
 	if value is Dictionary:
 		var clean := {}
 		for key in value:
-			clean[key] = _strip_outside_paths(value[key])
+			clean[key] = value[key] if key in NOT_PATHS else _strip_outside_paths(value[key])
 		return clean
 	return value
 
 
 static func _points_outside(text: String) -> bool:
-	if text.begins_with("\\\\") or text.begins_with("//") or text.begins_with("user://"):
+	var clean := text.replace("\\", "/").to_lower()
+	if clean.begins_with("//") or clean.begins_with("user:") or clean.begins_with("uid:") or clean.begins_with("file:"):
 		return true
-	if text.begins_with("res://") and text.contains(".."):
+	if clean.begins_with("res:") and clean.contains(".."):
 		return true
-	# C:\... or C:/...
-	return text.length() > 2 and text[1] == ":" and text[2] in ["/", "\\"]
+	# C:/... or C:file, or /file on the current drive, or climbing out of a folder
+	if clean.length() > 1 and clean[1] == ":":
+		return true
+	return text.get_extension() != "" and (clean.begins_with("/") or clean.begins_with("../"))
 
 
 ## Unpacks a scrap's assets. Same contents, same cache folder, so opening a scrap
@@ -182,9 +191,12 @@ static func _unpack(zip: ZIPReader, path: String) -> String:
 	for entry in zip.get_files():
 		if not _safe_asset(entry):
 			continue
+		var data := zip.read_file(entry)
+		if not SafeFiles.bytes_match(entry.get_extension().to_lower(), data):
+			continue # named like a sprite or sound, but it isn't one
 		var out := FileAccess.open(cache + entry.get_file(), FileAccess.WRITE)
 		if out:
-			out.store_buffer(zip.read_file(entry))
+			out.store_buffer(data)
 	var done := FileAccess.open(cache + CACHE_DONE, FileAccess.WRITE)
 	if done:
 		done.store_string("ok")
@@ -218,6 +230,7 @@ static func _resolve(value: Variant, cache: String) -> Variant:
 
 ## Clears out unpacked files. The menu calls this, when nothing is using them.
 static func clear_cache() -> void:
+	# (a fight's scraps and a locale's assets are in here; the menu's only called when neither's open)
 	ChartDefs.forget_loaded_files()
 	if not DirAccess.dir_exists_absolute(CACHE):
 		return

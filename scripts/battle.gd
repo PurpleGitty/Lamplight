@@ -26,11 +26,20 @@ const SOUND_RULES := {
 	"menu_select_sound": "Select", "menu_back_sound": "Deselect", "text_sound": "Txt",
 }
 ## Rules that change how the fight looks or sounds, and so need putting into effect.
-const LOOK_RULES := ["background", "background_hframes", "background_vframes", "speech_font", "menu_font",
+const LOOK_RULES := ["background", "background_video", "background_hframes", "background_vframes", "speech_font", "menu_font",
 	"soul_sprite", "soul_hframes", "soul_hitbox_w", "soul_hitbox_h", "soul_hitbox_x", "soul_hitbox_y"]
 
 ## Which chart to play next. The chart maker's Test Fight sets this.
 static var chart_to_play := ""
+## Where to go when the fight's over, when it started from an overworld ("" = stay here).
+static var return_scene := ""
+static var last_fight_won := false
+## What BACK does on the game over screen, when an overworld started the fight.
+static var give_up_label := "CARRY ON"
+## From an overworld: name -> {"hp", "max_hp", "fight_damage", "defense", "specials", "maneuvers"}.
+## Anyone here with the same name as someone in the fight brings these along, and their HP
+## gets written back afterwards.
+static var overworld_party := {}
 
 @onready var conductor: Conductor = $Conductor
 @onready var board = $board
@@ -71,6 +80,8 @@ var _leaving: Array[Node] = [] # characters who left, freed at the next player t
 var _player_turn_id := 0
 var _mods: Array = [] # timed effects in play: {"kind", "value", "turns", "targets"}
 var _default_background: Texture2D
+var _background_video: VideoStreamPlayer
+var _background_video_path := ""
 var _default_background_scale := Vector2.ONE
 var _default_sounds := {} # rule -> the stream its node started with
 
@@ -81,6 +92,7 @@ func _ready() -> void:
 	if chart.is_empty():
 		push_error("Couldn't load a chart from %s - make one in the Scrap O' Matic" % path)
 		chart = ChartDefs.new_chart()
+	_bring_overworld_party()
 	rules = chart["rules"].duplicate()
 	traditional = ChartDefs.uses_frames(chart)
 	tp = rules["start_tp"]
@@ -103,7 +115,9 @@ func _ready() -> void:
 			_add_enemy(entry)
 	for entry in chart["party"]:
 		if entry["present"]:
-			_add_member(entry)
+			var member := _add_member(entry)
+			if overworld_party.has(entry["name"]):
+				member.set_hp(clampi(int(overworld_party[entry["name"]]["hp"]), 1, member.max_hp))
 	hud.layout_party()
 
 	conductor.bpm = chart["bpm"]
@@ -115,6 +129,20 @@ func _ready() -> void:
 	ChartDefs.set_looping($Music.stream, traditional)
 	conductor.start()
 	start_player_turn()
+
+
+func _bring_overworld_party() -> void:
+	for entry in chart["party"]:
+		if not overworld_party.has(entry["name"]):
+			continue
+		var from: Dictionary = overworld_party[entry["name"]]
+		for key in ["max_hp", "fight_damage", "defense"]:
+			entry[key] = from[key]
+		# Someone with no moves set keeps the fight's own
+		if not from["specials"].is_empty():
+			entry["specials"] = from["specials"].map(func(id): return ChartDefs.new_move(true, id))
+		if not from["maneuvers"].is_empty():
+			entry["maneuvers"] = from["maneuvers"].map(func(id): return ChartDefs.new_move(false, id))
 
 
 func _add_member(entry: Dictionary) -> PartyMember:
@@ -140,10 +168,15 @@ func _add_enemy(entry: Dictionary) -> Enemy:
 func _process(delta: float) -> void:
 	_animate_background()
 	if phase == Phase.OVER:
-		if can_restart and Input.is_action_just_pressed("ACCEPT"):
+		if can_restart and return_scene != "" and last_fight_won and Input.is_action_just_pressed("ACCEPT"):
+			_go_back_to_overworld()
+		elif can_restart and Input.is_action_just_pressed("ACCEPT"):
 			get_tree().reload_current_scene()
 		elif can_restart and Input.is_action_just_pressed("BACK"):
-			get_tree().change_scene_to_file("res://menu.tscn")
+			if return_scene != "":
+				_go_back_to_overworld()
+			else:
+				get_tree().change_scene_to_file("res://menu.tscn")
 		return
 
 	_fight_seconds += delta
@@ -304,8 +337,20 @@ func start_enemy_turn(attack: Dictionary) -> void:
 func win() -> void:
 	if not _end_battle():
 		return
-	_show_banner("YOU WON\n* %s was defeated!\n\n%s" % [enemies[0].display_name, GameSettings.hint([["ACCEPT", "PLAY AGAIN"], ["BACK", "MAIN MENU"]])])
+	last_fight_won = true
+	var choices := [["ACCEPT", "CONTINUE"]] if return_scene != "" else [["ACCEPT", "PLAY AGAIN"], ["BACK", "MAIN MENU"]]
+	_show_banner("YOU WON\n* %s was defeated!\n\n%s" % [enemies[0].display_name, GameSettings.hint(choices)])
 	can_restart = true
+
+
+func _go_back_to_overworld() -> void:
+	for member in party:
+		if overworld_party.has(member.display_name):
+			overworld_party[member.display_name]["hp"] = maxi(member.hp, 1)
+	var scene := return_scene
+	return_scene = ""
+	chart_to_play = ""
+	get_tree().change_scene_to_file(scene)
 
 
 func lose(cause: String) -> void:
@@ -313,6 +358,7 @@ func lose(cause: String) -> void:
 	var soul_position: Vector2 = soul.global_position if soul.visible else Vector2.ZERO
 	if not _end_battle():
 		return
+	last_fight_won = false
 	conductor.stop()
 	var lasted := _clock(_fight_seconds)
 	if not traditional:
@@ -634,9 +680,35 @@ func _apply_look() -> void:
 		# Covers the whole screen, whatever shape it is
 		var cover := maxf(SCREEN_SIZE.x / frame_size.x, SCREEN_SIZE.y / frame_size.y)
 		background.scale = Vector2(cover, cover)
+	_apply_background_video(background)
 	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
 	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
 	soul.set_look(rules)
+
+
+## A video plays behind everything, and the image goes see-through (not hidden, since
+## the dim during enemy turns hangs off it).
+func _apply_background_video(background: Sprite2D) -> void:
+	var path: String = rules["background_video"]
+	background.self_modulate.a = 0.0 if path != "" else 1.0
+	if path == _background_video_path:
+		return
+	_background_video_path = path
+	if _background_video == null:
+		var behind := CanvasLayer.new()
+		behind.layer = -10
+		add_child(behind)
+		_background_video = VideoStreamPlayer.new()
+		_background_video.expand = true
+		_background_video.size = SCREEN_SIZE
+		_background_video.volume = 0.0
+		_background_video.finished.connect(func(): _background_video.play())
+		behind.add_child(_background_video)
+	_background_video.stop()
+	_background_video.stream = ChartDefs.load_video(path)
+	background.self_modulate.a = 0.0 if _background_video.stream != null else 1.0
+	if _background_video.stream != null:
+		_background_video.play()
 
 
 func _apply_sounds() -> void:

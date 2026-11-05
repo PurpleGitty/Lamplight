@@ -5,7 +5,7 @@ extends Control
 ## every fight there is to play; Settings holds sound, graphics and controls. The
 ## title and options are placeholder text until the menu art is made.
 
-enum Page { MAIN, SCRAP, PLAY, SETTINGS, SOUND, GRAPHICS, CONTROLS }
+enum Page { MAIN, SCRAP, PLAY, SETTINGS, SOUND, GRAPHICS, CONTROLS, LOCALE, LOCALE_PLAY, LOCALE_SAVES }
 
 const TITLE_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
 const OPTION_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
@@ -14,6 +14,7 @@ const ICON_CREATE = preload("res://sprites/menu/scrap_create.png")
 const ICON_PLAY = preload("res://sprites/menu/scrap_play.png")
 const BATTLE_SCENE := "res://node_2d.tscn"
 const EDITOR_SCENE := "res://editor/attack_editor.tscn"
+const LOCALE_EDITOR_SCENE := "res://editor/locale_editor.tscn"
 const CHARTS_FOLDER := "res://charts/"
 ## The story's fights, in order. They're listed first in Play.
 const CAMPAIGN_FIGHTS := ["res://charts/testicina.json"]
@@ -37,12 +38,14 @@ const BIND_WIDTH := 11
 const AFTER_REBIND_PAUSE_MS := 250
 ## Which page and option BACK goes to from each page.
 const PARENTS := {
-	Page.SCRAP: [Page.MAIN, 1], Page.PLAY: [Page.SCRAP, 1], Page.SETTINGS: [Page.MAIN, 2],
+	Page.SCRAP: [Page.MAIN, 1], Page.PLAY: [Page.SCRAP, 1], Page.LOCALE: [Page.MAIN, 2], Page.LOCALE_PLAY: [Page.LOCALE, 1], Page.LOCALE_SAVES: [Page.LOCALE_PLAY, 0], Page.SETTINGS: [Page.MAIN, 3],
 	Page.SOUND: [Page.SETTINGS, 0], Page.GRAPHICS: [Page.SETTINGS, 1], Page.CONTROLS: [Page.SETTINGS, 2],
 }
 
 ## The page to come back to from a fight or the editor.
 static var page := Page.MAIN
+## The overworld whose saves are listed.
+static var locale_path := ""
 
 var selected := 0
 ## Each is {"label", "action", "leaves"}, and can have "note", "icon", "adjust" (for
@@ -65,6 +68,9 @@ var _ignore_input_until := 0
 
 func _ready() -> void:
 	Battle.chart_to_play = "" # the campaign plays its own charts
+	Battle.return_scene = ""
+	Battle.overworld_party = {}
+	Overworld.resume = null
 	ScrapFile.clear_cache() # nothing's playing or being edited now
 	# The editor switches the window to full resolution; put the game's view back
 	GameSettings.apply_game_view()
@@ -125,6 +131,9 @@ func _open_page(new_page: Page, start_on := 0) -> void:
 		Page.SOUND: _build_sound()
 		Page.GRAPHICS: _build_graphics()
 		Page.CONTROLS: _build_controls()
+		Page.LOCALE: _build_locale()
+		Page.LOCALE_PLAY: _build_locale_play()
+		Page.LOCALE_SAVES: _build_locale_saves()
 	_select(start_on, false)
 
 
@@ -133,6 +142,7 @@ func _build_main() -> void:
 	var picks := [
 		["CAMPAIGN", func(): get_tree().change_scene_to_file(BATTLE_SCENE), true],
 		["SCRAP O' MATIC", func(): _open_page(Page.SCRAP), false],
+		["LOCALE-INATOR", func(): _open_page(Page.LOCALE), false],
 		["SETTINGS", func(): _open_page(Page.SETTINGS), false],
 		["QUIT", func(): get_tree().quit(), true],
 	]
@@ -146,6 +156,53 @@ func _build_scrap() -> void:
 	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): get_tree().change_scene_to_file(EDITOR_SCENE), true)
 	_icon_option(1, "PLAY", ICON_PLAY, func(): _open_page(Page.PLAY), false)
 	_hint([["ACCEPT", "PICK"], ["BACK", "BACK"]])
+
+
+func _build_locale() -> void:
+	_title("LOCALE-INATOR", 32, 70)
+	_icon_option(0, "CREATE + EDIT", ICON_CREATE, func(): get_tree().change_scene_to_file(LOCALE_EDITOR_SCENE), true)
+	_icon_option(1, "PLAY", ICON_PLAY, func(): _open_page(Page.LOCALE_PLAY), false)
+	_hint([["ACCEPT", "PICK"], ["BACK", "BACK"]])
+
+
+func _build_locale_play() -> void:
+	_title("PLAY", 32, 40)
+	for path in LocaleFile.list():
+		var chosen: String = path
+		_add_row(chosen.get_file().get_basename().to_upper(), "OVERWORLD", DIM, func(): _pick_locale(chosen), false)
+	_add_row("OPEN LOCALES FOLDER", "Put .lcal files here to play them", DIM, func(): OS.shell_open(ProjectSettings.globalize_path(LocaleFile.folder())), false)
+	_add_row("BACK", "", DIM, _go_back, false)
+	_hint([["ACCEPT", "PLAY"], ["BACK", "BACK"]])
+
+
+## With saves to continue from, lists them. Otherwise, starts right away.
+func _pick_locale(path: String) -> void:
+	locale_path = path
+	if SaveGame.has_any(LocaleFile.peek(path)):
+		_open_page(Page.LOCALE_SAVES)
+	else:
+		_start_locale(-1)
+
+
+func _build_locale_saves() -> void:
+	_title(locale_path.get_file().get_basename().to_upper(), 32, 40)
+	var locale := LocaleFile.peek(locale_path)
+	_add_row("NEW GAME", "From the very start", DIM, func(): _start_locale(-1), true)
+	for slot in [SaveGame.AUTOSAVE_SLOT] + SaveGame.SLOTS:
+		if not SaveGame.read(locale, slot).is_empty():
+			var chosen: int = slot
+			_add_row(SaveGame.describe(locale, slot), "Continue", DIM, func(): _start_locale(chosen), true)
+	_add_row("BACK", "", DIM, _go_back, false)
+	_hint([["ACCEPT", "PICK"], ["BACK", "BACK"]])
+
+
+func _start_locale(slot: int) -> void:
+	Overworld.return_scene = "res://menu.tscn"
+	Overworld.test_room = -1
+	Overworld.test_spawn = Vector2.INF
+	var scene := Overworld.play(locale_path)
+	Overworld.load_slot = slot
+	get_tree().change_scene_to_file(scene)
 
 
 func _icon_option(index: int, text: String, texture: Texture2D, action: Callable, leaves: bool) -> void:
@@ -291,6 +348,14 @@ func _build_controls() -> void:
 		option["bind"] = name_text
 		option["text"] = _bind_text.bind(name_text)
 		y += CONTROL_GAP
+	var auto_run := func(_step := 0):
+		GameSettings.change("auto_run", not GameSettings.values["auto_run"])
+		_refresh_texts()
+	var auto_text := func(): return "AUTO RUN  %s" % _on_off("auto_run")
+	var auto_option := _add_option(_label(auto_text.call(), OPTION_FONT, 16, y), auto_run, false)
+	auto_option["text"] = auto_text
+	auto_option["adjust"] = auto_run
+	y += CONTROL_GAP
 	_add_option(_label("RESET CONTROLS", OPTION_FONT, 16, y), _reset_controls, false)
 	y += CONTROL_GAP
 	_add_option(_label("BACK", OPTION_FONT, 16, y), _go_back, false)
@@ -461,7 +526,7 @@ func _place_soul(animate: bool) -> void:
 
 ## Lays out a long list so the chosen row is always showing.
 func _scroll_rows() -> void:
-	if page != Page.PLAY:
+	if page not in [Page.PLAY, Page.LOCALE_PLAY, Page.LOCALE_SAVES]:
 		return
 	_rows_top = clampi(_rows_top, selected - VISIBLE_ROWS + 1, selected)
 	_rows_top = clampi(_rows_top, 0, maxi(options.size() - VISIBLE_ROWS, 0))
@@ -479,7 +544,7 @@ func _scroll_rows() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if _leaving or _rebinding != "" or Time.get_ticks_msec() < _ignore_input_until:
 		return
-	var sideways := page == Page.SCRAP
+	var sideways := page in [Page.SCRAP, Page.LOCALE]
 	var forward := GameSettings.pressed(event, "DOWN") or (sideways and GameSettings.pressed(event, "RIGHT"))
 	var backward := GameSettings.pressed(event, "UP") or (sideways and GameSettings.pressed(event, "LEFT"))
 	if forward:

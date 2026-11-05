@@ -37,6 +37,9 @@ end_attack.png
 change_objects.png
   Change Objects: Changes any number of objects at once on this beat: blue/orange, see-through, tint, size, damage. With an easing other than instant, alpha and scale fade over the node's length.
 
+math_attack.png
+  Math Attack: Bullets placed by formulas, like a graphing calculator: patterns, waves, fractals and line drawings. Runs for the node's length. Overlap as many as you like.
+
 [Spawning group]
 
 spawn.png

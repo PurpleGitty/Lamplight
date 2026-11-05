@@ -196,6 +196,17 @@ const TYPES := {
 			{"name": "changes", "type": "object_changes", "default": []},
 			{"name": "easing", "type": "enum", "default": "instant", "options": EASINGS},
 		]},
+	"math_attack": {
+		"lane": "board", "label": "Math Attack", "color": Color("ff6bd6"), "length": 8.0,
+		"help": "Bullets placed by formulas, like a graphing calculator: patterns, waves, fractals and line drawings. Runs for the node's length. Overlap as many as you like.",
+		"params": [
+			{"name": "formula", "type": "formula", "default": "# Every bullet runs these lines, every frame\nradius = 50\nspeed = 0.5\na = u * tau + t * speed\nx = radius * cos(a)\ny = radius * sin(a)\nsize = 8\nhue = u\n"},
+			{"name": "count", "type": "int", "default": 24, "min": 1, "max": 2000, "help": "How many bullets"},
+			{"name": "sprite", "type": "texture", "default": "", "help": "What each bullet looks like, coloured by the formula (blank = a plain circle)"},
+			{"name": "damage", "type": "int", "default": 20, "min": 0, "max": 999},
+			{"name": "mode", "type": "enum", "default": "normal", "options": OBJECT_MODES, "help": "blue: only hurts if you move. orange: only hurts if you stay still"},
+			{"name": "name", "type": "string", "default": "math", "help": "Shown as the cause of death: \"Testicina's math\""},
+		]},
 
 	# --- META LANE ---
 	"change_rules": {
@@ -246,7 +257,7 @@ const TABS := [
 	{"name": "Soul", "color": Color("ff60a0"), "items": ["soul_teleport", "soul_speed"]},
 	{"name": "Music", "color": Color("ffd24f"), "items": ["play_sound", "music_volume"]},
 	{"name": "Attack", "color": Color("ff5c5c"), "items": [
-		"begin_attack", "end_attack", "change_objects",
+		"begin_attack", "end_attack", "change_objects", "math_attack",
 		{"group": "Spawning", "items": ["spawn", "despawn", "telegraph", "set_harmful"]},
 		{"group": "Movement", "items": ["move_to", "move_by", "random_point", "target_soul", "launch", "stop", "orbit"]},
 		{"group": "Looks", "items": ["spin", "face_soul", "scale_to", "fade_to"]},
@@ -314,6 +325,7 @@ const RULE_PARAMS := [
 	{"name": "soul_hitbox_x", "type": "float", "default": 0.0, "min": -100.0, "max": 100.0, "help": "From the soul's centre"},
 	{"name": "soul_hitbox_y", "type": "float", "default": 0.0, "min": -100.0, "max": 100.0},
 	{"name": "background", "type": "texture", "default": "", "help": "A still image or sprite sheet, stretched to cover the screen (blank = the game's). When a Change Rules node swaps it, change its frames too"},
+	{"name": "background_video", "type": "video", "default": "", "help": "A looping video instead of the image. MP4s get converted when you pick them"},
 	{"name": "background_hframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames across in the sprite sheet"},
 	{"name": "background_vframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames down in the sprite sheet"},
 	{"name": "background_frames", "type": "int", "default": 0, "min": 0, "max": 4096, "help": "How many frames to loop through (0 = all of them)"},
@@ -814,10 +826,10 @@ static func forget_loaded_files() -> void:
 static func load_font(path: String) -> Font:
 	if path == "":
 		return null
-	if ResourceLoader.exists(path):
+	if SafeFiles.is_game_file(path, SafeFiles.GAME_FONTS):
 		var res = load(path)
 		return res if res is Font else null
-	if not FileAccess.file_exists(path):
+	if not SafeFiles.is_media_file(path, SafeFiles.FONTS):
 		return null
 	if not _loaded_files.has(path):
 		var font := FontFile.new()
@@ -829,11 +841,11 @@ static func load_font(path: String) -> Font:
 ## Loads a sprite. Files from a scrap or just imported from the chart maker aren't
 ## in Godot's import system, so they're read directly.
 static func load_texture(path: String) -> Texture2D:
-	if path != "" and ResourceLoader.exists(path):
+	if SafeFiles.is_game_file(path, SafeFiles.IMAGES):
 		var res = load(path)
 		if res is Texture2D:
 			return res
-	if path != "" and FileAccess.file_exists(path):
+	if SafeFiles.is_media_file(path, SafeFiles.IMAGES):
 		if not _loaded_files.has(path):
 			var image := Image.load_from_file(ProjectSettings.globalize_path(path))
 			_loaded_files[path] = ImageTexture.create_from_image(image) if image else null
@@ -846,9 +858,9 @@ static func load_texture(path: String) -> Texture2D:
 static func load_audio(path: String) -> AudioStream:
 	if path == "":
 		return null
-	if ResourceLoader.exists(path):
+	if SafeFiles.is_game_file(path, SafeFiles.SOUNDS):
 		return load(path) as AudioStream
-	if not FileAccess.file_exists(path):
+	if not SafeFiles.is_media_file(path, SafeFiles.SOUNDS):
 		return null
 	if not _loaded_files.has(path):
 		var full := ProjectSettings.globalize_path(path)
@@ -858,6 +870,19 @@ static func load_audio(path: String) -> AudioStream:
 			"wav": _loaded_files[path] = AudioStreamWAV.load_from_file(full)
 			_: _loaded_files[path] = null
 	return _loaded_files[path]
+
+
+## Loads a video (only ever an .ogv), or null if there isn't one.
+static func load_video(path: String) -> VideoStream:
+	if path == "":
+		return null
+	if SafeFiles.is_game_file(path, SafeFiles.VIDEOS):
+		return load(path) as VideoStream
+	if not SafeFiles.is_media_file(path, SafeFiles.VIDEOS):
+		return null
+	var stream := VideoStreamTheora.new()
+	stream.file = path
+	return stream
 
 
 ## Makes a song or sound loop, whatever kind of file it is.

@@ -15,6 +15,7 @@ const GHOST_COLOR := Color(0.25, 1.0, 0.45)
 var runtime: AttackRuntime
 var contents := Node2D.new() # holds the objects, placed in the attack's content frame
 var ghosts := Ghosts.new()
+var math_layer := MathLayer.new()
 var _objects := {} # AttackRuntime.ObjectState -> AttackObject
 var _open := 0.0 # goes 0 -> 1 while the board opens
 var _last_center := Vector2.ZERO
@@ -43,12 +44,26 @@ class Ghosts extends Node2D:
 			draw_rect(Rect2(-g["size"] / 2, g["size"]), color, false, 2.0)
 
 
+## Draws Math Attacks, in the same frame as the objects.
+class MathLayer extends Node2D:
+	var runtime: AttackRuntime
+
+	func _process(_delta: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		if runtime != null:
+			for m in runtime.maths:
+				m.draw(self, Transform2D.IDENTITY)
+
+
 func _ready() -> void:
 	pulse = false
 	border_inset = 1.0
 	clip_contents = false
 	clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW # objects are masked to the board's shape, even rotated
 	add_child(contents)
+	contents.add_child(math_layer)
 	ghosts.z_index = z_index
 	get_parent().add_child.call_deferred(ghosts)
 	hide()
@@ -70,6 +85,7 @@ func is_open() -> bool:
 func open(attack: AttackRuntime) -> void:
 	_clear_objects()
 	runtime = attack
+	math_layer.runtime = attack
 	for o in attack.objects:
 		var node := AttackObject.new()
 		node.setup(o.data, battle.enemy.display_name)
@@ -96,6 +112,7 @@ func close() -> void:
 	if runtime == null:
 		return
 	runtime = null
+	math_layer.runtime = null
 	var t := create_tween().set_parallel()
 	t.tween_method(_retract_step, 1.0, 0.0, RETRACT_TIME).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	t.tween_property(dim, "modulate:a", 0.0, RETRACT_TIME * 2)

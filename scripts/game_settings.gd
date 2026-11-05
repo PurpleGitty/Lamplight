@@ -40,7 +40,7 @@ const WINDOWED_SIZE := Vector2i(1280, 960)
 
 var values := {
 	"master_volume": 100, "music_volume": 100, "sfx_volume": 100,
-	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true,
+	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true, "auto_run": false,
 }
 var bindings := {"key": DEFAULT_KEYS.duplicate(), "pad": DEFAULT_PAD.duplicate(true)}
 ## "key" or "pad": what the player last pressed, so prompts name the right thing.

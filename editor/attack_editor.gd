@@ -10,6 +10,7 @@ const Timeline = preload("res://editor/timeline.gd")
 const Preview = preload("res://editor/preview.gd")
 const Inspector = preload("res://editor/inspector.gd")
 const TextEditorWindow = preload("res://editor/text_editor.gd")
+const FormulaEditorWindow = preload("res://editor/formula_editor.gd")
 const NodeTabs = preload("res://editor/node_tabs.gd")
 const CharactersPanel = preload("res://editor/characters_panel.gd")
 const RulesPanel = preload("res://editor/rules_panel.gd")
@@ -25,6 +26,7 @@ const BROWSE_KINDS := {
 	"texture": [["*.png,*.jpg,*.jpeg,*.webp;Images"], "sprites"],
 	"audio": [["*.mp3,*.ogg,*.wav;Audio"], "sounds"],
 	"font": [["*.ttf,*.otf,*.woff,*.woff2;Fonts"], "fonts"],
+	"video": [VideoImport.FILTERS, "videos"],
 }
 const OPEN_FILTERS := ["*.scrp,*.json;Fights"]
 const SAVE_FILTERS := ["*.scrp;Scrap file (the fight and all its files)", "*.json;Plain chart (the fight only)"]
@@ -93,6 +95,7 @@ var side_tabs := TabContainer.new()
 var node_tabs: NodeTabs
 var snap_picker := OptionButton.new()
 var text_editor: TextEditorWindow
+var formula_editor: FormulaEditorWindow
 var status_label: Label
 var time_label: Label
 var title_label: Label
@@ -246,6 +249,9 @@ func _build_ui() -> void:
 	text_editor = TextEditorWindow.new()
 	text_editor.editor = self
 	add_child(text_editor)
+	formula_editor = FormulaEditorWindow.new()
+	formula_editor.editor = self
+	add_child(formula_editor)
 
 
 ## One tab of the panel on the right.
@@ -296,6 +302,10 @@ func icon_for(type: String) -> Texture2D:
 
 func open_text_editor(ev: Dictionary) -> void:
 	text_editor.open(ev)
+
+
+func open_formula_editor(ev: Dictionary) -> void:
+	formula_editor.open(ev)
 
 
 func set_status(text: String) -> void:
@@ -590,6 +600,7 @@ func _restore(text: String) -> void:
 	var object_id: int = selected_object["id"] if selected_object != null else -1
 	chart = ChartDefs.parse_chart(text)
 	text_editor.hide() # it was editing a node from the old copy
+	formula_editor.hide()
 	selected = []
 	selected_object = null
 	for lane in lane_list():
@@ -797,7 +808,16 @@ func browse_file(kind: String, on_pick: Callable, for_new_scrap := false) -> voi
 	var folder: String = BROWSE_KINDS[kind][1]
 	_browse("Pick a file", filters, FileDialog.FILE_MODE_OPEN_FILE, func(path):
 		var packs_itself := for_new_scrap or ScrapFile.is_scrap(chart_path)
-		on_pick.call(ProjectSettings.localize_path(path) if packs_itself else _import_file(path, folder)))
+		if kind != "video":
+			on_pick.call(ProjectSettings.localize_path(path) if packs_itself else _import_file(path, folder))
+			return
+		set_status("Converting %s..." % path.get_file())
+		VideoImport.convert_video(path, func(result):
+			if result["error"] != "":
+				set_status(result["error"])
+				return
+			set_status("Video ready: %s" % result["path"].get_file())
+			on_pick.call(ProjectSettings.localize_path(result["path"]) if packs_itself else _import_file(result["path"], folder))))
 
 
 func _import_file(path: String, folder: String) -> String:
