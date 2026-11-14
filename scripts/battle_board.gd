@@ -18,6 +18,7 @@ var ghosts := Ghosts.new()
 var math_layer := MathLayer.new()
 var _objects := {} # AttackRuntime.ObjectState -> AttackObject
 var _open := 0.0 # goes 0 -> 1 while the board opens
+var _tween: Tween # opening or closing; a new one stops the old, so a closing board can't hide one that's just opened
 var _last_center := Vector2.ZERO
 var _last_angle := 0.0
 var _last_size := Vector2.ZERO
@@ -101,7 +102,7 @@ func open(attack: AttackRuntime) -> void:
 
 	_open = 0.0
 	show()
-	var t := create_tween().set_parallel()
+	var t := _new_tween()
 	t.tween_property(self, "_open", 1.0, OPEN_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	t.tween_property(dim, "modulate:a", 0.5, OPEN_TIME)
 	_sync()
@@ -113,10 +114,17 @@ func close() -> void:
 		return
 	runtime = null
 	math_layer.runtime = null
-	var t := create_tween().set_parallel()
+	var t := _new_tween()
 	t.tween_method(_retract_step, 1.0, 0.0, RETRACT_TIME).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 	t.tween_property(dim, "modulate:a", 0.0, RETRACT_TIME * 2)
 	t.chain().tween_callback(hide)
+
+
+func _new_tween() -> Tween:
+	if _tween:
+		_tween.kill()
+	_tween = create_tween().set_parallel()
+	return _tween
 
 
 func _retract_step(amount: float) -> void:
