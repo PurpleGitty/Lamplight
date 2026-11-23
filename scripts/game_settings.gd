@@ -47,6 +47,7 @@ var values := {
 	"master_volume": 100, "music_volume": 100, "sfx_volume": 100,
 	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true, "auto_run": false,
 	"fx_shadows": true, "fx_backgrounds": true, "fx_trails": true, "discord_status": true,
+	"tutorial_offered": false, # asked on the title screen the first time the game's opened
 	"touch_stick": "AUTO", "touch_size": "MEDIUM", "touch_opacity": 100, "finger_ui": true,
 	"audio_delay_ms": -1, # below 0: use the platform's usual
 }

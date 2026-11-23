@@ -79,6 +79,7 @@ func _ready() -> void:
 		_ready_embedded()
 		return
 	Battle.chart_to_play = "" # the campaign plays its own charts
+	Battle.tutorial = false
 	Battle.return_scene = ""
 	Battle.overworld_party = {}
 	Overworld.resume = null
@@ -109,6 +110,8 @@ func _ready() -> void:
 	_add_version_label()
 	GameSettings.device_changed.connect(_refresh_prompts)
 	_open_page(page)
+	if page == Page.MAIN and not GameSettings.values["tutorial_offered"]:
+		_offer_tutorial()
 
 
 ## Just the settings, over a paused fight: nothing about what's playing gets reset.
@@ -430,13 +433,103 @@ func _build_system() -> void:
 		_setting_row(row, func(): return "DISCORD STATUS  %s" % _on_off("discord_status"), func(_step: int):
 			GameSettings.change("discord_status", not GameSettings.values["discord_status"]))
 		row += 1
-	# Not made yet: here so it has a home
-	var tutorial := _label("TUTORIAL  COMING SOON", OPTION_FONT, 16, SUB_FIRST_Y + row * SUB_GAP)
-	tutorial.add_theme_color_override("font_color", DIM)
-	_add_option(tutorial, func(): pass, false)
-	row += 1
+	# Not over a paused fight: it'd throw the fight away
+	if not embedded:
+		_add_option(_label("PLAY TUTORIAL", OPTION_FONT, 16, SUB_FIRST_Y + row * SUB_GAP), _start_tutorial, true)
+		row += 1
 	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + row * SUB_GAP), _go_back, false)
 	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
+
+
+func _start_tutorial() -> void:
+	Battle.tutorial = true
+	GameSettings.go_to(BATTLE_SCENE)
+
+
+# --- the first time the game's opened ---
+
+var _offer: Control
+var _offer_choices: Array[Label] = []
+var _offer_at := 0
+
+
+func _offer_tutorial() -> void:
+	_offer = Control.new()
+	_offer.set_anchors_preset(PRESET_FULL_RECT)
+	_offer.z_index = 5
+	add_child(_offer)
+	var shade := ColorRect.new()
+	shade.color = Color(0, 0, 0, 0.75)
+	shade.set_anchors_preset(PRESET_FULL_RECT)
+	_offer.add_child(shade)
+	var box := UIBox.new()
+	box.color = Color.BLACK
+	box.position = Vector2(64, 110)
+	box.size = Vector2(512, 260)
+	_offer.add_child(box)
+	var words := Label.new()
+	words.text = "It looks like you're new around here. Would you like a tutorial for the campaign?\n\n(If not, you can always check it out later in [SETTINGS -> SYSTEM].)"
+	words.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	words.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	words.add_theme_font_override("font", OPTION_FONT)
+	words.add_theme_font_size_override("font_size", 16)
+	words.add_theme_constant_override("line_spacing", 6)
+	words.position = Vector2(24, 22)
+	words.size = Vector2(464, 170)
+	box.add_child(words)
+	_offer_choices.clear()
+	for i in 2:
+		var choice := Label.new()
+		choice.text = ["YES", "NO"][i]
+		choice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		choice.add_theme_font_override("font", OPTION_FONT)
+		choice.add_theme_font_size_override("font_size", 16)
+		choice.position = Vector2(96 + i * 200, 216)
+		choice.size = Vector2(120, 24)
+		box.add_child(choice)
+		_offer_choices.append(choice)
+	_offer_at = 0
+	_show_offer_choice()
+	soul.hide()
+
+
+func _show_offer_choice() -> void:
+	for i in _offer_choices.size():
+		_offer_choices[i].add_theme_color_override("font_color", Color.YELLOW if i == _offer_at else Color.WHITE)
+
+
+## Arrows pick YES or NO; ACCEPT answers. BACK is a no. Either way it isn't asked again.
+func _offer_input(event: InputEvent) -> void:
+	var tap := GameSettings.tap_at(event)
+	if tap != Vector2.INF:
+		for i in _offer_choices.size():
+			if GameSettings.tap_hits(_offer_choices[i], tap):
+				_offer_at = i
+				_answer_offer()
+		return
+	if GameSettings.pressed(event, "LEFT") or GameSettings.pressed(event, "RIGHT") or GameSettings.pressed(event, "UP") or GameSettings.pressed(event, "DOWN"):
+		_offer_at = 1 - _offer_at
+		move_sound.play()
+		_show_offer_choice()
+	elif GameSettings.pressed(event, "ACCEPT"):
+		_answer_offer()
+	elif GameSettings.pressed(event, "BACK"):
+		_offer_at = 1
+		_answer_offer()
+
+
+func _answer_offer() -> void:
+	GameSettings.change("tutorial_offered", true)
+	if _offer_at == 0:
+		select_sound.play()
+		_leaving = true
+		_start_tutorial()
+		return
+	back_sound.play()
+	_offer.queue_free()
+	_offer = null
+	soul.show()
+	_ignore_input_until = Time.get_ticks_msec() + AFTER_REBIND_PAUSE_MS
 
 
 func _on_off(key: String) -> String:
@@ -548,6 +641,10 @@ func _menu_tap(tap: Vector2) -> void:
 
 ## The press after choosing a control to change.
 func _input(event: InputEvent) -> void:
+	if _offer != null:
+		get_viewport().set_input_as_handled()
+		_offer_input(event)
+		return
 	var tap := GameSettings.tap_at(event)
 	if tap != Vector2.INF:
 		_menu_tap(tap)

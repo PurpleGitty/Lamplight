@@ -1,17 +1,17 @@
 extends CharacterBody2D
 ## The soul. Can only move during the enemy's turn, and checks for bullets
 ## every physics frame so standing inside one keeps hurting after i-frames.
-## Keeping a bullet within the graze outline, 130% of the soul's size, gives TP
+## Keeping a bullet within the graze outline, 220% of the soul's size, gives TP
 ## every half of the soul's i-frame time, with a sound and a little "+2" each time.
 ## The soul is held inside the board by geometry, not physics walls, so a turning
 ## board can't sweep past it and leave it outside.
 
-const GRAZE_SCALE := 1.3 # the graze range and its outline, compared to the soul
-const OUTLINE_THICKNESS := 1.5
+const GRAZE_SCALE := 2.2 # the graze range and its outline, compared to the soul
 const FASTEST_GRAZE := 0.05 # seconds, if i-frames are turned right down
 const BOARD_BORDER := Vector2(1, 1)
 const OUTLINE_FADE := 4.0 # per second
 const START_GRACE := 0.5 # seconds of safety once the board's open, so nothing lands on a soul that's only just appeared
+const SLOW_SPEED := 0.5 # holding BACK, for squeezing between bullets
 
 @onready var battle: Battle = owner
 @onready var hitbox: Area2D = $"bullet collision"
@@ -69,7 +69,8 @@ func frame_size() -> Vector2:
 	return sprite.texture.get_size() / Vector2(sprite.hframes, 1)
 
 
-## Traces each soul frame's silhouette at the size of the graze range.
+## Each soul frame's own shape blown up to the size of the graze range, as a one-pixel
+## outline, so it reads as a bigger soul rather than a blob.
 func _build_outlines() -> void:
 	var image := sprite.texture.get_image()
 	if image.is_compressed():
@@ -79,46 +80,21 @@ func _build_outlines() -> void:
 	var longest := float(maxi(size.x, size.y))
 	_graze_radius = longest * GRAZE_SCALE / 2.0
 	_half_size = frame_size() / 2.0 + BOARD_BORDER
-	var reach := (GRAZE_SCALE - 1.0) * longest / 2.0 # pixels out from the art
-	var margin := ceili(reach) + 1
+	var big := Vector2i((Vector2(size) * GRAZE_SCALE).round())
+	# The same odd or even width as the soul, so both sit on the same pixel grid
+	big += Vector2i((big.x - size.x) % 2, (big.y - size.y) % 2)
 	_outlines.clear()
 	for f in sprite.hframes:
-		var width := size.x + margin * 2
-		var height := size.y + margin * 2
-		var distances := _distances_to_art(image, f, size, margin)
-		var traced := Image.create(width, height, false, Image.FORMAT_RGBA8)
-		for y in height:
-			for x in width:
-				var distance: float = distances[y * width + x]
-				if distance <= reach and distance > reach - OUTLINE_THICKNESS:
+		var inside := func(x: int, y: int) -> bool:
+			if x < 0 or y < 0 or x >= big.x or y >= big.y:
+				return false
+			return _solid(image, f, size, floori((x + 0.5) * size.x / big.x), floori((y + 0.5) * size.y / big.y))
+		var traced := Image.create(big.x, big.y, false, Image.FORMAT_RGBA8)
+		for y in big.y:
+			for x in big.x:
+				if inside.call(x, y) and not (inside.call(x - 1, y) and inside.call(x + 1, y) and inside.call(x, y - 1) and inside.call(x, y + 1)):
 					traced.set_pixel(x, y, Color.WHITE)
 		_outlines.append(ImageTexture.create_from_image(traced))
-
-
-## How far every pixel is from the art, worked out in one sweep each way so a big
-## sprite doesn't take long.
-func _distances_to_art(image: Image, frame_index: int, size: Vector2i, margin: int) -> PackedFloat32Array:
-	var width := size.x + margin * 2
-	var height := size.y + margin * 2
-	var distances := PackedFloat32Array()
-	distances.resize(width * height)
-	for y in height:
-		for x in width:
-			distances[y * width + x] = 0.0 if _solid(image, frame_index, size, x - margin, y - margin) else INF
-	var diagonal := sqrt(2.0)
-	var before := [[-1, 0, 1.0], [0, -1, 1.0], [-1, -1, diagonal], [1, -1, diagonal]]
-	var after := [[1, 0, 1.0], [0, 1, 1.0], [1, 1, diagonal], [-1, 1, diagonal]]
-	for sweep in [[before, range(height), range(width)], [after, range(height - 1, -1, -1), range(width - 1, -1, -1)]]:
-		for y in sweep[1]:
-			for x in sweep[2]:
-				var best: float = distances[y * width + x]
-				for step in sweep[0]:
-					var nx: int = x + step[0]
-					var ny: int = y + step[1]
-					if nx >= 0 and ny >= 0 and nx < width and ny < height:
-						best = minf(best, distances[ny * width + nx] + step[2])
-				distances[y * width + x] = best
-	return distances
 
 
 func _solid(image: Image, frame_index: int, size: Vector2i, x: int, y: int) -> bool:
@@ -152,6 +128,8 @@ func _physics_process(delta: float) -> void:
 
 	var direction := Input.get_vector("LEFT", "RIGHT", "UP", "DOWN")
 	velocity = direction * battle.rules["soul_speed"] * battle.mod("soul_speed")
+	if Input.is_action_pressed("BACK"):
+		velocity *= SLOW_SPEED
 	_graze_shape.radius = _graze_radius * battle.mod("graze_radius")
 	outline.scale = Vector2.ONE * battle.mod("graze_radius")
 	_graze_wait = maxf(_graze_wait - delta, 0.0)

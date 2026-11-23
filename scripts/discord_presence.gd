@@ -103,6 +103,8 @@ func _activity() -> Variant:
 		var conductor: Conductor = battle.conductor
 		var playing := conductor != null and conductor.playing and not get_tree().paused
 		var song_at := conductor.song_position if playing else -1.0
+		if Battle.tutorial:
+			return _make("Learning the ropes", "In the tutorial" if not get_tree().paused else "Paused")
 		if Battle.return_scene != "" and Overworld.locale_to_play != "":
 			return _make("Exploring " + _file_title(Overworld.locale_to_play), "In a fight" if playing else "Paused", song_at)
 		var what := "Playing " + _file_title(Battle.chart_to_play) if Battle.chart_to_play != "" else "In a fight"

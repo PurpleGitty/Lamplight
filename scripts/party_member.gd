@@ -81,7 +81,8 @@ func set_hp(value: int) -> void:
 func _go_down() -> void:
 	is_down = true
 	revive_progress = 0.0
-	battle.get_node("Spanked").play()
+	if battle.tutorial_node == null: # the tutorial's soul has its own breaking sounds
+		battle.get_node("Spanked").play()
 
 	# The HP bar turns into a green revive bar while down
 	hp_bar.self_modulate = Color.GREEN
