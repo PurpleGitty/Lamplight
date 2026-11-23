@@ -41,6 +41,7 @@ const WINDOWED_SIZE := Vector2i(1280, 960)
 var values := {
 	"master_volume": 100, "music_volume": 100, "sfx_volume": 100,
 	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true, "auto_run": false,
+	"discord_status": true,
 }
 var bindings := {"key": DEFAULT_KEYS.duplicate(), "pad": DEFAULT_PAD.duplicate(true)}
 ## "key" or "pad": what the player last pressed, so prompts name the right thing.
@@ -58,6 +59,8 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	if DiscordPresence.supported():
+		add_child(DiscordPresence.new())
 	apply_game_view()
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values["vsync"] else DisplayServer.VSYNC_DISABLED)
 	if _window_mode_saved:

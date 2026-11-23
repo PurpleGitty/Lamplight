@@ -118,4 +118,4 @@ func _add_label(text: String, font_size: int, center: Vector2) -> Label:
 
 
 func _wait(seconds: float) -> void:
-	await get_tree().create_timer(seconds).timeout
+	await get_tree().create_timer(seconds, false).timeout

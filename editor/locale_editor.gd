@@ -790,7 +790,7 @@ func _back_to_menu() -> void:
 
 func _leave() -> void:
 	MainMenu.page = MainMenu.Page.LOCALE
-	get_tree().change_scene_to_file("res://menu.tscn")
+	get_tree().change_scene_to_file("res://scenes/menu.tscn")
 
 
 func _show_help() -> void:

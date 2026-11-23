@@ -5,14 +5,17 @@ extends Control
 ## every fight there is to play; Settings holds sound, graphics and controls. The
 ## title and options are placeholder text until the menu art is made.
 
-enum Page { MAIN, SCRAP, PLAY, SETTINGS, SOUND, GRAPHICS, CONTROLS, LOCALE, LOCALE_PLAY, LOCALE_SAVES }
+enum Page { MAIN, SCRAP, PLAY, SETTINGS, SOUND, GRAPHICS, CONTROLS, LOCALE, LOCALE_PLAY, LOCALE_SAVES, SYSTEM }
+
+## BACK from the Settings page when this is just the settings, over a paused fight.
+signal closed
 
 const TITLE_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
 const OPTION_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
 const SOUL = preload("res://sprites/candy_soul.png")
 const ICON_CREATE = preload("res://sprites/menu/scrap_create.png")
 const ICON_PLAY = preload("res://sprites/menu/scrap_play.png")
-const BATTLE_SCENE := "res://node_2d.tscn"
+const BATTLE_SCENE := "res://scenes/battle.tscn"
 const EDITOR_SCENE := "res://editor/attack_editor.tscn"
 const LOCALE_EDITOR_SCENE := "res://editor/locale_editor.tscn"
 const CHARTS_FOLDER := "res://charts/"
@@ -39,7 +42,7 @@ const AFTER_REBIND_PAUSE_MS := 250
 ## Which page and option BACK goes to from each page.
 const PARENTS := {
 	Page.SCRAP: [Page.MAIN, 1], Page.PLAY: [Page.SCRAP, 1], Page.LOCALE: [Page.MAIN, 2], Page.LOCALE_PLAY: [Page.LOCALE, 1], Page.LOCALE_SAVES: [Page.LOCALE_PLAY, 0], Page.SETTINGS: [Page.MAIN, 3],
-	Page.SOUND: [Page.SETTINGS, 0], Page.GRAPHICS: [Page.SETTINGS, 1], Page.CONTROLS: [Page.SETTINGS, 2],
+	Page.SOUND: [Page.SETTINGS, 0], Page.GRAPHICS: [Page.SETTINGS, 1], Page.CONTROLS: [Page.SETTINGS, 2], Page.SYSTEM: [Page.SETTINGS, 3],
 }
 
 ## The page to come back to from a fight or the editor.
@@ -47,6 +50,8 @@ static var page := Page.MAIN
 ## The overworld whose saves are listed.
 static var locale_path := ""
 
+## Only the settings pages, for the pause menu: set before it's added.
+var embedded := false
 var selected := 0
 ## Each is {"label", "action", "leaves"}, and can have "note", "icon", "adjust" (for
 ## left/right), "text" (a function giving its current text), "bind" (an action name).
@@ -67,6 +72,9 @@ var _ignore_input_until := 0
 
 
 func _ready() -> void:
+	if embedded:
+		_ready_embedded()
+		return
 	Battle.chart_to_play = "" # the campaign plays its own charts
 	Battle.return_scene = ""
 	Battle.overworld_party = {}
@@ -98,6 +106,29 @@ func _ready() -> void:
 	_add_version_label()
 	GameSettings.device_changed.connect(_refresh_prompts)
 	_open_page(page)
+
+
+## Just the settings, over a paused fight: nothing about what's playing gets reset.
+func _ready_embedded() -> void:
+	set_anchors_preset(PRESET_FULL_RECT)
+	var bg := ColorRect.new()
+	bg.color = Color.BLACK
+	bg.set_anchors_preset(PRESET_FULL_RECT)
+	add_child(bg)
+	add_child(page_root)
+	soul.texture = SOUL
+	soul.hframes = 2
+	soul.scale = Vector2(2, 2)
+	soul.z_index = 1
+	add_child(soul)
+	move_sound.stream = preload("res://sounds/lightningbulb-spacebar-click-keyboard-199448.mp3")
+	select_sound.stream = preload("res://sounds/creatorshome-video-game-select-337214.mp3")
+	back_sound.stream = preload("res://sounds/freesound_community-cancel-36118.mp3")
+	add_child(move_sound)
+	add_child(select_sound)
+	add_child(back_sound)
+	GameSettings.device_changed.connect(_refresh_prompts)
+	_open_page(Page.SETTINGS)
 
 
 ## The version, in the bottom right corner of every page.
@@ -134,6 +165,7 @@ func _open_page(new_page: Page, start_on := 0) -> void:
 		Page.LOCALE: _build_locale()
 		Page.LOCALE_PLAY: _build_locale_play()
 		Page.LOCALE_SAVES: _build_locale_saves()
+		Page.SYSTEM: _build_system()
 	_select(start_on, false)
 
 
@@ -197,7 +229,7 @@ func _build_locale_saves() -> void:
 
 
 func _start_locale(slot: int) -> void:
-	Overworld.return_scene = "res://menu.tscn"
+	Overworld.return_scene = "res://scenes/menu.tscn"
 	Overworld.test_room = -1
 	Overworld.test_spawn = Vector2.INF
 	var scene := Overworld.play(locale_path)
@@ -283,7 +315,7 @@ func _play(path: String) -> void:
 
 func _build_settings() -> void:
 	_title("SETTINGS", 32, 60)
-	var picks := [["SOUND", Page.SOUND], ["GRAPHICS", Page.GRAPHICS], ["CONTROLS", Page.CONTROLS]]
+	var picks := [["SOUND", Page.SOUND], ["GRAPHICS", Page.GRAPHICS], ["CONTROLS", Page.CONTROLS], ["SYSTEM", Page.SYSTEM]]
 	for i in picks.size():
 		var label := _label(picks[i][0], OPTION_FONT, 16, SUB_FIRST_Y + i * SUB_GAP)
 		var target: Page = picks[i][1]
@@ -317,6 +349,23 @@ func _build_graphics() -> void:
 	_setting_row(4, func(): return "SHAKING  %s" % _on_off("screen_shake"), func(_step: int):
 		GameSettings.change("screen_shake", not GameSettings.values["screen_shake"]))
 	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + 5 * SUB_GAP), _go_back, false)
+	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
+
+
+## The game itself: Discord, and the tutorial.
+func _build_system() -> void:
+	_title("SYSTEM", 32, 60)
+	var row := 0
+	if DiscordPresence.supported():
+		_setting_row(row, func(): return "DISCORD STATUS  %s" % _on_off("discord_status"), func(_step: int):
+			GameSettings.change("discord_status", not GameSettings.values["discord_status"]))
+		row += 1
+	# Not made yet: here so it has a home
+	var tutorial := _label("TUTORIAL  COMING SOON", OPTION_FONT, 16, SUB_FIRST_Y + row * SUB_GAP)
+	tutorial.add_theme_color_override("font_color", DIM)
+	_add_option(tutorial, func(): pass, false)
+	row += 1
+	_add_option(_label("BACK", OPTION_FONT, 16, SUB_FIRST_Y + row * SUB_GAP), _go_back, false)
 	_hint([["LEFT", ""], ["RIGHT", "CHANGE"], ["BACK", "BACK"]])
 
 
@@ -577,6 +626,10 @@ func _adjust(step: int) -> void:
 
 
 func _go_back() -> void:
+	if embedded and page == Page.SETTINGS:
+		back_sound.play()
+		closed.emit()
+		return
 	if not PARENTS.has(page):
 		return
 	back_sound.play()

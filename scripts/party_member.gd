@@ -7,8 +7,8 @@ extends Character
 signal downed
 signal revived
 
-const DISSOLVE_SHADER = preload("res://dissolve.gdshader")
-const DISSOLVE_NOISE = preload("res://dissolve_noise.tres")
+const DISSOLVE_SHADER = preload("res://shaders/dissolve.gdshader")
+const DISSOLVE_NOISE = preload("res://shaders/dissolve_noise.tres")
 
 var hp_bar: TextureProgressBar
 var name_label: Label

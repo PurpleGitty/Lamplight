@@ -4,7 +4,7 @@ extends Node2D
 ## event runner, which works through a list of steps one at a time. It keeps its
 ## place in a plain list, so a fight can interrupt a cutscene and carry on after.
 
-const SCENE := "res://overworld.tscn"
+const SCENE := "res://scenes/overworld.tscn"
 const SCREEN := Vector2(640, 480)
 const FONT = preload("res://fonts/PixelOperator.ttf")
 const MENU_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
@@ -27,7 +27,7 @@ const PORTRAIT_SIZE := 96.0
 ## What to play. The menu and the Locale-Inator set this.
 static var locale_to_play := ""
 ## Where Quit goes.
-static var return_scene := "res://menu.tscn"
+static var return_scene := "res://scenes/menu.tscn"
 ## Which room and spawn to start at, for testing from the editor (-1 = the locale's start).
 static var test_room := -1
 static var test_spawn := Vector2.INF
@@ -1104,7 +1104,7 @@ func _start_fight(step: Dictionary) -> bool:
 	Battle.overworld_party = _party_for_fight() if step["use_party"] else {}
 	Battle.give_up_label = "BACK TO LAST SAVE" if step["if_lost"] == "back to last save" else "CARRY ON"
 	GameSettings.apply_game_view() # the fight scales the way the settings say
-	get_tree().change_scene_to_file("res://node_2d.tscn")
+	get_tree().change_scene_to_file("res://scenes/battle.tscn")
 	return true
 
 

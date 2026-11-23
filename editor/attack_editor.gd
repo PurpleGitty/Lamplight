@@ -976,7 +976,7 @@ func _back_to_menu() -> void:
 	stop_playback()
 	if dirty:
 		ChartDefs.save_chart(chart, AUTOSAVE_PATH)
-	get_tree().change_scene_to_file("res://menu.tscn") # the menu restores the game's scaling
+	get_tree().change_scene_to_file("res://scenes/menu.tscn") # the menu restores the game's scaling
 
 
 func _test_fight() -> void:
@@ -984,4 +984,4 @@ func _test_fight() -> void:
 	stop_playback()
 	Battle.chart_to_play = chart_path
 	GameSettings.apply_game_view()
-	get_tree().change_scene_to_file("res://node_2d.tscn")
+	get_tree().change_scene_to_file("res://scenes/battle.tscn")

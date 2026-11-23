@@ -105,6 +105,9 @@ func _ready() -> void:
 		_default_sounds[rule] = get_node(SOUND_RULES[rule]).stream
 	_apply_look()
 	_apply_sounds()
+	var pause_menu := PauseMenu.new()
+	pause_menu.battle = self
+	add_child(pause_menu)
 	var reticle := FocusReticle.new()
 	reticle.battle = self
 	reticle.z_index = 4
@@ -176,7 +179,7 @@ func _process(delta: float) -> void:
 			if return_scene != "":
 				_go_back_to_overworld()
 			else:
-				get_tree().change_scene_to_file("res://menu.tscn")
+				get_tree().change_scene_to_file("res://scenes/menu.tscn")
 		return
 
 	_fight_seconds += delta
@@ -308,7 +311,7 @@ func player_done() -> void:
 	if not traditional:
 		return
 	var id := _player_turn_id
-	await get_tree().create_timer(TRADITIONAL_PAUSE).timeout
+	await get_tree().create_timer(TRADITIONAL_PAUSE, false).timeout
 	if id != _player_turn_id or phase != Phase.PLAYER:
 		return
 	if attacks.is_empty():

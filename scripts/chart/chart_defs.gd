@@ -308,6 +308,7 @@ const CHART_PARAMS := [
 ## The fight's rules (the Rules tab). Change Rules nodes can alter all but battle_type.
 const RULE_PARAMS := [
 	{"name": "battle_type", "type": "enum", "default": "timed", "options": ["timed", "traditional"], "help": "timed: turns follow the song and you lose when it ends. traditional: the song loops, no time limit, and attacks are measured in frames (60 a second) and start when the player finishes their turn"},
+	{"name": "music_while_paused", "type": "bool", "default": false, "help": "The song keeps playing while the player has the game paused. The fight follows the song, so it picks up where the song's got to"},
 	{"name": "tp_enabled", "type": "bool", "default": true, "help": "Off: no TP box, and specials are free"},
 	{"name": "start_tp", "type": "float", "default": 0.0, "min": 0.0, "max": 1000.0},
 	{"name": "max_tp", "type": "float", "default": 100.0, "min": 1.0, "max": 1000.0},

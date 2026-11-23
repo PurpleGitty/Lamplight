@@ -427,7 +427,7 @@ func _close_minigame() -> void:
 
 
 func _wait(seconds: float) -> void:
-	await get_tree().create_timer(seconds).timeout
+	await get_tree().create_timer(seconds, false).timeout
 
 
 # --- DIALOGUE (only reached if the player was quick) ---
