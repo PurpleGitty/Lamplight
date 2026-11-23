@@ -136,7 +136,7 @@ func _picker(everyone: Array) -> void:
 
 
 func _thumbnail(data: Dictionary) -> Texture2D:
-	var tex := ChartDefs.load_texture(data["sprite"])
+	var tex := ChartDefs.character_texture(data["sprite"])
 	var frames := maxi(int(data["hframes"]), 1)
 	var w := tex.get_width() / float(frames)
 	var atlas := AtlasTexture.new()
@@ -331,6 +331,8 @@ func _minigame_settings(item: Dictionary) -> void:
 
 
 func _acts(data: Dictionary) -> void:
+	if not data.get("acts") is Array:
+		data["acts"] = [] # someone who started out in the party
 	var items: Array = data["acts"]
 	for item in items:
 		_row({"name": "name", "type": "string"}, item["name"], func(v): editor.set_param(item, "name", v, false))

@@ -47,12 +47,19 @@ func _ready() -> void:
 
 ## Puts the sprite and hitbox from the rules into effect.
 func set_look(rules: Dictionary) -> void:
-	var look := "%s/%d" % [rules["soul_sprite"], rules["soul_hframes"]]
+	var look := "%s/%d/%s" % [rules["soul_sprite"], rules["soul_hframes"], rules["game_art"]]
 	if look != _look:
 		_look = look
 		sprite.frame = 0
-		sprite.texture = ChartDefs.load_texture(rules["soul_sprite"]) if rules["soul_sprite"] != "" else _default_texture
-		sprite.hframes = maxi(int(rules["soul_hframes"]), 1)
+		if rules["soul_sprite"] != "":
+			sprite.texture = ChartDefs.load_texture(rules["soul_sprite"])
+			sprite.hframes = maxi(int(rules["soul_hframes"]), 1)
+		elif rules["game_art"]:
+			sprite.texture = _default_texture
+			sprite.hframes = maxi(int(rules["soul_hframes"]), 1)
+		else:
+			sprite.texture = ChartDefs.blank_soul()
+			sprite.hframes = 2
 		_build_outlines()
 	_collider.shape.size = Vector2(rules["soul_hitbox_w"], rules["soul_hitbox_h"])
 	_collider.position = Vector2(rules["soul_hitbox_x"], rules["soul_hitbox_y"])

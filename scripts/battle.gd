@@ -26,7 +26,7 @@ const SOUND_RULES := {
 	"menu_select_sound": "Select", "menu_back_sound": "Deselect", "text_sound": "Txt",
 }
 ## Rules that change how the fight looks or sounds, and so need putting into effect.
-const LOOK_RULES := ["background", "background_video", "background_hframes", "background_vframes", "speech_font", "menu_font",
+const LOOK_RULES := ["game_art", "background", "background_video", "background_hframes", "background_vframes", "speech_font", "menu_font",
 	"soul_sprite", "soul_hframes", "soul_hitbox_w", "soul_hitbox_h", "soul_hitbox_x", "soul_hitbox_y"]
 
 ## Which chart to play next. The chart maker's Test Fight sets this.
@@ -650,7 +650,7 @@ func _apply_change(change: Dictionary) -> void:
 		"sprite":
 			if value != "":
 				who.data[key] = value
-				who.texture = ChartDefs.load_texture(value)
+				who.texture = ChartDefs.character_texture(value)
 		"hframes":
 			who.data[key] = value
 			who.frame = 0
@@ -681,6 +681,8 @@ func _apply_look() -> void:
 		var cover := maxf(SCREEN_SIZE.x / frame_size.x, SCREEN_SIZE.y / frame_size.y)
 		background.scale = Vector2(cover, cover)
 	_apply_background_video(background)
+	if path == "" and not rules["game_art"]:
+		background.self_modulate.a = 0.0 # no background yet: plain black
 	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
 	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
 	soul.set_look(rules)

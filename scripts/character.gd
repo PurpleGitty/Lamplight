@@ -29,7 +29,7 @@ func setup(entry: Dictionary, owner_battle: Battle) -> void:
 	hp = max_hp
 	voice = ChartDefs.load_audio(entry["voice"])
 	bob_pattern = ChartDefs.parse_bob(entry["bob"])
-	texture = ChartDefs.load_texture(entry["sprite"])
+	texture = ChartDefs.character_texture(entry["sprite"])
 	hframes = maxi(int(entry["hframes"]), 1)
 	scale = Vector2.ONE * float(entry["sprite_scale"])
 	position = Vector2(entry["x"], entry["y"])
