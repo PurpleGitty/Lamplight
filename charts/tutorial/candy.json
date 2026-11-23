@@ -1,0 +1,402 @@
+{
+	"board_events": [],
+	"bpm": 178.4,
+	"enemies": [
+		{
+			"acts": [
+				{
+					"name": "Check",
+					"text": "* Candy\n* ??? AT   ??? DF   ??? HP\n* It's not immediately apparent to you if this is actually happening."
+				}
+			],
+			"bob": "",
+			"defense": 0.0,
+			"hframes": 1,
+			"idle_beats": 4.0,
+			"idle_count": 1,
+			"idle_first": 0,
+			"max_hp": 4000,
+			"name": "Candy",
+			"present": true,
+			"sprite": "",
+			"sprite_scale": 1.0,
+			"voice": "",
+			"x": 190.0,
+			"y": -40.0
+		}
+	],
+	"meta_events": [],
+	"next_id": 23,
+	"objects": [],
+	"offset": 0.204,
+	"party": [
+		{
+			"attack_count": 0,
+			"attack_first": 0,
+			"attack_seconds": 0.4,
+			"attack_sound": "res://sounds/tutorial/slap.mp3",
+			"bob": "1, 2",
+			"defense": 0.0,
+			"fight_damage": 300,
+			"fight_minigame": "timing_bar",
+			"hframes": 1,
+			"idle_beats": 4.0,
+			"idle_count": 1,
+			"idle_first": 0,
+			"maneuvers": [
+				{
+					"cost": 0.0,
+					"description": "Take much less damage next turn.",
+					"effects": [
+						{
+							"kind": "damage_taken",
+							"target": "self",
+							"turns": 1,
+							"value": 0.5
+						}
+					],
+					"name": "Brace",
+					"preset": "brace",
+					"sound": "",
+					"sprite": "",
+					"text": "* {user} braces.",
+					"use_count": 0,
+					"use_first": 0,
+					"use_seconds": 0.4
+				},
+				{
+					"cost": 15.0,
+					"description": "Heals whoever's most hurt.",
+					"effects": [
+						{
+							"kind": "heal",
+							"target": "lowest_hp",
+							"turns": 1,
+							"value": 30.0
+						}
+					],
+					"name": "First Aid",
+					"preset": "first_aid",
+					"sound": "",
+					"sprite": "",
+					"text": "* {user} patches someone up.",
+					"use_count": 0,
+					"use_first": 0,
+					"use_seconds": 0.4
+				}
+			],
+			"max_hp": 100,
+			"name": "Crow",
+			"present": true,
+			"specials": [
+				{
+					"cost": 30.0,
+					"damage": 800.0,
+					"description": "A big, simple hit.",
+					"effects": [],
+					"hits": 1,
+					"hits_all": false,
+					"minigame": "timing_bar",
+					"name": "Heavy Slam",
+					"preset": "heavy_slam",
+					"settings": {
+						"cross_time": 0.9
+					},
+					"sound": "",
+					"sprite": "",
+					"text": "",
+					"use_count": 0,
+					"use_first": 0,
+					"use_seconds": 0.4
+				}
+			],
+			"sprite": "",
+			"sprite_scale": 2.0,
+			"voice": "",
+			"x": -260.0,
+			"y": 150.0
+		}
+	],
+	"rules": {
+		"auto_revive": true,
+		"background": "",
+		"background_beats": 4.0,
+		"background_frames": 0,
+		"background_hframes": 1,
+		"background_vframes": 1,
+		"background_video": "",
+		"battle_type": "timed",
+		"defend_factor": 0.5,
+		"enemy_hurt_sound": "",
+		"game_art": false,
+		"graze_tp": 2.0,
+		"hurt_sound": "",
+		"invincibility": 1.0,
+		"max_tp": 100.0,
+		"menu_back_sound": "",
+		"menu_font": "",
+		"menu_move_sound": "",
+		"menu_select_sound": "",
+		"music_while_paused": false,
+		"perfect_tp": 10.0,
+		"revive_seconds": 60.0,
+		"soul_hframes": 2,
+		"soul_hitbox_h": 8.0,
+		"soul_hitbox_w": 8.0,
+		"soul_hitbox_x": 0.0,
+		"soul_hitbox_y": 0.0,
+		"soul_speed": 128.0,
+		"soul_sprite": "res://sprites/tutorial/blank_soul.png",
+		"speech_font": "",
+		"start_tp": 0.0,
+		"text_sound": "",
+		"tp_enabled": true
+	},
+	"song": "res://sounds/tutorial/crow.mp3",
+	"text_events": [],
+	"turn_events": [
+		{
+			"beat": 32.0,
+			"id": 1,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 48.0,
+			"id": 2,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 72.0,
+			"id": 3,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 88.0,
+			"id": 4,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 112.0,
+			"id": 5,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 128.0,
+			"id": 6,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 152.0,
+			"id": 7,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 168.0,
+			"id": 8,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 192.0,
+			"id": 9,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 208.0,
+			"id": 10,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 232.0,
+			"id": 11,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 248.0,
+			"id": 12,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 272.0,
+			"id": 13,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 288.0,
+			"id": 14,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 312.0,
+			"id": 15,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 328.0,
+			"id": 16,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 352.0,
+			"id": 17,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 368.0,
+			"id": 18,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 392.0,
+			"id": 19,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 408.0,
+			"id": 20,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		},
+		{
+			"beat": 432.0,
+			"id": 21,
+			"length": 1.0,
+			"params": {
+				"board_x": 0.0,
+				"board_y": 0.0,
+				"clip": true,
+				"height": 128.0,
+				"soul_x": 0.0,
+				"soul_y": 0.0,
+				"width": 128.0
+			},
+			"type": "begin_attack"
+		},
+		{
+			"beat": 448.0,
+			"id": 22,
+			"length": 1.0,
+			"params": {},
+			"type": "end_attack"
+		}
+	],
+	"version": 1
+}

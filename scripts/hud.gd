@@ -54,6 +54,9 @@ var allowed_tabs: Array = [0, 1, 2, 3]
 var shown_tabs: Array = [0, 1, 2, 3]
 ## A tab that flashes on the beat to show it's new (-1 = none).
 var pulsing_tab := -1
+## Called with the tab when ACCEPT picks one; returning true means it's dealt with (the
+## tutorial's last choice). Unset normally.
+var tab_hook: Callable
 ## How the last FIGHT or special went: its damage multiplier (0 = a miss) and whether it was PERFECT.
 var last_multiplier := 0.0
 var last_perfect := false
@@ -238,6 +241,8 @@ func _tab_input(event: InputEvent) -> void:
 		update_tab_visuals()
 	elif GameSettings.pressed(event, "ACCEPT"):
 		_sfx("Select")
+		if tab_hook.is_valid() and tab_hook.call(selected_tab):
+			return
 		match selected_tab:
 			0: # FIGHT
 				pending_choice = {"type": "fight"}

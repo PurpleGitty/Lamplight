@@ -80,6 +80,7 @@ func _ready() -> void:
 		return
 	Battle.chart_to_play = "" # the campaign plays its own charts
 	Battle.tutorial = false
+	TutorialEncounter.pending = false
 	Battle.return_scene = ""
 	Battle.overworld_party = {}
 	Overworld.resume = null

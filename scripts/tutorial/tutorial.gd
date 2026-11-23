@@ -32,6 +32,7 @@ const SPECIAL_TAB := 1
 const MANEUVER_TAB := 2
 const DEFEND_TAB := 3
 const CAPTION_SPEED := 0.03 # seconds per letter
+const BOX_LETTERS := 115 # longer lines are split across pages, so they fit the command box
 const SHARDS := 6
 const SHARD_GRAVITY := 500.0
 
@@ -173,7 +174,7 @@ func _run() -> void:
 	await _maneuvers()
 	await _checking()
 	await _defending()
-	_finish()
+	await _last_words()
 
 
 ## Fades in, then pulses into place in the middle.
@@ -346,6 +347,39 @@ func _defending() -> void:
 	await _tell("It helps if you wanna tank for the party or wait out an effect.")
 
 
+## The wrap-up, then a choice: ATTACK starts the real fight with Candy, DEFEND leaves.
+func _last_words() -> void:
+	await _tell("Alright, that mostly covers everything.")
+	await _tell("Do be aware that in a real scrap, you will lose automatically if you don't meet the winning criteria by the end of the song. This usually means killing your enemy.")
+	await _tell("In this campaign, there really is no way to settle fights peacefully. Only really with interludes and custom scraps, which we won't cover here.")
+	await _tell("Also, you have limited time to complete actions before your enemy's turn begins, so pick your moves and attack as quickly as possible.")
+	await _tell("(You'll usually get informative or entertaining banter from the two parties if you finish your turn early!)")
+	await _tell("So that's everything. Surely you aren't gonna quit back to the main menu before beating me in a real scrap right?")
+	hud.shown_tabs = [FIGHT_TAB, SPECIAL_TAB, MANEUVER_TAB, DEFEND_TAB]
+	hud.allowed_tabs = [FIGHT_TAB, DEFEND_TAB]
+	hud.pulsing_tab = -1
+	var picked := [-1]
+	hud.tab_hook = func(tab: int) -> bool:
+		picked[0] = tab
+		hud.state = HUD.MenuState.WAITING
+		hud.update_tab_visuals()
+		_turn_done.emit()
+		return true
+	hud.begin_turn({"flavor": "* Attack to stay, defend to leave.", "dialogue": [], "status": ""})
+	await _turn_done
+	hud.tab_hook = Callable()
+	if picked[0] == DEFEND_TAB:
+		await _tell("Wuss.")
+		_finish()
+		return
+	# The real thing
+	TutorialEncounter.pending = true
+	TutorialEncounter.from_name = _member.display_name
+	Battle.tutorial = false
+	Battle.chart_to_play = TutorialEncounter.CHART
+	GameSettings.go_to("res://scenes/battle.tscn")
+
+
 ## Done for now: back to the main menu.
 func _finish() -> void:
 	hud._show_text("")
@@ -407,10 +441,36 @@ func _show_caption(text: String) -> void:
 	_caption_writer.start(_caption, text, CAPTION_SPEED)
 
 
-## In the command box, as flavor text. Waits for ACCEPT.
+## In the command box, as flavor text. Waits for ACCEPT. Too long for the box, it goes
+## over more than one page, split between sentences.
 func _tell(text: String) -> void:
-	hud._show_text("* " + text)
-	await _accept()
+	for page in _pages(text):
+		hud._show_text("* " + page)
+		await _accept()
+
+
+static func _pages(text: String) -> PackedStringArray:
+	var pages := PackedStringArray()
+	var page := ""
+	for sentence in _sentences(text):
+		if page != "" and (page + " " + sentence).length() > BOX_LETTERS:
+			pages.append(page)
+			page = sentence
+		else:
+			page = sentence if page == "" else page + " " + sentence
+	pages.append(page)
+	return pages
+
+
+static func _sentences(text: String) -> PackedStringArray:
+	var found := PackedStringArray()
+	var start := 0
+	for i in text.length():
+		if text[i] in ".!?" and i + 1 < text.length() and text[i + 1] == " ":
+			found.append(text.substr(start, i + 1 - start))
+			start = i + 2
+	found.append(text.substr(start))
+	return found
 
 
 func _accept() -> void:

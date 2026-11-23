@@ -134,6 +134,15 @@ func _ready() -> void:
 	$Music.bus = &"Music"
 	$Music.stream = ChartDefs.load_audio(chart["song"])
 	ChartDefs.set_looping($Music.stream, traditional)
+	if chart_to_play == TutorialEncounter.CHART:
+		# Candy's fight: her rig, the visualizer, and the tutorial's intro the first time
+		var encounter := TutorialEncounter.new()
+		encounter.battle = self
+		encounter.play_intro = TutorialEncounter.pending
+		add_child(encounter)
+		if TutorialEncounter.pending:
+			TutorialEncounter.pending = false
+			return # the intro starts the music and the first turn
 	if tutorial:
 		# It starts the music and every turn itself
 		tutorial_node = Tutorial.new()
