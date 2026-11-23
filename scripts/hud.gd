@@ -48,6 +48,15 @@ var writer := TextMarkup.Typewriter.new() # types the menu text (with formatting
 var _row_hints: Array = []
 var _hint_label: Label
 var status := "" # replaces "* X is about to attack!" this turn, if set
+## Tabs that can be picked.
+var allowed_tabs: Array = [0, 1, 2, 3]
+## Tabs on show (the tutorial brings them in one at a time). The rest stay tucked away.
+var shown_tabs: Array = [0, 1, 2, 3]
+## A tab that flashes on the beat to show it's new (-1 = none).
+var pulsing_tab := -1
+## How the last FIGHT or special went: its damage multiplier (0 = a miss) and whether it was PERFECT.
+var last_multiplier := 0.0
+var last_perfect := false
 
 
 func _ready() -> void:
@@ -85,6 +94,8 @@ func layout_party() -> void:
 		var name_width := menu_font.get_string_size(member.display_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
 		bar.position = Vector2(name_width + 6, 0)
 		bar.size = Vector2(maxf(minf(50.0, column - name_width - 12), 8.0), 15)
+		if battle.party.size() == 1:
+			row.position.x = roundf((size.x - name_width - 6.0 - bar.size.x) / 2.0) # on their own: in the middle
 		member.set_hud(row, bar)
 		party_rows.append(row)
 
@@ -104,6 +115,11 @@ func _process(delta: float) -> void:
 			member.name_label.self_modulate = Color.DIM_GRAY
 		else:
 			member.name_label.self_modulate = Color.WHITE
+	if pulsing_tab >= 0 and state != MenuState.HIDDEN:
+		var song := battle.conductor
+		var glow := 1.0 - fposmod(song.song_beat, 1.0) if song.playing else 0.5 + 0.5 * sin(Time.get_ticks_msec() / 200.0)
+		var base := Color.YELLOW if selected_tab == pulsing_tab else Color.WHITE
+		tabs[pulsing_tab].modulate = base.lerp(Color(2, 2, 2), glow * 0.6)
 
 
 func current_member() -> PartyMember:
@@ -125,7 +141,7 @@ func begin_turn(turn: Dictionary) -> void:
 	flavor = turn["flavor"]
 	dialogue = turn.get("dialogue", [])
 	status = turn.get("status", "")
-	selected_tab = 0
+	selected_tab = _first_tab()
 	enter_tab_select()
 	_slide(OPEN_POS)
 
@@ -160,13 +176,29 @@ func enter_tab_select() -> void:
 	update_tab_visuals()
 
 
+func _first_tab() -> int:
+	return allowed_tabs.min() if not allowed_tabs.is_empty() else 0
+
+
+## The next tab that can be picked that way, or -1 if there isn't one.
+func _next_tab(step: int) -> int:
+	var i := selected_tab + step
+	while i >= 0 and i < tabs.size():
+		if i in allowed_tabs:
+			return i
+		i += step
+	return -1
+
+
 func _tab_input(event: InputEvent) -> void:
-	if GameSettings.pressed(event, "RIGHT") and selected_tab < tabs.size() - 1:
-		selected_tab += 1
+	var right := _next_tab(1)
+	var left := _next_tab(-1)
+	if GameSettings.pressed(event, "RIGHT") and right >= 0:
+		selected_tab = right
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		update_tab_visuals()
-	elif GameSettings.pressed(event, "LEFT") and selected_tab > 0:
-		selected_tab -= 1
+	elif GameSettings.pressed(event, "LEFT") and left >= 0:
+		selected_tab = left
 		_sfx("LightningbulbSpacebarClickKeyboard199448")
 		update_tab_visuals()
 	elif GameSettings.pressed(event, "ACCEPT"):
@@ -265,7 +297,7 @@ func lock_choice(choice: Dictionary) -> void:
 	pending_choice = null
 	picker += 1
 	if picker < order.size():
-		selected_tab = 0
+		selected_tab = _first_tab()
 		enter_tab_select()
 	else:
 		execute_choices()
@@ -332,6 +364,8 @@ func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
 		_open_minigame(game_id, title, game_settings, choice.get("target"))
 		var game := minigame
 		var multiplier: float = await game.finished
+		last_multiplier = multiplier
+		last_perfect = game.perfect
 		if token != turn_token:
 			# Interrupted: whatever was built up still lands
 			if multiplier > 0.0:
@@ -475,6 +509,9 @@ func _dialogue_input(event: InputEvent) -> void:
 func enter_waiting() -> void:
 	state = MenuState.WAITING
 	bubble.hide()
+	if battle.tutorial_node != null:
+		battle.player_done() # it says what happens next itself
+		return
 	_show_text(status if status != "" else "* %s is about to attack!" % battle.enemy.display_name)
 	battle.player_done()
 
@@ -487,7 +524,7 @@ func update_tab_visuals() -> void:
 	tab_tween = create_tween().set_parallel()
 	for i in tabs.size():
 		var y := 32.0 # tucked behind the box
-		if state != MenuState.HIDDEN:
+		if state != MenuState.HIDDEN and i in shown_tabs:
 			y = -40.0 if i == selected_tab else -32.0
 		tabs[i].modulate = Color.YELLOW if i == selected_tab and state != MenuState.HIDDEN else Color.WHITE
 		tab_tween.tween_property(tabs[i], "position:y", y, 0.1)

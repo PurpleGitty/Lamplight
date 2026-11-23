@@ -6,6 +6,9 @@ extends UIBox
 
 
 func _process(_delta: float) -> void:
+	if battle.tutorial_node != null:
+		clock_label.text = "0:00" # it only stops when it's done teaching
+		return
 	if battle.traditional:
 		clock_label.text = "--:--" # no time limit
 		return

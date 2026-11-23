@@ -14,6 +14,8 @@ signal finished(multiplier: float)
 const DEFAULT_FONT = preload("res://fonts/mojang_spaced.tres")
 const TRAIL_LENGTH := 6
 const TRAIL_ALPHA := 0.5
+## Minigames that aren't in the chart maker: the tutorial's own.
+const TUTORIAL_GAMES := {"free_shot": "res://scripts/minigames/free_shot.gd"}
 
 var title := ""
 var id := ""
@@ -28,6 +30,10 @@ var perfect := false # earns TP on a basic attack
 
 ## Makes the minigame with this id.
 static func create(game_id: String) -> Minigame:
+	if TUTORIAL_GAMES.has(game_id):
+		var special: Minigame = load(TUTORIAL_GAMES[game_id]).new()
+		special.id = game_id
+		return special
 	var known: String = game_id if ChartDefs.MINIGAMES.has(game_id) else "timing_bar"
 	var game: Minigame = load(ChartDefs.MINIGAMES[known]["script"]).new()
 	game.id = known
@@ -111,7 +117,7 @@ func asset(key: String) -> String:
 	var path: String = settings.get(key, "")
 	if path != "":
 		return path
-	for param in ChartDefs.MINIGAMES[id]["params"]:
+	for param in ChartDefs.MINIGAMES.get(id, {}).get("params", []):
 		if param["name"] == key:
 			return param["default"]
 	return ""

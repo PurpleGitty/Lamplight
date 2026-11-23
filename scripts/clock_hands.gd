@@ -20,6 +20,8 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	var song: Conductor = battle.conductor
 	var done := clampf(song.song_position / maxf(song.song_length, 0.001), 0.0, 1.0)
+	if battle.tutorial_node != null:
+		done = 0.0 # no time limit: the long hand stays at 12
 	_hand(floorf(done * SONG_TICKS) / SONG_TICKS * TAU, LONG_HAND, Color.WHITE)
 	var beat := floorf(maxf(song.song_beat, 0.0))
 	_hand(fmod(beat, BEATS_PER_LAP) / BEATS_PER_LAP * TAU, SHORT_HAND, Color(1.0, 0.35, 0.35))

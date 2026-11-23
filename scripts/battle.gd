@@ -40,6 +40,8 @@ static var give_up_label := "CARRY ON"
 ## Anyone here with the same name as someone in the fight brings these along, and their HP
 ## gets written back afterwards.
 static var overworld_party := {}
+## The campaign tutorial plays next, instead of a chart. Its own script runs the fight.
+static var tutorial := false
 
 @onready var conductor: Conductor = $Conductor
 @onready var board = $board
@@ -84,11 +86,13 @@ var _background_video: VideoStreamPlayer
 var _background_video_path := ""
 var _default_background_scale := Vector2.ONE
 var _default_sounds := {} # rule -> the stream its node started with
+## The tutorial running this fight, if it's the tutorial.
+var tutorial_node: Tutorial
 
 
 func _ready() -> void:
 	var path := chart_to_play if chart_to_play != "" else FALLBACK_CHART
-	chart = ChartDefs.load_chart(path)
+	chart = Tutorial.make_chart() if tutorial else ChartDefs.load_chart(path)
 	if chart.is_empty():
 		push_error("Couldn't load a chart from %s - make one in the Scrap O' Matic" % path)
 		chart = ChartDefs.new_chart()
@@ -130,6 +134,12 @@ func _ready() -> void:
 	$Music.bus = &"Music"
 	$Music.stream = ChartDefs.load_audio(chart["song"])
 	ChartDefs.set_looping($Music.stream, traditional)
+	if tutorial:
+		# It starts the music and every turn itself
+		tutorial_node = Tutorial.new()
+		tutorial_node.battle = self
+		add_child(tutorial_node)
+		return
 	conductor.start()
 	start_player_turn()
 
@@ -170,6 +180,8 @@ func _add_enemy(entry: Dictionary) -> Enemy:
 
 func _process(delta: float) -> void:
 	_animate_background()
+	if tutorial_node != null:
+		return
 	if phase == Phase.OVER:
 		if can_restart and return_scene != "" and last_fight_won and Input.is_action_just_pressed("ACCEPT"):
 			_go_back_to_overworld()
@@ -308,6 +320,9 @@ func start_player_turn() -> void:
 ## The menu calls this when the player has done everything they can this turn.
 ## Only traditional battles care: their enemy turn starts now, not on a beat.
 func player_done() -> void:
+	if tutorial_node != null:
+		tutorial_node.player_done()
+		return
 	if not traditional:
 		return
 	var id := _player_turn_id
@@ -583,12 +598,15 @@ func spend_tp(amount: float) -> void:
 
 
 func _on_member_downed() -> void:
+	if tutorial_node != null:
+		tutorial_node.soul_broke()
+		return
 	if living_members().is_empty():
 		lose(last_hit_by)
 
 
 func _on_enemy_died() -> void:
-	if living_enemies().is_empty():
+	if living_enemies().is_empty() and tutorial_node == null:
 		win()
 
 

@@ -42,6 +42,7 @@ var values := {
 	"master_volume": 100, "music_volume": 100, "sfx_volume": 100,
 	"window_mode": "FULLSCREEN", "vsync": true, "fps": 30, "pixel_perfect": false, "screen_shake": true, "auto_run": false,
 	"discord_status": true,
+	"tutorial_offered": false, # asked on the title screen the first time the game's opened
 }
 var bindings := {"key": DEFAULT_KEYS.duplicate(), "pad": DEFAULT_PAD.duplicate(true)}
 ## "key" or "pad": what the player last pressed, so prompts name the right thing.
