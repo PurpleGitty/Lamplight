@@ -34,7 +34,7 @@ func setup(data: Dictionary, enemy_name: String) -> void:
 	source_name = "%s's %s" % [enemy_name, data["name"]]
 
 
-const MODE_TINT = preload("res://mode_tint.gdshader")
+const MODE_TINT = preload("res://shaders/mode_tint.gdshader")
 const BLUE := Color(0.3, 0.7, 1.0)
 const ORANGE := Color(1.0, 0.65, 0.2)
 

@@ -10,7 +10,7 @@ const LABELS := {
 	"soul_hitbox_h": "hitbox height", "soul_hitbox_x": "hitbox x", "soul_hitbox_y": "hitbox y", "background_hframes": "frames across", "background_vframes": "frames down",
 	"background_frames": "frames to loop", "background_beats": "beats per loop", "speech_font": "speech font", "menu_font": "menu font",
 	"hurt_sound": "party hurt", "enemy_hurt_sound": "enemy hurt", "menu_move_sound": "menu move", "menu_select_sound": "menu select",
-	"menu_back_sound": "menu back", "text_sound": "text blip", "game_art": "use game's art",
+	"menu_back_sound": "menu back", "text_sound": "text blip", "game_art": "use game's art", "music_while_paused": "music while paused",
 }
 const TYPE_NOTES := {
 	"timed": "Turns follow the song. Lose when it ends.",
@@ -43,6 +43,7 @@ func refresh() -> void:
 	_note(TYPE_NOTES[rules["battle_type"]])
 	if ChartDefs.uses_frames(editor.chart):
 		_note("Nodes keep their numbers when you switch: beat 32 becomes frame 32, so an existing chart needs re-timing.")
+	_rule(rules, "music_while_paused")
 
 	_card("TP", Color("ffd24f"))
 	_rule(rules, "tp_enabled", true)

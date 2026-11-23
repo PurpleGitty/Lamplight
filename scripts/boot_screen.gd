@@ -5,7 +5,7 @@ extends Control
 
 const HEADPHONES = preload("res://sprites/menu/headphones.png")
 const FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
-const MENU_SCENE := "res://menu.tscn"
+const MENU_SCENE := "res://scenes/menu.tscn"
 const ART_SCALE := 5.0
 const FADE_IN := 0.6
 const LETTER_TIME := 0.07 # seconds per letter, typing the words out
