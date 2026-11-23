@@ -4,10 +4,9 @@ extends Node2D
 ## her hips), then her arm, hair and guitar (turning at her shoulders, on top of that).
 ## She sways to the beat: the two halves turn opposite ways so her body bows like a spine,
 ## eases through straight, and bows the other way, landing each bow on a beat. At each
-## stop she crunches a little further into it twice (the pieces turn and dip a touch
-## more), and the second crunch springs her into the swing the other way. Her guitar is
-## part of her top half, so it never leaves her hand; her legs stay planted. Pieces only
-## turn and move, never stretch.
+## stop she crunches a little further into it (the pieces turn and dip a touch more), then
+## bounces back up to go the other way. Her guitar is part of her top half, so it never
+## leaves her hand; her legs stay planted. Pieces only turn and move, never stretch.
 ## The node's origin is between her feet, on the ground.
 
 const GUITAR = preload("res://sprites/candy/guitar.png")
@@ -25,8 +24,7 @@ const LEAN := 5.0 # degrees her body turns at the end of a sway
 const COUNTER := 1.7 # her top half turns back this many times as far, so she bows
 const CRUNCH_TURN := 0.6 # turns this much further into the bow at each stop
 const CRUNCH_DIP := 2.0 # pixels her top half dips at each stop
-const CRUNCH_TIME := 0.06 # beats either side of each crunch
-const SECOND_CRUNCH := 0.25 # beats after landing; she starts swinging back from here
+const CRUNCH_TIME := 0.12 # beats either side of the stop
 ## The beat when no fight's playing (a preview, say).
 @export var bpm := 120.0
 
@@ -72,17 +70,12 @@ func _process(delta: float) -> void:
 func _sway() -> void:
 	var song := Conductor.current
 	var beat := song.song_beat if song != null and song.playing else _clock * bpm / 60.0
-	# Everything's counted in beats, so a faster song makes all of it quicker.
-	# She lands a bow on each beat (left, then right), holds it for two crunches, and the
-	# second crunch starts her easing over to the other side, landing on the next beat.
-	var side := -1.0 if posmod(floori(beat), 2) == 0 else 1.0
-	var into := fposmod(beat, 1.0)
-	var lean := side
-	if into > SECOND_CRUNCH:
-		var swing := (into - SECOND_CRUNCH) / (1.0 - SECOND_CRUNCH)
-		lean = lerpf(side, -side, swing * swing * (3.0 - 2.0 * swing))
-	var landing := absf(beat - roundf(beat)) # the first crunch, as she lands
-	var crunch := exp(-pow(landing / CRUNCH_TIME, 2.0)) + exp(-pow((into - SECOND_CRUNCH) / CRUNCH_TIME, 2.0))
+	# Counted in beats, so a faster song makes all of it quicker.
+	# Bowed one way on each beat, the other way on the next, easing through straight
+	var lean := -cos(PI * beat)
+	# A quick crunch further into the bow right at each stop, then back up
+	var from_stop := absf(beat - roundf(beat))
+	var crunch := exp(-pow(from_stop / CRUNCH_TIME, 2.0))
 	var turn := lean * LEAN * (1.0 + CRUNCH_TURN * crunch)
 	_body.rotation_degrees = turn
 	_top.rotation_degrees = -turn * COUNTER
