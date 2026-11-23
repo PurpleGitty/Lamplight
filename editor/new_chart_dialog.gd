@@ -8,6 +8,7 @@ var song := LineEdit.new()
 var bpm := SpinBox.new()
 var enemies := LineEdit.new()
 var party := LineEdit.new()
+var game_art := CheckBox.new()
 
 
 func _ready() -> void:
@@ -40,6 +41,10 @@ func _ready() -> void:
 	_row(box, "Enemies", enemies)
 	party.text = "Purple, Violet"
 	_row(box, "Party", party)
+	game_art.text = "Start with the game's placeholder art"
+	game_art.tooltip_text = "Off: no background, no character sprites and a plain soul, so you can add your own"
+	game_art.button_pressed = false
+	box.add_child(game_art)
 	var hint := Label.new()
 	hint.text = "Separate names with commas. Sprites, stats and everything else are on the Characters tab."
 	hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.65))
@@ -66,33 +71,44 @@ func _names(text: String) -> PackedStringArray:
 	return names
 
 
+## Someone for one side of the fight. A name from the first fight brings their look and
+## stats, whichever side they're on now, but they get what that side needs: an enemy
+## gets ACTs, and a party member gets moves.
+func _cast(character_name: String, is_party: bool) -> Dictionary:
+	var entry := ChartDefs.new_character(character_name, is_party)
+	for known in ChartDefs.default_party() + ChartDefs.default_enemies():
+		if known["name"] != character_name:
+			continue
+		var same_side: bool = known.has("specials") == is_party
+		for key in known:
+			if key in ["x", "y"]:
+				continue
+			if same_side or entry.has(key) and key not in ["acts", "specials", "maneuvers"]:
+				entry[key] = known[key].duplicate(true) if known[key] is Array or known[key] is Dictionary else known[key]
+	return entry
+
+
 func _create() -> void:
 	var chart := ChartDefs.new_chart()
 	if song.text != "":
 		chart["song"] = song.text
 	chart["bpm"] = bpm.value
 
-	# Names matching the first fight's cast keep their sprites and stats
-	var known: Array = ChartDefs.default_party() + ChartDefs.default_enemies()
 	var new_party := []
 	for character_name in _names(party.text):
-		var entry := ChartDefs.new_character(character_name, true)
+		var entry := _cast(character_name, true)
 		entry["x"] = -276.0 + new_party.size() * 164.0
 		entry["y"] = 168.0
-		for k in known:
-			if k["name"] == character_name:
-				entry = k
 		new_party.append(entry)
 	var new_enemies := []
 	for character_name in _names(enemies.text):
-		var entry := ChartDefs.new_character(character_name, false)
+		var entry := _cast(character_name, false)
 		entry["x"] = 176.0 - new_enemies.size() * 130.0
-		for k in known:
-			if k["name"] == character_name:
-				entry = k
 		new_enemies.append(entry)
 	chart["party"] = new_party
 	chart["enemies"] = new_enemies
+	if not game_art.button_pressed:
+		ChartDefs.strip_game_art(chart)
 
 	var clean := file_name.text.strip_edges().validate_filename()
 	editor.create_chart(chart, ScrapFile.unused_path(clean if clean != "" else "new_fight"))

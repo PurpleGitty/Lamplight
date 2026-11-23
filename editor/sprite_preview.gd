@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color(0.05, 0.05, 0.07))
-	var tex := ChartDefs.load_texture(data["sprite"])
+	var tex := ChartDefs.character_texture(data["sprite"]) if data.has("present") else ChartDefs.load_texture(data["sprite"])
 	var frames := maxi(int(data["hframes"]), 1)
 	var frame_size := Vector2(tex.get_width() / float(frames), tex.get_height())
 	var units: float = _time * ChartDefs.units_per_second(editor.chart) if data.has("frame") else _time * editor.chart["bpm"] / 60.0

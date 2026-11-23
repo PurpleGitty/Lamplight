@@ -129,12 +129,18 @@ func _view() -> Transform2D:
 
 
 func _soul_texture() -> Texture2D:
-	var path: String = editor.chart["rules"]["soul_sprite"]
-	return _texture(path) if path != "" else SOUL
+	var rules: Dictionary = editor.chart["rules"]
+	var path: String = rules["soul_sprite"]
+	if path != "":
+		return _texture(path)
+	return SOUL if rules["game_art"] else ChartDefs.blank_soul()
 
 
 func _soul_size() -> Vector2:
-	return _soul_texture().get_size() / Vector2(maxi(int(editor.chart["rules"]["soul_hframes"]), 1), 1)
+	var frames: int = maxi(int(editor.chart["rules"]["soul_hframes"]), 1)
+	if editor.chart["rules"]["soul_sprite"] == "" and not editor.chart["rules"]["game_art"]:
+		frames = 2
+	return _soul_texture().get_size() / Vector2(frames, 1)
 
 
 ## The soul's hitbox, in world position.
@@ -221,12 +227,16 @@ func _everyone() -> Array:
 ## Where a character's sprite sits on the battle screen.
 func _character_box(data: Dictionary) -> Rect2:
 	var frames := maxi(int(data["hframes"]), 1)
-	var box: Vector2 = _texture(data["sprite"]).get_size() / Vector2(frames, 1) * float(data["sprite_scale"])
+	var box: Vector2 = ChartDefs.character_texture(data["sprite"]).get_size() / Vector2(frames, 1) * float(data["sprite_scale"])
 	return Rect2(Vector2(data["x"], data["y"]) - box / 2.0, box)
 
 
 func _draw_characters() -> void:
 	for data in _everyone():
+		if data["sprite"] == "":
+			# No art yet: just a faint outline, so they can still be found and moved
+			draw_rect(_character_box(data), Color(1, 1, 1, 0.25 if data["present"] else 0.12), false, 1.0)
+			continue
 		var tex := _texture(data["sprite"])
 		var frames := maxi(int(data["hframes"]), 1)
 		var frame_size := tex.get_size() / Vector2(frames, 1)
@@ -268,7 +278,8 @@ func _draw_background() -> void:
 	var path: String = rules["background"]
 	var dim := Color(0.4, 0.4, 0.4)
 	if path == "":
-		draw_texture_rect(BACKGROUND, SCREEN, false, dim)
+		if rules["game_art"]:
+			draw_texture_rect(BACKGROUND, SCREEN, false, dim)
 		return
 	var tex := _texture(path)
 	var across := maxi(int(rules["background_hframes"]), 1)

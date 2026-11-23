@@ -324,6 +324,7 @@ const RULE_PARAMS := [
 	{"name": "soul_hitbox_h", "type": "float", "default": 8.0, "min": 0.0, "max": 200.0},
 	{"name": "soul_hitbox_x", "type": "float", "default": 0.0, "min": -100.0, "max": 100.0, "help": "From the soul's centre"},
 	{"name": "soul_hitbox_y", "type": "float", "default": 0.0, "min": -100.0, "max": 100.0},
+	{"name": "game_art", "type": "bool", "default": true, "help": "Blank background and soul use the game's own art. Off: a blank background stays black, and a blank soul is a plain square, so you can add your own art later"},
 	{"name": "background", "type": "texture", "default": "", "help": "A still image or sprite sheet, stretched to cover the screen (blank = the game's). When a Change Rules node swaps it, change its frames too"},
 	{"name": "background_video", "type": "video", "default": "", "help": "A looping video instead of the image. MP4s get converted when you pick them"},
 	{"name": "background_hframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames across in the sprite sheet"},
@@ -570,6 +571,55 @@ static func fill_special(special: Dictionary) -> void:
 	settings.merge(SPECIAL_PRESETS.get(special.get("preset", ""), {}).get("settings", {}), true)
 	settings.merge(special.get("settings", {}), true)
 	special["settings"] = settings
+
+
+## The game's own placeholder sprites, which Clear The Game's Art takes out.
+const BUILT_IN_ART := ["res://sprites/purplecina.png", "res://sprites/violetcina.png", "res://sprites/purple_head.png"]
+
+static var _blank_character: Texture2D
+static var _blank_soul: Texture2D
+
+
+## A character with no sprite: see-through, but the size of a small sprite so they can
+## still be placed, and speech bubbles still know where they are.
+static func character_texture(path: String) -> Texture2D:
+	if path != "":
+		return load_texture(path)
+	if _blank_character == null:
+		_blank_character = ImageTexture.create_from_image(Image.create(48, 48, false, Image.FORMAT_RGBA8))
+	return _blank_character
+
+
+## The soul when there's no art for it: a plain square, with a fainter second frame for
+## the flicker after a hit.
+static func blank_soul() -> Texture2D:
+	if _blank_soul == null:
+		var image := Image.create(32, 16, false, Image.FORMAT_RGBA8)
+		image.fill_rect(Rect2i(4, 4, 8, 8), Color.WHITE)
+		image.fill_rect(Rect2i(20, 4, 8, 8), Color(1, 1, 1, 0.4))
+		_blank_soul = ImageTexture.create_from_image(image)
+	return _blank_soul
+
+
+## Takes the game's placeholder art out of a chart, so only the creator's own shows.
+static func strip_game_art(chart: Dictionary) -> void:
+	chart["rules"]["game_art"] = false
+	for character in chart["party"] + chart["enemies"]:
+		if is_game_art(character["sprite"]):
+			character["sprite"] = ""
+
+
+## The game's placeholder art, whether straight from the game or packed into a scrap
+## that was saved with it.
+static func is_game_art(path: String) -> bool:
+	if path in BUILT_IN_ART:
+		return true
+	if not path.begins_with("user://scrap_cache/"):
+		return false
+	for built_in in BUILT_IN_ART:
+		if path.get_file() == built_in.get_file():
+			return true
+	return false
 
 
 static func new_character(character_name: String, is_party: bool) -> Dictionary:

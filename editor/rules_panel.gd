@@ -10,7 +10,7 @@ const LABELS := {
 	"soul_hitbox_h": "hitbox height", "soul_hitbox_x": "hitbox x", "soul_hitbox_y": "hitbox y", "background_hframes": "frames across", "background_vframes": "frames down",
 	"background_frames": "frames to loop", "background_beats": "beats per loop", "speech_font": "speech font", "menu_font": "menu font",
 	"hurt_sound": "party hurt", "enemy_hurt_sound": "enemy hurt", "menu_move_sound": "menu move", "menu_select_sound": "menu select",
-	"menu_back_sound": "menu back", "text_sound": "text blip",
+	"menu_back_sound": "menu back", "text_sound": "text blip", "game_art": "use game's art",
 }
 const TYPE_NOTES := {
 	"timed": "Turns follow the song. Lose when it ends.",
@@ -66,6 +66,11 @@ func refresh() -> void:
 	_rule(rules, "defend_factor")
 
 	_card("Background", Color("7fd4ff"))
+	_rule(rules, "game_art", true)
+	_action("Clear the game's art", func():
+		editor.push_undo()
+		ChartDefs.strip_game_art(editor.chart)
+		editor.changed())
 	_rule(rules, "background", true)
 	if rules["background"] != "":
 		_rule(rules, "background_hframes")
