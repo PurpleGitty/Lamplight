@@ -126,7 +126,7 @@ func _process(delta: float) -> void:
 
 
 func current_member() -> PartyMember:
-	if state in [MenuState.TAB_SELECT, MenuState.LIST_SELECT, MenuState.TARGET_SELECT]:
+	if state in [MenuState.TAB_SELECT, MenuState.LIST_SELECT, MenuState.TARGET_SELECT] and picker < order.size():
 		return order[picker]
 	return null
 
@@ -385,7 +385,9 @@ func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
 		else:
 			if connected:
 				battle.play_sound(member.data["attack_sound"])
-			if int(member.data["attack_count"]) > 0:
+			if member.play_rig("attack"):
+				pass # built from pieces, with an animation called attack
+			elif int(member.data["attack_count"]) > 0:
 				member.play_anim(int(member.data["attack_first"]), int(member.data["attack_count"]), member.data["attack_seconds"])
 		await _wait(HIT_DELAY - WEAPON_SOUND_LEAD)
 		if token != turn_token:

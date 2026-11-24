@@ -11,18 +11,341 @@
 			],
 			"bob": "",
 			"defense": 0.0,
-			"hframes": 1,
+			"hframes": 1.0,
 			"idle_beats": 4.0,
-			"idle_count": 1,
-			"idle_first": 0,
-			"max_hp": 4000,
+			"idle_count": 1.0,
+			"idle_first": 0.0,
+			"max_hp": 4000.0,
 			"name": "Candy",
 			"present": true,
+			"rig": {
+				"animations": [
+					{
+						"beats": 2.0,
+						"loop": true,
+						"name": "idle",
+						"tracks": {
+							"2": {
+								"frame": [
+									{
+										"beat": 0,
+										"ease": "hold",
+										"value": 0
+									},
+									{
+										"beat": 0.386,
+										"ease": "hold",
+										"value": 1
+									},
+									{
+										"beat": 0.614,
+										"ease": "hold",
+										"value": 2
+									},
+									{
+										"beat": 1.386,
+										"ease": "hold",
+										"value": 1
+									},
+									{
+										"beat": 1.614,
+										"ease": "hold",
+										"value": 0
+									}
+								],
+								"rotation": [
+									{
+										"beat": 0,
+										"ease": "smooth",
+										"value": -8.0
+									},
+									{
+										"beat": 0.12,
+										"ease": "smooth",
+										"value": -5.68
+									},
+									{
+										"beat": 0.25,
+										"ease": "smooth",
+										"value": -3.56
+									},
+									{
+										"beat": 0.5,
+										"ease": "smooth",
+										"value": -0.0
+									},
+									{
+										"beat": 0.75,
+										"ease": "smooth",
+										"value": 3.56
+									},
+									{
+										"beat": 0.88,
+										"ease": "smooth",
+										"value": 5.68
+									},
+									{
+										"beat": 1,
+										"ease": "smooth",
+										"value": 8.0
+									},
+									{
+										"beat": 1.12,
+										"ease": "smooth",
+										"value": 5.68
+									},
+									{
+										"beat": 1.25,
+										"ease": "smooth",
+										"value": 3.56
+									},
+									{
+										"beat": 1.5,
+										"ease": "smooth",
+										"value": 0.0
+									},
+									{
+										"beat": 1.75,
+										"ease": "smooth",
+										"value": -3.56
+									},
+									{
+										"beat": 1.88,
+										"ease": "smooth",
+										"value": -5.68
+									}
+								]
+							},
+							"3": {
+								"rotation": [
+									{
+										"beat": 0,
+										"ease": "smooth",
+										"value": 13.6
+									},
+									{
+										"beat": 0.12,
+										"ease": "smooth",
+										"value": 9.65
+									},
+									{
+										"beat": 0.25,
+										"ease": "smooth",
+										"value": 6.06
+									},
+									{
+										"beat": 0.5,
+										"ease": "smooth",
+										"value": 0.0
+									},
+									{
+										"beat": 0.75,
+										"ease": "smooth",
+										"value": -6.06
+									},
+									{
+										"beat": 0.88,
+										"ease": "smooth",
+										"value": -9.65
+									},
+									{
+										"beat": 1,
+										"ease": "smooth",
+										"value": -13.6
+									},
+									{
+										"beat": 1.12,
+										"ease": "smooth",
+										"value": -9.65
+									},
+									{
+										"beat": 1.25,
+										"ease": "smooth",
+										"value": -6.06
+									},
+									{
+										"beat": 1.5,
+										"ease": "smooth",
+										"value": -0.0
+									},
+									{
+										"beat": 1.75,
+										"ease": "smooth",
+										"value": 6.06
+									},
+									{
+										"beat": 1.88,
+										"ease": "smooth",
+										"value": 9.65
+									}
+								],
+								"y": [
+									{
+										"beat": 0,
+										"ease": "hold",
+										"value": -20
+									},
+									{
+										"beat": 0.065,
+										"ease": "hold",
+										"value": -21
+									},
+									{
+										"beat": 0.141,
+										"ease": "hold",
+										"value": -22
+									},
+									{
+										"beat": 0.859,
+										"ease": "hold",
+										"value": -21
+									},
+									{
+										"beat": 0.935,
+										"ease": "hold",
+										"value": -20
+									},
+									{
+										"beat": 1.065,
+										"ease": "hold",
+										"value": -21
+									},
+									{
+										"beat": 1.141,
+										"ease": "hold",
+										"value": -22
+									},
+									{
+										"beat": 1.859,
+										"ease": "hold",
+										"value": -21
+									},
+									{
+										"beat": 1.935,
+										"ease": "hold",
+										"value": -20
+									}
+								]
+							},
+							"5": {
+								"frame": [
+									{
+										"beat": 0,
+										"ease": "hold",
+										"value": 0
+									},
+									{
+										"beat": 0.386,
+										"ease": "hold",
+										"value": 1
+									},
+									{
+										"beat": 0.614,
+										"ease": "hold",
+										"value": 2
+									},
+									{
+										"beat": 1.386,
+										"ease": "hold",
+										"value": 1
+									},
+									{
+										"beat": 1.614,
+										"ease": "hold",
+										"value": 0
+									}
+								]
+							}
+						}
+					}
+				],
+				"next_id": 7,
+				"pieces": [
+					{
+						"frame": 1,
+						"hframes": 3,
+						"id": 1,
+						"name": "Legs",
+						"parent": -1,
+						"pivot_x": 50.0,
+						"pivot_y": 116.0,
+						"rotation": 0.0,
+						"sprite": "res://sprites/candy/legs.png",
+						"x": 0.0,
+						"y": 0.0
+					},
+					{
+						"frame": 1,
+						"hframes": 3,
+						"id": 2,
+						"name": "Body",
+						"parent": 1,
+						"pivot_x": 50.0,
+						"pivot_y": 64.0,
+						"rotation": 0.0,
+						"sprite": "res://sprites/candy/skirt.png",
+						"x": 0.0,
+						"y": -52.0
+					},
+					{
+						"frame": 0,
+						"hframes": 1,
+						"id": 3,
+						"name": "Shoulders",
+						"parent": 2,
+						"pivot_x": 0.0,
+						"pivot_y": 0.0,
+						"rotation": 0.0,
+						"sprite": "",
+						"x": 0.0,
+						"y": -22.0
+					},
+					{
+						"frame": 1,
+						"hframes": 3,
+						"id": 4,
+						"name": "Arm",
+						"parent": 3,
+						"pivot_x": 50.0,
+						"pivot_y": 42.0,
+						"rotation": 0.0,
+						"sprite": "res://sprites/candy/arm.png",
+						"x": 0.0,
+						"y": 0.0
+					},
+					{
+						"frame": 1,
+						"hframes": 3,
+						"id": 5,
+						"name": "Hair",
+						"parent": 3,
+						"pivot_x": 50.0,
+						"pivot_y": 42.0,
+						"rotation": 0.0,
+						"sprite": "res://sprites/candy/hair.png",
+						"x": 0.0,
+						"y": 0.0
+					},
+					{
+						"frame": 0,
+						"hframes": 1,
+						"id": 6,
+						"name": "Guitar",
+						"parent": 3,
+						"pivot_x": 80.0,
+						"pivot_y": 42.0,
+						"rotation": 0.0,
+						"sprite": "res://sprites/candy/guitar.png",
+						"x": 0.0,
+						"y": 0.0
+					}
+				]
+			},
 			"sprite": "",
-			"sprite_scale": 1.0,
+			"sprite_scale": 2.0,
 			"voice": "",
 			"x": 190.0,
-			"y": -40.0
+			"y": 97.0
 		}
 	],
 	"meta_events": [],
@@ -31,18 +354,18 @@
 	"offset": 0.204,
 	"party": [
 		{
-			"attack_count": 0,
-			"attack_first": 0,
+			"attack_count": 0.0,
+			"attack_first": 0.0,
 			"attack_seconds": 0.4,
 			"attack_sound": "res://sounds/tutorial/slap.mp3",
 			"bob": "1, 2",
 			"defense": 0.0,
-			"fight_damage": 300,
+			"fight_damage": 300.0,
 			"fight_minigame": "timing_bar",
-			"hframes": 1,
+			"hframes": 1.0,
 			"idle_beats": 4.0,
-			"idle_count": 1,
-			"idle_first": 0,
+			"idle_count": 1.0,
+			"idle_first": 0.0,
 			"maneuvers": [
 				{
 					"cost": 0.0,
@@ -51,7 +374,7 @@
 						{
 							"kind": "damage_taken",
 							"target": "self",
-							"turns": 1,
+							"turns": 1.0,
 							"value": 0.5
 						}
 					],
@@ -60,8 +383,8 @@
 					"sound": "",
 					"sprite": "",
 					"text": "* {user} braces.",
-					"use_count": 0,
-					"use_first": 0,
+					"use_count": 0.0,
+					"use_first": 0.0,
 					"use_seconds": 0.4
 				},
 				{
@@ -71,7 +394,7 @@
 						{
 							"kind": "heal",
 							"target": "lowest_hp",
-							"turns": 1,
+							"turns": 1.0,
 							"value": 30.0
 						}
 					],
@@ -80,21 +403,33 @@
 					"sound": "",
 					"sprite": "",
 					"text": "* {user} patches someone up.",
-					"use_count": 0,
-					"use_first": 0,
+					"use_count": 0.0,
+					"use_first": 0.0,
 					"use_seconds": 0.4
 				}
 			],
-			"max_hp": 100,
+			"max_hp": 100.0,
 			"name": "Crow",
 			"present": true,
+			"rig": {
+				"animations": [
+					{
+						"beats": 2.0,
+						"loop": true,
+						"name": "idle",
+						"tracks": {}
+					}
+				],
+				"next_id": 1,
+				"pieces": []
+			},
 			"specials": [
 				{
 					"cost": 30.0,
 					"damage": 800.0,
 					"description": "A big, simple hit.",
 					"effects": [],
-					"hits": 1,
+					"hits": 1.0,
 					"hits_all": false,
 					"minigame": "timing_bar",
 					"name": "Heavy Slam",
@@ -105,8 +440,8 @@
 					"sound": "",
 					"sprite": "",
 					"text": "",
-					"use_count": 0,
-					"use_first": 0,
+					"use_count": 0.0,
+					"use_first": 0.0,
 					"use_seconds": 0.4
 				}
 			],
@@ -121,9 +456,9 @@
 		"auto_revive": true,
 		"background": "",
 		"background_beats": 4.0,
-		"background_frames": 0,
-		"background_hframes": 1,
-		"background_vframes": 1,
+		"background_frames": 0.0,
+		"background_hframes": 1.0,
+		"background_vframes": 1.0,
 		"background_video": "",
 		"battle_type": "timed",
 		"defend_factor": 0.5,
@@ -140,7 +475,7 @@
 		"music_while_paused": false,
 		"perfect_tp": 10.0,
 		"revive_seconds": 60.0,
-		"soul_hframes": 2,
+		"soul_hframes": 2.0,
 		"soul_hitbox_h": 8.0,
 		"soul_hitbox_w": 8.0,
 		"soul_hitbox_x": 0.0,
@@ -150,7 +485,8 @@
 		"speech_font": "",
 		"start_tp": 0.0,
 		"text_sound": "",
-		"tp_enabled": true
+		"tp_enabled": true,
+		"visualizer": true
 	},
 	"song": "res://sounds/tutorial/crow.mp3",
 	"text_events": [],
@@ -398,5 +734,5 @@
 			"type": "end_attack"
 		}
 	],
-	"version": 1
+	"version": 1.0
 }

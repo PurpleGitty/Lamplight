@@ -60,6 +60,7 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	CrashScreen.watch(self) # the failsafe, if a script breaks
 	if DiscordPresence.supported():
 		add_child(DiscordPresence.new())
 	apply_game_view()

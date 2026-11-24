@@ -33,6 +33,7 @@ var _soul_moved := false
 var _drag_marker: Dictionary
 var _textures := {}
 var _sound: AudioStreamPlayer
+var _visualizer: MusicVisualizer # only listens; drawn into the preview by hand
 
 
 func _ready() -> void:
@@ -163,6 +164,7 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color.BLACK)
 	draw_set_transform_matrix(view)
 	_draw_background()
+	_draw_visualizer(view)
 	_draw_characters()
 	draw_rect(SCREEN, Color(1, 1, 1, 0.3), false, 1.0)
 
@@ -224,15 +226,58 @@ func _everyone() -> Array:
 	return editor.chart["party"] + editor.chart["enemies"]
 
 
+## The music visualizer, when the rules have it on. It listens to the song playing in
+## the editor, so it moves while the chart plays.
+func _draw_visualizer(view: Transform2D) -> void:
+	var on: bool = editor.chart["rules"].get("visualizer", false)
+	if on and _visualizer == null:
+		_visualizer = MusicVisualizer.new()
+		_visualizer.visible = false
+		add_child(_visualizer)
+	elif not on and _visualizer != null:
+		_visualizer.queue_free()
+		_visualizer = null
+	if _visualizer != null:
+		_visualizer.paint(self, view, Color(0.8, 0.8, 0.8))
+		draw_set_transform_matrix(view)
+
+
+## A character built from pieces, posed for the playhead, and where they are.
+func _rig_pose(data: Dictionary) -> Dictionary:
+	var rig: Dictionary = data["rig"]
+	var idle := Rig.find_animation(rig, Rig.IDLE)
+	return Rig.pose(rig, idle, Rig.local_time(idle, maxf(editor.beat, 0.0)) if not idle.is_empty() else 0.0)
+
+
+func _rig_transform(data: Dictionary) -> Transform2D:
+	var s := float(data["sprite_scale"])
+	return Transform2D(0.0, Vector2(s, s), 0.0, Vector2(data["x"], data["y"]))
+
+
 ## Where a character's sprite sits on the battle screen.
 func _character_box(data: Dictionary) -> Rect2:
+	if Rig.has_pieces(data.get("rig")):
+		var box := Rig.bounds(data["rig"], _rig_pose(data))
+		var s := float(data["sprite_scale"])
+		return Rect2(Vector2(data["x"], data["y"]) + box.position * s, box.size * s)
 	var frames := maxi(int(data["hframes"]), 1)
 	var box: Vector2 = ChartDefs.character_texture(data["sprite"]).get_size() / Vector2(frames, 1) * float(data["sprite_scale"])
 	return Rect2(Vector2(data["x"], data["y"]) - box / 2.0, box)
 
 
 func _draw_characters() -> void:
+	var view := _view()
 	for data in _everyone():
+		if Rig.has_pieces(data.get("rig")):
+			var placed := _rig_pose(data)
+			var alpha := 1.0 if data["present"] else ABSENT_ALPHA
+			if _visualizer != null:
+				# The shiny floor reflects them, upside down from where they stand
+				var mirror := view * _rig_transform(data) * Transform2D(0.0, Vector2(1, -1), 0.0, Vector2.ZERO)
+				Rig.draw(self, data["rig"], placed, mirror, Color(CHARACTER_TINT, 0.3 * alpha))
+			Rig.draw(self, data["rig"], placed, view * _rig_transform(data), Color(CHARACTER_TINT, alpha))
+			draw_set_transform_matrix(view)
+			continue
 		if data["sprite"] == "":
 			# No art yet: just a faint outline, so they can still be found and moved
 			draw_rect(_character_box(data), Color(1, 1, 1, 0.25 if data["present"] else 0.12), false, 1.0)

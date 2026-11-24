@@ -1,21 +1,21 @@
 class_name TutorialEncounter
 extends Node
-## Candy's fight at the end of the tutorial. Whenever her chart plays, this puts her rig in
-## place of her (blank) sprite, with a reflection on the ground, and the music visualizer
-## behind the arena. Straight out of the tutorial it also plays the intro first: your name
-## is backspaced into Crow's, Crow slides in from the right, Candy and the visualizer fade
-## in out of the dark, a title card flashes, and then the song starts the fight.
+## Candy's fight at the end of the tutorial. Her pieces, the music visualizer and her
+## reflection all come from her chart (the Keyframer and the rules); this adds what's
+## special to her fight: from beat 63, a second visualizer and a meteor shower, and,
+## straight out of the tutorial, the intro: your name is backspaced into Crow's, Crow
+## slides in from the right, Candy and the visualizer fade in out of the dark, a title
+## card flashes, and then the song starts the fight.
 
 const CHART := "res://charts/tutorial/candy.json"
 const HUD = preload("res://scripts/hud.gd")
-const REFLECTION = preload("res://shaders/ground_reflection.gdshader")
 const TITLE_FONT = preload("res://fonts/PixelOperatorMono8-Bold.ttf")
-const GROUND_Y := 100.0 # where Candy stands and the visualizer's lowest point
-const CANDY_SCALE := 2.0
 const ERASE_TIME := 0.07 # seconds per letter
 const TYPE_TIME := 0.12
 const SLIDE_TIME := 0.9
 const FADE_IN := 1.6
+const SKY_BEAT := 63.0 # when the second visualizer and the meteor shower come in
+const SKY_FADE := 2.0 # seconds
 
 ## Set by the tutorial just before it starts this fight.
 static var pending := false
@@ -24,44 +24,45 @@ static var from_name := ""
 
 var battle: Battle
 var play_intro := false
-var _candy_holder := Node2D.new() # her rig and its reflection, which fade in together
-var _visualizer := MusicVisualizer.new()
+var _sky_started := false
 
 
 func _ready() -> void:
-	_visualizer.ground_y = GROUND_Y
-	var candy: Enemy = battle.find_character("Candy")
-	if candy != null:
-		# Her rig stands on the visualizer's ground where she is; her own sprite's an
-		# invisible box for speech bubbles and hits
-		_candy_holder.position = Vector2(0, _visualizer.ground_at(candy.position.x) - candy.position.y)
-		candy.add_child(_candy_holder)
-		var rig := CandySprite.new()
-		rig.scale = Vector2.ONE * CANDY_SCALE
-		_candy_holder.add_child(rig)
-		var mirror := CanvasGroup.new()
-		var flipped := CandySprite.new()
-		flipped.scale = Vector2(CANDY_SCALE, -CANDY_SCALE)
-		mirror.add_child(flipped)
-		var fade := ShaderMaterial.new()
-		fade.shader = REFLECTION
-		mirror.material = fade
-		_candy_holder.add_child(mirror)
-		mirror.set_meta("fade", fade)
-		_candy_holder.set_meta("mirror", mirror)
-	battle.add_child(_visualizer)
 	if play_intro:
 		_intro()
 
 
 func _process(_delta: float) -> void:
-	# The reflection fades out going down from her feet, measured on screen
-	if _candy_holder.has_meta("mirror"):
-		var mirror: CanvasGroup = _candy_holder.get_meta("mirror")
-		var ground := mirror.get_global_transform_with_canvas() * Vector2.ZERO
-		var fade: ShaderMaterial = mirror.get_meta("fade")
-		fade.set_shader_parameter("ground_y", ground.y)
-		fade.set_shader_parameter("fade_length", 60.0 * mirror.get_global_transform_with_canvas().get_scale().y)
+	if not _sky_started and battle.visualizer != null and battle.conductor.playing and battle.conductor.song_beat >= SKY_BEAT:
+		_start_sky()
+
+
+## Beat 63: a bigger copy of the visualizer rises up behind the first, the other way
+## round, and a faint meteor shower starts overhead.
+func _start_sky() -> void:
+	_sky_started = true
+	var front := battle.visualizer
+	var behind := MusicVisualizer.new()
+	behind.source = front
+	behind.ground_y = front.ground_y
+	behind.tallest = MusicVisualizer.TALLEST * 1.7
+	behind.mirrored = true
+	behind.tint = Color(0.4, 0.4, 0.42)
+	behind.modulate.a = 0.0
+	var stars := MeteorShower.new()
+	stars.ground = front.ground_at
+	var stars_on_floor := MeteorShower.new()
+	stars_on_floor.source = stars
+	stars_on_floor.ground = front.ground_at
+	# Stars, then the big one, behind the visualizer; the floor's stars over its reflection
+	var at := front.get_index()
+	battle.add_child(stars)
+	battle.move_child(stars, at)
+	battle.add_child(behind)
+	battle.move_child(behind, at + 1)
+	battle.add_child(stars_on_floor)
+	battle.move_child(stars_on_floor, front.get_index() + 1)
+	create_tween().tween_property(behind, "modulate:a", 1.0, SKY_FADE)
 
 
 func _intro() -> void:
@@ -76,8 +77,14 @@ func _intro() -> void:
 	hud.state = HUD.MenuState.WAITING
 	hud.update_tab_visuals()
 	crow.position.x = 380.0
-	_candy_holder.modulate.a = 0.0
-	_visualizer.modulate.a = 0.0
+	var candy: Enemy = battle.find_character("Candy")
+	var dark: Array[CanvasItem] = []
+	if candy != null:
+		dark.append(candy)
+	if battle.visualizer != null:
+		dark.append(battle.visualizer)
+	for thing in dark:
+		thing.modulate.a = 0.0
 	var label: Label = hud.party_rows[0]
 	_show_name(label, from_name)
 	await _seconds(0.6)
@@ -106,8 +113,8 @@ func _intro() -> void:
 
 	# Candy and the visualizer come out of the dark
 	var fade := create_tween().set_parallel()
-	fade.tween_property(_candy_holder, "modulate:a", 1.0, FADE_IN)
-	fade.tween_property(_visualizer, "modulate:a", 1.0, FADE_IN)
+	for thing in dark:
+		fade.tween_property(thing, "modulate:a", 1.0, FADE_IN)
 	await fade.finished
 	await _seconds(0.4)
 	await _title_card()

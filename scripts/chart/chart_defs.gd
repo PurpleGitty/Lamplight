@@ -217,11 +217,12 @@ const TYPES := {
 		]},
 	"play_anim": {
 		"lane": "meta", "label": "Play Animation", "color": Color("a8e060"), "length": 2.0,
-		"help": "Plays frames of a character's sprite sheet across the node's length, then goes back to idle.",
+		"help": "Plays frames of a character's sprite sheet (or an animation from the Keyframer) across the node's length, then goes back to idle.",
 		"params": [
 			{"name": "character", "type": "character", "default": ""},
 			{"name": "first_frame", "type": "int", "default": 0, "min": 0, "max": 255},
 			{"name": "frame_count", "type": "int", "default": 1, "min": 1, "max": 255},
+			{"name": "rig_animation", "type": "string", "default": "", "help": "For someone built from pieces: the Keyframer animation to play instead of frames"},
 		]},
 	"soul_teleport": {
 		"lane": "meta", "label": "Move Soul", "color": Color("ff80c0"), "instant": true,
@@ -332,6 +333,7 @@ const RULE_PARAMS := [
 	{"name": "background_vframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames down in the sprite sheet"},
 	{"name": "background_frames", "type": "int", "default": 0, "min": 0, "max": 4096, "help": "How many frames to loop through (0 = all of them)"},
 	{"name": "background_beats", "type": "float", "default": 4.0, "min": 0.01, "max": 1000.0, "help": "Beats one loop takes"},
+	{"name": "visualizer", "type": "bool", "default": false, "help": "The music as a white skyline round the arena, on a shiny floor that reflects anyone built from pieces in the Keyframer (where they stand is their spot)"},
 	{"name": "speech_font", "type": "font", "default": "", "help": "Speech bubbles and captions (blank = the game's)"},
 	{"name": "menu_font", "type": "font", "default": "", "help": "The command box, names and minigame titles (blank = the game's)"},
 	{"name": "hurt_sound", "type": "audio", "default": "", "help": "The party takes a hit (blank = the game's)"},
@@ -626,6 +628,7 @@ static func is_game_art(path: String) -> bool:
 static func new_character(character_name: String, is_party: bool) -> Dictionary:
 	var c := defaults(CHARACTER_PARAMS)
 	c["name"] = character_name
+	c["rig"] = Rig.new_rig()
 	if is_party:
 		c.merge(defaults(PARTY_PARAMS), true)
 		c["specials"] = []
@@ -831,6 +834,7 @@ static func parse_chart(text: String) -> Dictionary:
 						full["defense"] = k["defense"]
 					if not had_attack_sound:
 						full["attack_sound"] = k["attack_sound"]
+			Rig.fill(full["rig"])
 			for special in full.get("specials", []):
 				fill_move(special, true)
 			for maneuver in full.get("maneuvers", []):

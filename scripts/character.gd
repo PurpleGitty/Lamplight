@@ -10,6 +10,10 @@ var max_hp := 100
 var hp := 100
 var voice: AudioStream
 var bob_pattern: Array[float] = []
+## Their pieces, if they're built from pieces (a rig) instead of one sprite sheet.
+var rig_sprite: RigSprite
+## Their reflection in the floor, when the fight has the music visualizer on.
+var rig_reflection: RigReflection
 
 var _shake_strength := 0.0
 var _shake_time := 0.0
@@ -34,15 +38,35 @@ func setup(entry: Dictionary, owner_battle: Battle) -> void:
 	scale = Vector2.ONE * float(entry["sprite_scale"])
 	position = Vector2(entry["x"], entry["y"])
 	frame = clampi(int(entry["idle_first"]), 0, hframes - 1)
+	if Rig.has_pieces(entry.get("rig")):
+		rig_sprite = RigSprite.new()
+		rig_sprite.rig = entry["rig"]
+		add_child(rig_sprite)
 
 
 ## The sprite's top edge on screen, for placing speech bubbles.
 func top_y() -> float:
+	if rig_sprite != null:
+		return position.y + rig_sprite.bounds().position.y * scale.y
 	return position.y - texture.get_height() * scale.y / 2
 
 
 func half_width() -> float:
+	if rig_sprite != null:
+		var box := rig_sprite.bounds()
+		return maxf(absf(box.position.x), absf(box.end.x)) * scale.x
 	return texture.get_width() / float(hframes) * scale.x / 2
+
+
+## Plays one of their rig's animations once (if they have a rig, and it has one by
+## that name), stretched over this many seconds, or its own length if not given.
+func play_rig(anim_name: String, seconds := -1.0) -> bool:
+	if rig_sprite == null or not rig_sprite.has_animation(anim_name):
+		return false
+	rig_sprite.play(anim_name, seconds)
+	if rig_reflection != null:
+		rig_reflection.mirrored.play(anim_name, seconds)
+	return true
 
 
 ## Plays frames of the sprite sheet once, then goes back to idle.
@@ -100,3 +124,7 @@ func animate(delta: float, bobbing := true) -> void:
 
 	# Whole sprite pixels only, so it stays crisp
 	offset = (Vector2(0, bob - _lift) + jitter).round()
+	if rig_sprite != null:
+		rig_sprite.position = offset
+	if rig_reflection != null:
+		rig_reflection.mirrored.position = Vector2(offset.x, -offset.y)

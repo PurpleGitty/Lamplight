@@ -20,10 +20,12 @@ const EDITOR_SCENE := "res://editor/attack_editor.tscn"
 const LOCALE_EDITOR_SCENE := "res://editor/locale_editor.tscn"
 const CHARTS_FOLDER := "res://charts/"
 ## The story's fights, in order. They're listed first in Play.
-const CAMPAIGN_FIGHTS := ["res://charts/testicina.json"]
+## Testicina isn't finished, so she's left out of the play list (and the builds) for now.
+const CAMPAIGN_FIGHTS := []
 const TITLE_COLOR := Color("b48cff")
 const DIM := Color(0.6, 0.6, 0.65)
 const BAD := Color(0.9, 0.35, 0.35)
+const GREYED := Color(0.3, 0.3, 0.33) # an option that can't be picked yet
 const FIRST_OPTION_Y := 230.0
 const OPTION_GAP := 40.0
 const SUB_FIRST_Y := 130.0
@@ -184,7 +186,9 @@ func _build_main() -> void:
 	]
 	for i in picks.size():
 		var label := _label(picks[i][0], OPTION_FONT, 16, FIRST_OPTION_Y + i * OPTION_GAP)
-		_add_option(label, picks[i][1], picks[i][2])
+		var option := _add_option(label, picks[i][1], picks[i][2])
+		if picks[i][0] == "CAMPAIGN":
+			option["disabled"] = true # not playable yet: the tutorial's in SETTINGS > SYSTEM
 
 
 func _build_scrap() -> void:
@@ -632,11 +636,21 @@ func _refresh_texts() -> void:
 # --- selecting ---
 
 func _select(index: int, animate := true) -> void:
-	selected = wrapi(index, 0, options.size())
+	# Greyed-out options are stepped over, carrying on the way the soul was going
+	var step := 1 if index >= selected else -1
+	index = wrapi(index, 0, options.size())
+	for tries in options.size():
+		if not options[index].get("disabled", false):
+			break
+		index = wrapi(index + step, 0, options.size())
+	selected = index
 	_scroll_rows()
 	for i in options.size():
 		var option: Dictionary = options[i]
-		option["label"].add_theme_color_override("font_color", Color.YELLOW if i == selected else Color.WHITE)
+		var color := Color.YELLOW if i == selected else Color.WHITE
+		if option.get("disabled", false):
+			color = GREYED
+		option["label"].add_theme_color_override("font_color", color)
 		if option.has("icon"):
 			option["icon"].modulate = Color.WHITE if i == selected else Color(0.5, 0.5, 0.55)
 	_update_texts()
