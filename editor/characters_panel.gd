@@ -48,13 +48,20 @@ func refresh() -> void:
 	_labeled(data, "voice")
 
 	_card("Sprite", Color("ffd24f"))
-	_labeled(data, "sprite")
-	_compact(data, ["hframes", "sprite_scale"])
+	var built := Rig.has_pieces(data.get("rig"))
+	if built:
+		_note("Built from pieces in the Keyframer: their spot (x, y) is where they stand.")
+	else:
+		_labeled(data, "sprite")
+		_labeled(data, "hframes")
+	_action("Keyframer: build from pieces + animate" if not built else "Open the Keyframer", func(): editor.keyframer.open(data))
+	_labeled(data, "sprite_scale")
 	_compact(data, ["x", "y"])
 
 	_card("Animation", Color("ff9ecb"))
 	_section("Idle")
-	_compact(data, ["idle_first", "idle_count", "idle_beats"])
+	if not built:
+		_compact(data, ["idle_first", "idle_count", "idle_beats"])
 	_labeled(data, "bob")
 	if entry["party"]:
 		_section("Attack")

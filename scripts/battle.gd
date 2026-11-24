@@ -16,7 +16,7 @@ signal tp_gained(amount: float)
 
 enum Phase { PLAYER, ENEMY, OVER }
 
-const FALLBACK_CHART := "res://charts/testicina.json"
+const FALLBACK_CHART := "res://charts/tutorial/candy.json"
 const TRADITIONAL_PAUSE := 1.0 # seconds of "about to attack" before a traditional enemy turn
 const SCREEN_SIZE := Vector2(640, 480)
 const SPEECH_FONT = preload("res://fonts/PixelOperator.ttf")
@@ -88,6 +88,8 @@ var _default_background_scale := Vector2.ONE
 var _default_sounds := {} # rule -> the stream its node started with
 ## The tutorial running this fight, if it's the tutorial.
 var tutorial_node: Tutorial
+## The music visualizer round the arena, when the rules have it on.
+var visualizer: MusicVisualizer
 
 
 func _ready() -> void:
@@ -126,6 +128,9 @@ func _ready() -> void:
 			if overworld_party.has(entry["name"]):
 				member.set_hp(clampi(int(overworld_party[entry["name"]]["hp"]), 1, member.max_hp))
 	hud.layout_party()
+	if party.is_empty():
+		_nobody_here()
+		return
 
 	conductor.bpm = chart["bpm"]
 	conductor.offset = chart["offset"]
@@ -173,6 +178,7 @@ func _add_member(entry: Dictionary) -> PartyMember:
 	member.downed.connect(_on_member_downed)
 	party.append(member)
 	layer.add_child(member)
+	_set_reflection(member)
 	layer.move_child(member, 0) # behind the menu box
 	return member
 
@@ -184,6 +190,7 @@ func _add_enemy(entry: Dictionary) -> Enemy:
 	enemies.append(new_enemy)
 	layer.add_child(new_enemy)
 	layer.move_child(new_enemy, 0)
+	_set_reflection(new_enemy)
 	return new_enemy
 
 
@@ -398,6 +405,13 @@ func lose(cause: String) -> void:
 	var screen := GameOver.new()
 	add_child(screen)
 	await screen.play(soul_position, stats, $Break, $GigaTalk, soul.sprite.texture, soul.frame_size())
+	can_restart = true
+
+
+## A fight with nobody in the party can't be played: says so, instead of crashing.
+func _nobody_here() -> void:
+	_end_battle()
+	_show_banner("NOBODY'S HERE\n* No one in this fight's party is Present.\n* Tick Present for someone in CHARACTERS.\n\n%s" % GameSettings.hint([["ACCEPT", "TRY AGAIN"], ["BACK", "MAIN MENU"]]))
 	can_restart = true
 
 
@@ -635,7 +649,7 @@ func _run_meta(ev: Dictionary) -> void:
 				_apply_change(change)
 		"play_anim":
 			var who := find_character(p["character"])
-			if who:
+			if who and not who.play_rig(p["rig_animation"], to_seconds(ev["length"])):
 				who.play_anim(int(p["first_frame"]), int(p["frame_count"]), to_seconds(ev["length"]))
 		"soul_teleport":
 			var centre: Vector2 = board.runtime.board_center if board.runtime else Vector2.ZERO
@@ -718,9 +732,33 @@ func _apply_look() -> void:
 		background.self_modulate.a = 0.0 # plain black: easier to read, and less to draw
 	if path == "" and not rules["game_art"]:
 		background.self_modulate.a = 0.0 # no background yet: plain black
+	_set_visualizer(rules["visualizer"])
 	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
 	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
 	soul.set_look(rules)
+
+
+## The music visualizer and its shiny floor, which reflects anyone built from pieces.
+func _set_visualizer(on: bool) -> void:
+	if on and visualizer == null:
+		visualizer = MusicVisualizer.new()
+		add_child(visualizer)
+	elif not on and visualizer != null:
+		visualizer.queue_free()
+		visualizer = null
+	for who in party + enemies:
+		_set_reflection(who)
+
+
+func _set_reflection(who: Character) -> void:
+	var wanted := visualizer != null and who.rig_sprite != null
+	if wanted and who.rig_reflection == null:
+		who.rig_reflection = RigReflection.new(who.data["rig"])
+		who.add_child(who.rig_reflection)
+		who.move_child(who.rig_reflection, 0) # under them
+	elif not wanted and who.rig_reflection != null:
+		who.rig_reflection.queue_free()
+		who.rig_reflection = null
 
 
 ## A video plays behind everything, and the image goes see-through (not hidden, since

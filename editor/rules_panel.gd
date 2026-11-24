@@ -78,6 +78,7 @@ func refresh() -> void:
 		_rule(rules, "background_vframes")
 		_rule(rules, "background_frames")
 		_rule(rules, "background_beats")
+	_rule(rules, "visualizer")
 
 	_card("Fonts", Color("e0b0ff"))
 	_rule(rules, "speech_font")

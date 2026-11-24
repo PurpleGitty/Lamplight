@@ -25,6 +25,14 @@ const QUIET_HEIGHT := 2.0 # pixels, so the line's still there in a silence
 
 ## Where the ground is in the middle of the screen.
 var ground_y := 100.0
+## How tall the loudest peaks get in the middle.
+var tallest := TALLEST
+## Low notes on the right instead of the left.
+var mirrored := false
+## Multiplies the white (and the reflection's greys).
+var tint := Color.WHITE
+## Another visualizer to copy the levels from, instead of listening to the bus itself.
+var source: MusicVisualizer
 var _levels := PackedFloat32Array()
 var _analyzer: AudioEffectSpectrumAnalyzerInstance
 var _bus := -1
@@ -34,6 +42,8 @@ var _effect := -1
 func _ready() -> void:
 	z_index = 0 # over the background, under everything else
 	_levels.resize(BANDS)
+	if source != null:
+		return
 	_bus = AudioServer.get_bus_index(&"Music")
 	if _bus < 0:
 		return
@@ -50,6 +60,10 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+	if source != null:
+		_levels = source._levels
+		queue_redraw()
+		return
 	for i in BANDS:
 		var target := 0.0
 		if _analyzer != null:
@@ -70,13 +84,16 @@ func _heights(points: int) -> PackedFloat32Array:
 	var heights := PackedFloat32Array()
 	heights.resize(points)
 	for p in points:
-		var at := float(p) / (points - 1) * (BANDS - 1)
+		var along := float(p) / (points - 1)
+		if mirrored:
+			along = 1.0 - along
+		var at := along * (BANDS - 1)
 		var i := floori(at)
 		var j := mini(i + 1, BANDS - 1)
 		var t := at - i
 		t = t * t * (3.0 - 2.0 * t)
 		var across := float(p) / (points - 1) * 2.0 - 1.0
-		heights[p] = (QUIET_HEIGHT + lerpf(_levels[i], _levels[j], t) * TALLEST) * (1.0 + EDGE_GROW * across * across)
+		heights[p] = (QUIET_HEIGHT + lerpf(_levels[i], _levels[j], t) * tallest) * (1.0 + EDGE_GROW * across * across)
 	return heights
 
 
@@ -91,6 +108,13 @@ func _ground(x: float) -> float:
 
 
 func _draw() -> void:
+	paint(self, Transform2D())
+
+
+## Draws it onto any canvas item, with `xf` taking the arena to that canvas (the editor's
+## preview draws it this way).
+func paint(canvas: CanvasItem, xf: Transform2D, dim := Color.WHITE) -> void:
+	canvas.draw_set_transform_matrix(xf)
 	var points := 120
 	var heights := _heights(points)
 	var top := PackedVector2Array()
@@ -109,13 +133,13 @@ func _draw() -> void:
 	var back := base.duplicate()
 	back.reverse()
 	shape.append_array(back)
-	draw_colored_polygon(shape, Color.WHITE)
+	canvas.draw_colored_polygon(shape, tint * dim)
 	# The reflection: a strip of quads, grey at the ground and lighter toward the tips
 	for p in points - 1:
 		var quad := PackedVector2Array([base[p], base[p + 1], under[p + 1], under[p]])
-		var near := Color(0.2, 0.2, 0.2)
-		var far := Color(0.85, 0.85, 0.85)
-		draw_polygon(quad, PackedColorArray([near, near, far, far]))
+		var near := Color(0.2, 0.2, 0.2) * tint
+		var far := Color(0.85, 0.85, 0.85) * tint
+		canvas.draw_polygon(quad, PackedColorArray([near * dim, near * dim, far * dim, far * dim]))
 
 
 ## Up the cylinder's wall from here: straight up in the middle, leaning out toward the sides.

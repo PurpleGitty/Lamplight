@@ -50,6 +50,9 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color(0.05, 0.05, 0.07))
+	if Rig.has_pieces(data.get("rig")):
+		_draw_rig()
+		return
 	var tex := ChartDefs.character_texture(data["sprite"]) if data.has("present") else ChartDefs.load_texture(data["sprite"])
 	var frames := maxi(int(data["hframes"]), 1)
 	var frame_size := Vector2(tex.get_width() / float(frames), tex.get_height())
@@ -79,3 +82,18 @@ func _draw() -> void:
 	var mark := Rect2(strip_at + Vector2(frame * frame_size.x * strip_scale, 0), frame_size * strip_scale)
 	draw_rect(mark, Color.YELLOW, false, 2.0)
 	draw_string(FONT, Vector2(6, 16), "frame %d / %d" % [frame, frames - 1], HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.6))
+
+
+## Someone built from pieces: their idle animation at the chart's tempo, as big as
+## whole-pixel scaling allows, standing at the bottom.
+func _draw_rig() -> void:
+	var rig: Dictionary = data["rig"]
+	var idle := Rig.find_animation(rig, Rig.IDLE)
+	var beat: float = _time * editor.chart["bpm"] / 60.0
+	var placed := Rig.pose(rig, idle, Rig.local_time(idle, beat) if not idle.is_empty() else 0.0)
+	var rest := Rig.bounds(rig, Rig.pose(rig, {}, 0.0))
+	var area := Vector2(size.x - 8, SPRITE_AREA + STRIP_HEIGHT - 16)
+	var zoom := maxf(floorf(minf(area.x / maxf(rest.size.x, 1.0), area.y / maxf(rest.size.y, 1.0))), 1.0)
+	var feet := Vector2(size.x / 2.0, SPRITE_AREA + STRIP_HEIGHT - 8 - rest.end.y * zoom).round()
+	Rig.draw(self, rig, placed, Transform2D(0.0, Vector2(zoom, zoom), 0.0, feet))
+	draw_string(FONT, Vector2(6, 16), "idle, built from pieces", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 1, 1, 0.6))

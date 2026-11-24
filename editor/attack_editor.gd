@@ -11,12 +11,13 @@ const Preview = preload("res://editor/preview.gd")
 const Inspector = preload("res://editor/inspector.gd")
 const TextEditorWindow = preload("res://editor/text_editor.gd")
 const FormulaEditorWindow = preload("res://editor/formula_editor.gd")
+const KeyframerWindow = preload("res://editor/keyframer.gd")
 const NodeTabs = preload("res://editor/node_tabs.gd")
 const CharactersPanel = preload("res://editor/characters_panel.gd")
 const RulesPanel = preload("res://editor/rules_panel.gd")
 const NewChartDialog = preload("res://editor/new_chart_dialog.gd")
 const FONT = preload("res://fonts/PixelOperator.ttf")
-const DEFAULT_CHART := "res://charts/testicina.json"
+const DEFAULT_CHART := "res://charts/tutorial/candy.json"
 const AUTOSAVE_PATH := "user://attack_editor_autosave.json"
 const SNAPS := [[1.0, "Snap: 1 beat"], [0.5, "Snap: 1/2"], [1.0 / 3.0, "Snap: 1/3"], [0.25, "Snap: 1/4"], [0.125, "Snap: 1/8"], [0.0, "Snap: off"]]
 const FRAME_SNAPS := [[1.0, "Snap: 1 frame"], [5.0, "Snap: 5"], [10.0, "Snap: 10"], [15.0, "Snap: 15"], [30.0, "Snap: 30"], [0.0, "Snap: off"]]
@@ -96,6 +97,7 @@ var node_tabs: NodeTabs
 var snap_picker := OptionButton.new()
 var text_editor: TextEditorWindow
 var formula_editor: FormulaEditorWindow
+var keyframer: KeyframerWindow
 var status_label: Label
 var time_label: Label
 var title_label: Label
@@ -252,6 +254,9 @@ func _build_ui() -> void:
 	formula_editor = FormulaEditorWindow.new()
 	formula_editor.editor = self
 	add_child(formula_editor)
+	keyframer = KeyframerWindow.new()
+	keyframer.editor = self
+	add_child(keyframer)
 
 
 ## One tab of the panel on the right.
