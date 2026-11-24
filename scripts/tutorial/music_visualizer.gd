@@ -40,7 +40,7 @@ var _effect := -1
 
 
 func _ready() -> void:
-	z_index = 0 # over the background, under everything else
+	z_index = -1 # over the background (drawn after it), under the enemies, board and soul
 	_levels.resize(BANDS)
 	if source != null:
 		return

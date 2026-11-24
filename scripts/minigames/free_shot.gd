@@ -111,7 +111,7 @@ func tick(delta: float) -> void:
 	_update_net(delta)
 	if not _shot:
 		_swing += delta * TAU / SWING_TIME
-		if running and _clock >= AUTO_SHOOT:
+		if running and _clock >= AUTO_SHOOT and not Battle.tutorial: # the tutorial lets you take your time
 			_shoot()
 		return
 	_since_shot += delta

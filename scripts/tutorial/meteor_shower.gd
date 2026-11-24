@@ -26,6 +26,7 @@ var _direction := Vector2(-1.0, 0.55).normalized()
 
 
 func _ready() -> void:
+	z_index = -1 # in the sky with the visualizer, under the enemies, board and soul
 	if randf() < 0.5:
 		_direction.x = -_direction.x
 

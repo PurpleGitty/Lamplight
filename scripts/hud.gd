@@ -235,7 +235,10 @@ func open_list(kind: String, items: Array, index := 0) -> void:
 	for item in items:
 		var move_cost: float = item.get("cost", 0.0)
 		var cost := "%d TP" % move_cost if battle.rules["tp_enabled"] and move_cost > 0.0 else ""
-		rows.append({"text": "%s   %s" % [item["name"], cost], "enabled": move_cost <= available_tp(), "hint": item.get("description", "")})
+		var locked := _turns_locked(item)
+		if locked > 0:
+			cost = "(%d turn%s)" % [locked, "" if locked == 1 else "s"]
+		rows.append({"text": "%s   %s" % [item["name"], cost], "enabled": move_cost <= available_tp() and locked == 0, "hint": item.get("description", "")})
 	_show_rows(rows, selected_index)
 
 
@@ -250,8 +253,8 @@ func _list_input(event: InputEvent) -> void:
 		_highlight_row(selected_index)
 	elif GameSettings.pressed(event, "ACCEPT"):
 		var item: Dictionary = list_items[selected_index]
-		if item.get("cost", 0.0) > available_tp():
-			_sfx("Deselect") # can't afford it
+		if item.get("cost", 0.0) > available_tp() or _turns_locked(item) > 0:
+			_sfx("Deselect") # can't afford it, or can't use it yet
 			return
 		_sfx("Select")
 		if list_kind == "special":
@@ -264,6 +267,14 @@ func _list_input(event: InputEvent) -> void:
 	elif GameSettings.pressed(event, "BACK"):
 		_sfx("Deselect")
 		enter_tab_select()
+
+
+## Turns before the picking character can use this move again (0 = now).
+func _turns_locked(item: Dictionary) -> int:
+	var member := current_member()
+	if member == null or not item.has("effects"):
+		return 0
+	return member.turns_locked(item["name"])
 
 
 func enter_target_select() -> void:
@@ -342,6 +353,7 @@ func execute_choices() -> void:
 				if battle.rules["tp_enabled"]:
 					battle.spend_tp(move["cost"])
 				_use_move(member, move)
+				member.lock_moves(move)
 				battle.apply_effects(move["effects"], member)
 				_show_text(str(move["text"]).replace("{user}", member.display_name))
 				await _wait(1.6)
@@ -363,6 +375,17 @@ func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
 	var game_settings: Dictionary = move["settings"] if is_special else {}
 	if is_special and battle.rules["tp_enabled"]:
 		battle.spend_tp(move["cost"])
+	var said_first: bool = is_special and str(move.get("say", "")) != ""
+	if said_first:
+		# The sound and the line come before the minigame (a snap, and "Nevermore.")
+		flavortext.hide()
+		battle.play_sound(move["sound"])
+		bubble.say(move["say"], Vector2(member.position.x, member.top_y() - 4), SIDE_BOTTOM, member.voice)
+		await _wait(1.4)
+		bubble.hide()
+		if token != turn_token:
+			return
+	var landed := false
 
 	for hit in int(move.get("hits", 1)):
 		flavortext.hide()
@@ -376,12 +399,15 @@ func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
 			if multiplier > 0.0:
 				battle.play_sound(game.asset("hit_sound"))
 				_land_hit(member, choice, damage * multiplier)
+				if is_special:
+					member.lock_moves(move)
 			return
 		if minigame.perfect and not is_special:
 			battle.earn_tp(battle.rules["perfect_tp"])
 		var connected := multiplier > 0.0
+		landed = landed or connected
 		if is_special:
-			_use_move(member, move, connected)
+			_use_move(member, move, connected and not said_first)
 		else:
 			if connected:
 				battle.play_sound(member.data["attack_sound"])
@@ -405,6 +431,8 @@ func _attack(member: PartyMember, choice: Dictionary, token: int) -> void:
 		_close_minigame()
 	if is_special:
 		battle.apply_effects(move["effects"], member)
+		if landed:
+			member.lock_moves(move) # only once it's worked
 
 
 ## A move's animation, sound and icon.
@@ -418,6 +446,8 @@ func _use_move(member: PartyMember, move: Dictionary, with_sound := true) -> voi
 
 func _land_hit(member: PartyMember, choice: Dictionary, damage: float) -> void:
 	var power := battle.mod("attack_power", member)
+	if choice["type"] == "fight":
+		power *= battle.mod("fight_power", member) # a sharpening stone: not for specials
 	if choice.get("move", {}).get("hits_all", false):
 		for foe in battle.living_enemies():
 			foe.take_damage(roundi(damage * power))

@@ -81,6 +81,14 @@ var _next_meta := 0
 var _leaving: Array[Node] = [] # characters who left, freed at the next player turn
 var _player_turn_id := 0
 var _mods: Array = [] # timed effects in play: {"kind", "value", "turns", "targets"}
+var _scavengers: Array = [] # party members whose crows are out scavenging
+## What scavengers can bring back.
+const FINDS := [
+	{"text": "* The crows came back with snacks!\n* {user} got 40 HP back.", "effects": [{"kind": "heal", "value": 40.0, "target": "self", "turns": 1}]},
+	{"text": "* The crows came back with... narcotics?\n* The soul's faster for 2 turns.", "effects": [{"kind": "soul_speed", "value": 1.3, "target": "", "turns": 2}]},
+	{"text": "* The crows came back with a sharpening stone!\n* FIGHT does 10% more damage for 2 turns.", "effects": [{"kind": "fight_power", "value": 1.1, "target": "self", "turns": 2}]},
+	{"text": "* The crows came back with kevlar!\n* +4 defense for 4 turns.", "effects": [{"kind": "defense_up", "value": 4.0, "target": "self", "turns": 4}]},
+]
 var _default_background: Texture2D
 var _background_video: VideoStreamPlayer
 var _background_video_path := ""
@@ -90,6 +98,8 @@ var _default_sounds := {} # rule -> the stream its node started with
 var tutorial_node: Tutorial
 ## The music visualizer round the arena, when the rules have it on.
 var visualizer: MusicVisualizer
+## Holds the enemies when they're drawn behind the battle board (the rule enemy_layer).
+var enemies_behind := Node2D.new()
 
 
 func _ready() -> void:
@@ -105,6 +115,7 @@ func _ready() -> void:
 	attacks = ChartDefs.attacks(chart)
 	_meta = chart["meta_events"].duplicate()
 	_meta.sort_custom(func(a, b): return a["beat"] < b["beat"] or (a["beat"] == b["beat"] and a["id"] < b["id"]))
+	add_child(enemies_behind) # under the board (z 1) and the soul (z 2)
 	_default_background = $Background.texture
 	_default_background_scale = $Background.scale
 	for rule in SOUND_RULES:
@@ -190,6 +201,7 @@ func _add_enemy(entry: Dictionary) -> Enemy:
 	enemies.append(new_enemy)
 	layer.add_child(new_enemy)
 	layer.move_child(new_enemy, 0)
+	_place_enemy(new_enemy)
 	_set_reflection(new_enemy)
 	return new_enemy
 
@@ -330,6 +342,7 @@ func start_player_turn() -> void:
 	board.close()
 	soul.hide()
 	hud.begin_turn(current_turn())
+	_scavengers_return()
 	phase_changed.emit(phase)
 
 
@@ -530,6 +543,12 @@ func apply_effects(effects: Array, user: PartyMember) -> void:
 			continue
 		var targets := _effect_targets(effect.get("target", ""), user)
 		if info["timed"]:
+			if not info.get("stacks", true):
+				# A new one replaces the old for whoever it's on
+				for m in _mods:
+					if m["kind"] == effect["kind"]:
+						m["targets"] = m["targets"].filter(func(t): return t not in targets)
+				_mods = _mods.filter(func(m): return m["kind"] != effect["kind"] or not m["targets"].is_empty())
 			_mods.append({"kind": effect["kind"], "value": float(effect["value"]), "turns": int(effect.get("turns", 1)), "targets": targets})
 			continue
 		match effect["kind"]:
@@ -546,7 +565,38 @@ func apply_effects(effects: Array, user: PartyMember) -> void:
 			"revive":
 				for t in targets:
 					t.revive_now(float(effect["value"]) / 100.0)
+			"scavenge":
+				for t in targets:
+					if t not in _scavengers:
+						_scavengers.append(t)
 	_update_shares()
+
+
+## The start of a player turn: scavengers come back with something.
+func _scavengers_return() -> void:
+	var said: Array[String] = []
+	for member in _scavengers:
+		if not is_instance_valid(member):
+			continue
+		var find: Dictionary = FINDS.pick_random()
+		apply_effects(find["effects"], member)
+		said.append(find["text"].replace("{user}", member.display_name))
+	_scavengers.clear()
+	if said.is_empty():
+		return
+	play_sound("res://sounds/crow/flap.wav")
+	play_sound("res://sounds/crow/caw_2.wav")
+	hud.flavor = "\n".join(said)
+	hud.enter_tab_select()
+
+
+## All the timed effects of a kind added together (for ones that add, like defense).
+func mod_sum(kind: String, member: PartyMember = null) -> float:
+	var total := 0.0
+	for m in _mods:
+		if m["kind"] == kind and (member == null or member in m["targets"]):
+			total += m["value"]
+	return total
 
 
 func _effect_targets(target: String, user: PartyMember) -> Array:
@@ -728,9 +778,21 @@ func _apply_look() -> void:
 	if path == "" and not rules["game_art"]:
 		background.self_modulate.a = 0.0 # no background yet: plain black
 	_set_visualizer(rules["visualizer"])
+	for foe in enemies:
+		_place_enemy(foe)
 	hud.set_menu_font(ChartDefs.load_font(rules["menu_font"]))
 	hud.bubble.label.add_theme_font_override("normal_font", speech_font())
 	soul.set_look(rules)
+
+
+## Enemies go behind the battle board or over it, as the rules say.
+func _place_enemy(foe: Enemy) -> void:
+	var wanted: Node = enemies_behind if rules["enemy_layer"] == "behind board" else layer
+	if foe.get_parent() == wanted:
+		return
+	foe.reparent(wanted, false)
+	if wanted == layer:
+		layer.move_child(foe, 0) # behind the menu box
 
 
 ## The music visualizer and its shiny floor, which reflects anyone built from pieces.

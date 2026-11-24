@@ -23,15 +23,48 @@ func setup(data: Dictionary, enemy_name: String) -> void:
 
 	# The node itself is scaled by sprite_scale, so undo that for the hitbox
 	# (hitbox sizes in the chart are in screen pixels)
-	var shape := RectangleShape2D.new()
 	var s: float = maxf(data["sprite_scale"], 0.001)
-	shape.size = Vector2(data["hitbox_w"], data["hitbox_h"]) / s
-	hitbox.shape = shape
+	if data.get("hitbox_shape", "box") == "circle":
+		var circle := CircleShape2D.new()
+		circle.radius = float(data["hitbox_w"]) / 2.0 / s
+		hitbox.shape = circle
+	else:
+		var shape := RectangleShape2D.new()
+		shape.size = Vector2(data["hitbox_w"], data["hitbox_h"]) / s
+		hitbox.shape = shape
 	hitbox.position = Vector2(data["hitbox_x"], data["hitbox_y"]) / s
 	add_child(hitbox)
 
 	damage = int(data["damage"])
 	source_name = "%s's %s" % [enemy_name, data["name"]]
+	afterimages = data.get("afterimages", false) and GameSettings.values["fx_trails"]
+
+
+const AFTERIMAGE_TIME := 0.2 # seconds a copy takes to fade
+const AFTERIMAGE_ALPHA := 0.5
+var afterimages := false
+var _last_place := Transform2D()
+
+
+## Afterimages: a fading copy left behind each frame it moves or turns.
+func _process(_delta: float) -> void:
+	if not afterimages or not is_visible_in_tree():
+		_last_place = transform
+		return
+	if transform.is_equal_approx(_last_place):
+		return
+	_last_place = transform
+	var ghost := Sprite2D.new()
+	ghost.texture = sprite.texture
+	ghost.hframes = sprite.hframes
+	ghost.frame = sprite.frame
+	ghost.transform = transform
+	ghost.self_modulate = Color(1, 1, 1, AFTERIMAGE_ALPHA * modulate.a)
+	get_parent().add_child(ghost)
+	get_parent().move_child(ghost, get_index())
+	var t := ghost.create_tween()
+	t.tween_property(ghost, "self_modulate:a", 0.0, AFTERIMAGE_TIME)
+	t.tween_callback(ghost.queue_free)
 
 
 const MODE_TINT = preload("res://shaders/mode_tint.gdshader")

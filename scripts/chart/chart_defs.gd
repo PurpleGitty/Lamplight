@@ -281,11 +281,13 @@ const OBJECT_PARAMS := [
 	{"name": "tint", "type": "color", "default": "ffffff"},
 	{"name": "mode", "type": "enum", "default": "normal", "options": OBJECT_MODES, "help": "blue: only hurts if you move. orange: only hurts if you stay still"},
 	{"name": "spawn_sound", "type": "audio", "default": "", "help": "Plays each time it spawns"},
+	{"name": "hitbox_shape", "type": "enum", "default": "box", "options": ["box", "circle"], "help": "circle: round, as wide as hitbox_w"},
 	{"name": "hitbox_w", "type": "float", "default": 12.0, "min": 0.0, "max": 640.0},
 	{"name": "hitbox_h", "type": "float", "default": 12.0, "min": 0.0, "max": 480.0},
 	{"name": "hitbox_x", "type": "float", "default": 0.0, "min": -640.0, "max": 640.0, "help": "From the object's centre. [LMB DRAG] its hitbox in the preview to move it"},
 	{"name": "hitbox_y", "type": "float", "default": 0.0, "min": -480.0, "max": 480.0},
 	{"name": "damage", "type": "int", "default": 20, "min": 0, "max": 999},
+	{"name": "afterimages", "type": "bool", "default": false, "help": "Leaves fading copies of itself behind as it moves and turns"},
 ]
 
 ## What Change Objects can change.
@@ -333,6 +335,7 @@ const RULE_PARAMS := [
 	{"name": "background_vframes", "type": "int", "default": 1, "min": 1, "max": 64, "help": "Frames down in the sprite sheet"},
 	{"name": "background_frames", "type": "int", "default": 0, "min": 0, "max": 4096, "help": "How many frames to loop through (0 = all of them)"},
 	{"name": "background_beats", "type": "float", "default": 4.0, "min": 0.01, "max": 1000.0, "help": "Beats one loop takes"},
+	{"name": "enemy_layer", "type": "enum", "default": "behind board", "options": ["behind board", "over board"], "help": "Whether enemies are drawn behind the battle board (so they never hide an attack) or over it"},
 	{"name": "visualizer", "type": "bool", "default": false, "help": "The music as a white skyline round the arena, on a shiny floor that reflects anyone built from pieces in the Keyframer (where they stand is their spot)"},
 	{"name": "speech_font", "type": "font", "default": "", "help": "Speech bubbles and captions (blank = the game's)"},
 	{"name": "menu_font", "type": "font", "default": "", "help": "The command box, names and minigame titles (blank = the game's)"},
@@ -424,6 +427,24 @@ const MINIGAMES := {
 			{"name": "minimum", "type": "float", "default": 0.2, "min": 0.0, "max": 10.0, "help": "Damage multiplier with no taps"},
 			{"name": "maximum", "type": "float", "default": 1.5, "min": 0.0, "max": 10.0, "help": "Damage multiplier at full"},
 		]},
+	"nevermore": {
+		"label": "Crow volley", "script": "res://scripts/minigames/nevermore.gd",
+		"help": "The soul sits in the middle and LEFT and RIGHT turn it, while the enemy's target circles round it erratically. Press or hold ACCEPT to fire crows from the soul's point. Every crow that hits does the special's damage once.",
+		"params": [
+			{"name": "box_width", "type": "float", "default": 480.0, "min": 120.0, "max": 632.0, "help": "Size of the box it plays in"},
+			{"name": "box_height", "type": "float", "default": 360.0, "min": 80.0, "max": 472.0},
+			{"name": "sprite", "type": "texture", "default": "res://sprites/crow/crow.png", "help": "One crow facing right: 4 frames of flapping side by side"},
+			{"name": "caw_sound", "type": "audio", "default": "", "help": "Each crow caws as it's fired (blank = the game's three caws)"},
+			{"name": "flap_sound", "type": "audio", "default": "res://sounds/crow/flap.wav"},
+			{"name": "hit_sound", "type": "audio", "default": "", "help": "Plays just before the enemy's hurt sound"},
+			{"name": "max_crows", "type": "int", "default": 50, "min": 1, "max": 500, "help": "Most crows that can be fired: the special's damage times this is the most it can do"},
+			{"name": "fire_rate", "type": "float", "default": 10.0, "min": 0.5, "max": 60.0, "help": "Crows a second while ACCEPT is held"},
+			{"name": "fire_time", "type": "float", "default": 7.0, "min": 0.5, "max": 30.0, "help": "Seconds to fire them in"},
+			{"name": "crow_speed", "type": "float", "default": 320.0, "min": 20.0, "max": 2000.0, "help": "Pixels a second"},
+			{"name": "turn_speed", "type": "float", "default": 220.0, "min": 10.0, "max": 1000.0, "help": "Degrees a second the soul turns"},
+			{"name": "target_distance", "type": "float", "default": 120.0, "min": 20.0, "max": 300.0, "help": "How far the target circles from the soul"},
+			{"name": "target_speed", "type": "float", "default": 1.8, "min": 0.0, "max": 20.0, "help": "How fast the target can whip round, in radians a second"},
+		]},
 	"scope": {
 		"label": "Sniper scope", "script": "res://scripts/minigames/scope.gd",
 		"help": "A ring shrinks onto the target. Tap when it lines up.",
@@ -454,6 +475,9 @@ const EFFECTS := {
 	"hurt": {"label": "Lose HP", "timed": false, "target": "self", "value": 20.0, "help": "HP lost (never downs them)"},
 	"gain_tp": {"label": "Gain TP", "timed": false, "target": "", "value": 20.0, "help": "TP gained right away"},
 	"revive": {"label": "Revive now", "timed": false, "target": "downed", "value": 50.0, "help": "Brings a downed ally back with this % of their HP"},
+	"fight_power": {"label": "FIGHT damage x", "timed": true, "target": "self", "value": 1.1, "stacks": false, "help": "Multiplies plain FIGHT damage only, not specials. A new one replaces the old instead of stacking"},
+	"defense_up": {"label": "Defense +", "timed": true, "target": "self", "value": 4.0, "help": "Adds to defense (percent less damage from every hit)"},
+	"scavenge": {"label": "Send out scavengers", "timed": false, "target": "self", "value": 1.0, "help": "They come back at the start of the next turn with one of: snacks (HP), narcotics (faster soul for 2 turns), a sharpening stone (+10% FIGHT damage for 2 turns) or kevlar (+4 defense for 4 turns)"},
 }
 const EFFECT_TARGETS := ["self", "allies", "party", "lowest_hp", "downed"]
 
@@ -473,6 +497,8 @@ const SPECIAL_PRESETS := {
 		"effects": [{"kind": "bullet_size", "value": 0.7, "target": "", "turns": 1}]},
 	"overdrive": {"name": "Overdrive", "description": "Mash for damage, and get some TP back.", "cost": 15.0, "damage": 400.0, "minigame": "rapid_tap",
 		"effects": [{"kind": "gain_tp", "value": 10.0, "target": "", "turns": 1}]},
+	"nevermore": {"name": "Nevermore", "description": "Snap and sic a flock of crows on them.", "cost": 50.0, "damage": 50.0, "minigame": "nevermore",
+		"say": "Nevermore.", "sound": "res://sounds/crow/snap.wav", "locks": "Scavenge: 2"},
 	"hype_riff": {"name": "Hype Riff", "description": "The whole party hits harder next turn.", "cost": 40.0, "damage": 400.0, "minigame": "guitar_swing",
 		"effects": [{"kind": "attack_power", "value": 1.3, "target": "party", "turns": 1}]},
 }
@@ -512,6 +538,8 @@ const MANEUVER_PRESETS := {
 		"effects": [{"kind": "graze_radius", "value": 1.6, "target": "", "turns": 1}, {"kind": "tp_gain", "value": 1.25, "target": "", "turns": 1}]},
 	"blood_pact": {"name": "Blood Pact", "description": "Trade HP for TP right now.", "text": "* {user} gives up a little to get a lot.", "cost": 0.0,
 		"effects": [{"kind": "hurt", "value": 20.0, "target": "self", "turns": 1}, {"kind": "gain_tp", "value": 30.0, "target": "", "turns": 1}]},
+	"scavenge": {"name": "Scavenge", "description": "Crows fetch something useful for later.", "text": "* {user} sends the crows out to scavenge.", "cost": 25.0,
+		"locks": "Nevermore: 1", "effects": [{"kind": "scavenge", "value": 1.0, "target": "self", "turns": 1}]},
 	"adrenaline": {"name": "Adrenaline", "description": "Longer safety after each hit next turn.", "text": "* {user}'s heart is racing.", "cost": 10.0,
 		"effects": [{"kind": "invincibility", "value": 1.5, "target": "", "turns": 1}]},
 }
@@ -520,6 +548,8 @@ const MANEUVER_PRESETS := {
 const MOVE_DEFAULTS := {
 	"preset": "", "name": "New move", "description": "", "cost": 0.0, "text": "", "sprite": "", "sound": "",
 	"use_first": 0, "use_count": 0, "use_seconds": 0.4, "effects": [],
+	"say": "", # said in a speech bubble (with the sound) before a special's minigame
+	"locks": "", # moves this one stops them using for a while, as "Name: turns, Name: turns"
 }
 const SPECIAL_DEFAULTS := {"damage": 500.0, "hits": 1, "hits_all": false, "minigame": "timing_bar", "settings": {}}
 
@@ -546,6 +576,16 @@ static func fill_move(move: Dictionary, is_special: bool) -> void:
 		effect["turns"] = effect.get("turns", 1)
 	if is_special:
 		fill_special(move)
+
+
+## A move's locks ("Scavenge: 2, Other: 1") as move name -> player turns.
+static func parse_locks(text: String) -> Dictionary:
+	var locks := {}
+	for part in text.split(",", false):
+		var bits := part.rsplit(":", true, 1)
+		if bits.size() == 2 and bits[0].strip_edges() != "" and bits[1].strip_edges().is_valid_int():
+			locks[bits[0].strip_edges()] = maxi(int(bits[1]), 0)
+	return locks
 
 
 static func new_effect() -> Dictionary:
