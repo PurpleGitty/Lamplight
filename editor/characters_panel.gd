@@ -241,6 +241,9 @@ func _move_entry(outer: Control, items: Array, item: Dictionary, is_special: boo
 	_section("When used")
 	_row({"name": "sprite", "label": "icon sprite", "type": "texture"}, item["sprite"], set_field.call("sprite"))
 	_row({"name": "sound", "type": "audio"}, item["sound"], set_field.call("sound"))
+	if is_special:
+		_row({"name": "say", "label": "says first", "type": "string", "help": "Said in a speech bubble, with the sound, before the minigame starts"}, item["say"], set_field.call("say"))
+	_row({"name": "locks", "label": "locks moves", "type": "string", "help": "Moves this stops them using for a while, like  Scavenge: 2  (that many of their next turns). A special only locks them if it hits"}, item["locks"], set_field.call("locks"))
 	var anim := HBoxContainer.new()
 	_into().add_child(anim)
 	for field in [["use_first", "anim first", "int"], ["use_count", "frames", "int"], ["use_seconds", "seconds", "float"]]:

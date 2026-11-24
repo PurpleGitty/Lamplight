@@ -10,6 +10,8 @@ extends RefCounted
 ##     measured from its parent's pivot (or the character's spot for a piece with no
 ##     parent), rotation in degrees, and pivot_x, pivot_y, the pixel in its frame that it
 ##     turns around. Pieces only ever turn and move, so the art stays pixel for pixel.
+##     crops: for each frame, [x, y, w, h], the part of the frame that has art in it
+##     (empty = the whole frame). Only that part is drawn, picked and outlined.
 ##   animations: each has a name, a length in beats, whether it loops, and tracks: for a
 ##     piece id, a list of keys per property (x, y, rotation, frame). A key has a beat,
 ##     a value and an ease, which says how it gets from this key to the next.
@@ -33,7 +35,7 @@ static func new_animation(anim_name: String) -> Dictionary:
 static func new_piece(rig: Dictionary, piece_name: String, sprite := "") -> Dictionary:
 	var piece := {
 		"id": int(rig.get("next_id", 1)), "name": piece_name, "sprite": sprite, "hframes": 1, "frame": 0,
-		"parent": -1, "x": 0.0, "y": 0.0, "rotation": 0.0, "pivot_x": 0.0, "pivot_y": 0.0,
+		"parent": -1, "x": 0.0, "y": 0.0, "rotation": 0.0, "pivot_x": 0.0, "pivot_y": 0.0, "crops": [],
 	}
 	rig["next_id"] = piece["id"] + 1
 	return piece
@@ -97,6 +99,37 @@ static func texture(path: String) -> Texture2D:
 	if not _textures.has(path):
 		_textures[path] = ChartDefs.load_texture(path)
 	return _textures[path]
+
+
+## The part of a frame with art in it, in that frame's own pixels.
+static func frame_rect(piece: Dictionary, frame: int) -> Rect2:
+	var crops: Array = piece.get("crops", [])
+	if frame >= 0 and frame < crops.size() and crops[frame] is Array and crops[frame].size() == 4:
+		var c: Array = crops[frame]
+		return Rect2(c[0], c[1], c[2], c[3])
+	return Rect2(Vector2.ZERO, frame_size(piece))
+
+
+## Crops every frame of a piece to the art in it. Returns false if its image can't be read.
+static func crop_to_art(piece: Dictionary) -> bool:
+	var tex := texture(piece["sprite"])
+	if tex == null:
+		return false
+	var image := tex.get_image()
+	if image == null:
+		return false
+	if image.is_compressed():
+		image.decompress()
+	var size := frame_size(piece)
+	var crops := []
+	for frame in maxi(piece["hframes"], 1):
+		var region := Rect2i(int(frame * size.x), 0, int(size.x), int(size.y))
+		var used := image.get_region(region).get_used_rect()
+		if used.size == Vector2i.ZERO:
+			used = Rect2i(0, 0, 1, 1) # an empty frame: a dot, so it can still be found
+		crops.append([used.position.x, used.position.y, used.size.x, used.size.y])
+	piece["crops"] = crops
+	return true
 
 
 ## Forget loaded sprites, so a changed file shows its new look.
@@ -224,7 +257,8 @@ static func draw(canvas: CanvasItem, rig: Dictionary, placed: Dictionary, base: 
 		var spot: Dictionary = placed[piece["id"]]
 		canvas.draw_set_transform_matrix(base * spot["xf"])
 		var pivot := Vector2(piece["pivot_x"], piece["pivot_y"])
-		canvas.draw_texture_rect_region(tex, Rect2(-pivot, size), Rect2(Vector2(spot["frame"] * size.x, 0), size), tint)
+		var part := frame_rect(piece, spot["frame"])
+		canvas.draw_texture_rect_region(tex, Rect2(part.position - pivot, part.size), Rect2(Vector2(spot["frame"] * size.x, 0) + part.position, part.size), tint)
 	canvas.draw_set_transform_matrix(Transform2D())
 
 
@@ -237,8 +271,9 @@ static func bounds(rig: Dictionary, placed: Dictionary) -> Rect2:
 		if size == Vector2.ZERO or not placed.has(piece["id"]):
 			continue
 		var xf: Transform2D = placed[piece["id"]]["xf"]
-		var corner := -Vector2(piece["pivot_x"], piece["pivot_y"])
-		for c in [corner, corner + Vector2(size.x, 0), corner + size, corner + Vector2(0, size.y)]:
+		var part := frame_rect(piece, placed[piece["id"]]["frame"])
+		var corner := part.position - Vector2(piece["pivot_x"], piece["pivot_y"])
+		for c in [corner, corner + Vector2(part.size.x, 0), corner + part.size, corner + Vector2(0, part.size.y)]:
 			var p: Vector2 = xf * c
 			if first:
 				box = Rect2(p, Vector2.ZERO)
@@ -257,7 +292,7 @@ static func piece_at(rig: Dictionary, placed: Dictionary, point: Vector2) -> Dic
 		if size == Vector2.ZERO or not placed.has(piece["id"]):
 			continue
 		var inside: Vector2 = placed[piece["id"]]["xf"].affine_inverse() * point + Vector2(piece["pivot_x"], piece["pivot_y"])
-		if not Rect2(Vector2.ZERO, size).has_point(inside):
+		if not frame_rect(piece, placed[piece["id"]]["frame"]).has_point(inside):
 			continue
 		var tex := texture(piece["sprite"])
 		var image := tex.get_image() if tex != null else null

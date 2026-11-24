@@ -8,11 +8,26 @@ signal downed
 signal revived
 
 const DISSOLVE_SHADER = preload("res://shaders/dissolve.gdshader")
+const PERCENT_FONT = preload("res://fonts/PixelOperator8.ttf")
 const DISSOLVE_NOISE = preload("res://shaders/dissolve_noise.tres")
 
 var hp_bar: TextureProgressBar
 var name_label: Label
 var is_down := false
+## Moves they can't use for now: move name -> the player turn they can use it again.
+var locked_until := {}
+
+
+## How many more player turns this move's locked for (0 = it can be used).
+func turns_locked(move_name: String) -> int:
+	return maxi(int(locked_until.get(move_name, 0)) - battle.turn_number, 0)
+
+
+## Using a move locks the moves it names, for that many of their next turns.
+func lock_moves(move: Dictionary) -> void:
+	var locks := ChartDefs.parse_locks(str(move.get("locks", "")))
+	for move_name in locks:
+		locked_until[move_name] = battle.turn_number + int(locks[move_name]) + 1
 var defending := false # takes less damage until the next player turn
 var revive_progress := 0.0
 
@@ -31,6 +46,7 @@ func set_hud(label: Label, bar: TextureProgressBar) -> void:
 	name_label = label
 	hp_bar = bar
 	if is_down:
+		_percent_label().visible = false
 		hp_bar.self_modulate = Color.GREEN
 		hp_bar.max_value = battle.rules["revive_seconds"]
 		hp_bar.value = revive_progress
@@ -57,7 +73,8 @@ func take_damage(amount: int) -> void:
 	if battle.block_hit(self):
 		shake(1.0, 0.15)
 		return
-	var taken: float = amount * (1.0 - float(data["defense"]) / 100.0) * battle.mod("damage_taken", self)
+	var defense := minf(float(data["defense"]) + battle.mod_sum("defense_up", self), 100.0)
+	var taken: float = amount * (1.0 - defense / 100.0) * battle.mod("damage_taken", self)
 	if defending:
 		taken *= battle.rules["defend_factor"]
 	set_hp(hp - maxi(ceili(taken), 1))
@@ -86,6 +103,7 @@ func _go_down() -> void:
 
 	# The HP bar turns into a green revive bar while down
 	hp_bar.self_modulate = Color.GREEN
+	_percent_label().visible = false
 	hp_bar.max_value = battle.rules["revive_seconds"]
 	hp_bar.value = 0.0
 
@@ -137,3 +155,22 @@ func _show_hp() -> void:
 	hp_bar.self_modulate = Color.WHITE
 	hp_bar.max_value = max_hp
 	hp_bar.value = hp
+	_percent_label().text = "%d%%" % roundi(100.0 * hp / maxf(max_hp, 1))
+	_percent_label().visible = true
+
+
+## Their HP as a percentage, in white inside the bar.
+func _percent_label() -> Label:
+	var label: Label = hp_bar.get_node_or_null("Percent")
+	if label == null:
+		label = Label.new()
+		label.name = "Percent"
+		label.add_theme_font_override("font", PERCENT_FONT)
+		label.add_theme_font_size_override("font_size", 8)
+		label.add_theme_color_override("font_color", Color.WHITE)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		hp_bar.add_child(label)
+	label.self_modulate = Color.WHITE
+	return label

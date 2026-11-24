@@ -120,6 +120,9 @@ func _touches(o) -> bool:
 	var rules: Dictionary = editor.chart["rules"]
 	var soul_box := _soul_hitbox()
 	var local: Vector2 = xf.affine_inverse() * soul_box.get_center() - Vector2(o.data["hitbox_x"], o.data["hitbox_y"]) / s
+	if o.data.get("hitbox_shape", "box") == "circle":
+		var reach: float = (float(o.data["hitbox_w"]) / 2.0 + rules["soul_hitbox_w"] / 2.0) / (s * o.scale)
+		return local.length() <= reach
 	var half: Vector2 = Vector2(o.data["hitbox_w"], o.data["hitbox_h"]) / s / 2 + Vector2(rules["soul_hitbox_w"], rules["soul_hitbox_h"]) / 2 / (s * o.scale)
 	return absf(local.x) <= half.x and absf(local.y) <= half.y
 

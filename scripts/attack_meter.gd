@@ -9,7 +9,7 @@ const OVERSHOOT := 20.0 # pixels past the target before it counts as a miss
 ## (The bar moves ~11px per frame at 30 FPS, so PERFECT's full width, both sides of
 ## the line, must be at least that: then exactly one frame of it is always catchable.)
 const GRADES := [
-	[6.0, "PERFECT", 1.5, Color.YELLOW],
+	[7.0, "PERFECT", 1.5, Color.YELLOW],
 	[16.0, "GREAT", 1.0, Color.CYAN],
 	[40.0, "OK", 0.6, Color.WHITE],
 	[INF, "BAD", 0.3, Color.GRAY],

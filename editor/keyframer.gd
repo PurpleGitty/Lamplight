@@ -154,6 +154,7 @@ func _ready() -> void:
 	_button(piece_buttons, "Up", func(): _move_piece(-1), "Draw it sooner (behind more)")
 	_button(piece_buttons, "Down", func(): _move_piece(1), "Draw it later (in front of more)")
 	_button(piece_buttons, "Remove", _remove_piece, "")
+	_button(piece_buttons, "Crop all", _crop_all, "Crop every piece's frames to the art in them, so selecting one only outlines that piece. Nothing moves")
 	left.add_child(_piece_box)
 	_stage.window = self
 	_stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -518,11 +519,24 @@ func _refresh_piece_box() -> void:
 			editor.browse_file("texture", func(chosen: String):
 				editor.push_undo()
 				piece["sprite"] = chosen
+				piece["crops"] = []
 				Rig.forget_textures()
 				_changed()
 				_refresh_piece_box()), "")
 		_row("sprite", sprite_row)
 		_number(piece, "hframes", "frames across", 1, 64, 1)
+		var crop_row := HBoxContainer.new()
+		var cropped := Label.new()
+		cropped.text = "cropped to the art" if not piece["crops"].is_empty() else "whole frame"
+		cropped.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		crop_row.add_child(cropped)
+		_button(crop_row, "Crop to art", func(): _crop([piece]), "Crop each of its frames to the art in it, so it's picked and outlined by just that. Nothing moves")
+		_button(crop_row, "Uncrop", func():
+			editor.push_undo()
+			piece["crops"] = []
+			_changed()
+			_refresh_piece_box(), "")
+		_row("crop", crop_row)
 	var parent := OptionButton.new()
 	parent.focus_mode = Control.FOCUS_NONE
 	parent.add_item("(none)", -1)
@@ -545,6 +559,21 @@ func _refresh_piece_box() -> void:
 	_number(piece, "rotation", "turn", -3600, 3600, 0.5, "Degrees, clockwise")
 	if piece["sprite"] != "":
 		_number(piece, "frame", "frame", 0, 63, 1)
+
+
+func _crop_all() -> void:
+	_crop(rig()["pieces"].filter(func(p): return p["sprite"] != ""))
+
+
+func _crop(pieces: Array) -> void:
+	editor.push_undo()
+	var failed := 0
+	for piece in pieces:
+		if not Rig.crop_to_art(piece):
+			failed += 1
+	_changed()
+	_refresh_piece_box()
+	_status.text = "Cropped." if failed == 0 else "Couldn't read %d of the images." % failed
 
 
 func _is_inside(piece: Dictionary, ancestor: int) -> bool:
@@ -588,6 +617,7 @@ func _number(piece: Dictionary, key: String, label: String, low: float, high: fl
 		piece[key] = int(v) if key == "hframes" else v
 		if key == "hframes":
 			piece["frame"] = clampi(piece["frame"], 0, int(v) - 1)
+			piece["crops"] = [] # the frames changed shape
 		_changed())
 	_row(label, spin)
 
@@ -726,9 +756,10 @@ class Stage extends Control:
 		if piece.is_empty() or not placed.has(piece["id"]):
 			return
 		var piece_xf: Transform2D = xf * placed[piece["id"]]["xf"]
-		var box := Rig.frame_size(piece)
-		if box != Vector2.ZERO:
-			var corner := -Vector2(piece["pivot_x"], piece["pivot_y"])
+		if Rig.frame_size(piece) != Vector2.ZERO:
+			var part := Rig.frame_rect(piece, placed[piece["id"]]["frame"])
+			var box := part.size
+			var corner := part.position - Vector2(piece["pivot_x"], piece["pivot_y"])
 			var outline := PackedVector2Array()
 			for c in [corner, corner + Vector2(box.x, 0), corner + box, corner + Vector2(0, box.y), corner]:
 				outline.append(piece_xf * c)
